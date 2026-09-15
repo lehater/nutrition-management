@@ -17,8 +17,8 @@ Owns:
 - household membership for calculation purposes;
 - member nutrition profile;
 - versioned nutrition standard sets and their provenance;
-- derivation of individual 30-day target ranges;
-- aggregation into the household 30-day nutrition target.
+- derivation of individual 30-day energy/nutrient target specifications and applicable safety limits;
+- aggregation of compatible nutritional demand into the household 30-day nutrition target.
 
 Does not own food composition, products, prices or purchase decisions.
 
