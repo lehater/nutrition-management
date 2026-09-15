@@ -194,6 +194,19 @@ class NutritionTargetingRepository:
         ).first()
         return None if row is None else row[0]
 
+    def standard_exists(self, version: str) -> bool:
+        return self._connection.execute(
+            select(standard_table.c.version).where(standard_table.c.version == version)
+        ).first() is not None
+
+    def activate_standard(self, version: str) -> None:
+        if not self.standard_exists(version):
+            raise ValueError(f"unknown standard version: {version}")
+        self._connection.execute(standard_table.update().values(active=False))
+        self._connection.execute(
+            standard_table.update().where(standard_table.c.version == version).values(active=True)
+        )
+
     def add_standard(
         self,
         standard: NutritionStandardSet,
