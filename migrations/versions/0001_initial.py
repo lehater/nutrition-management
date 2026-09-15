@@ -38,8 +38,8 @@ def upgrade() -> None:
     )
     op.create_table(
         "nt_standard_reference",
+        sa.Column("standard_version", sa.String(), sa.ForeignKey("nt_standard_set.version"), primary_key=True),
         sa.Column("reference_id", sa.String(), primary_key=True),
-        sa.Column("standard_version", sa.String(), sa.ForeignKey("nt_standard_set.version"), nullable=False),
         sa.Column("nutrient_measure", sa.String(), nullable=False),
         sa.Column("kind", sa.String(), nullable=False),
         sa.Column("basis", sa.String(), nullable=False),
@@ -50,8 +50,8 @@ def upgrade() -> None:
     )
     op.create_table(
         "nt_safety_reference",
+        sa.Column("standard_version", sa.String(), sa.ForeignKey("nt_standard_set.version"), primary_key=True),
         sa.Column("reference_id", sa.String(), primary_key=True),
-        sa.Column("standard_version", sa.String(), sa.ForeignKey("nt_standard_set.version"), nullable=False),
         sa.Column("nutrient_measure", sa.String(), nullable=False),
         sa.Column("daily_upper", sa.String(), nullable=False),
     )
