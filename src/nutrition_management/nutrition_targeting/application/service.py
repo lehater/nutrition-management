@@ -3,6 +3,7 @@ from __future__ import annotations
 from nutrition_management.nutrition_targeting.application.contracts import (
     HouseholdTargetFact,
     MemberSafetyFact,
+    MemberTargetProvenanceFact,
     TargetFact,
 )
 from nutrition_management.nutrition_targeting.domain.aggregation import aggregate_household_target
@@ -41,5 +42,16 @@ def derive_household_target_fact(repository, household_id: str, derivation_date)
             )
             for member in members
             for limit in member.safety_limits
+        ),
+        member_provenance=tuple(
+            MemberTargetProvenanceFact(
+                member_id=member.member_id,
+                age_years=member.age_years,
+                current_weight_kg=member.current_weight_kg,
+                current_weight_date=member.current_weight_date,
+                pal=member.pal,
+                pal_activity_adjustment_applied=member.pal_activity_adjustment_applied,
+            )
+            for member in members
         ),
     )
