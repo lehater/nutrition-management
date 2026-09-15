@@ -1,71 +1,67 @@
 # Active execution
 
-Current product work: complete and merge the accepted first end-to-end executable planning slice.
+Current product work: define and unblock the next bounded slice for sourced `mvp-v1` Nutrition Standard Set data and target mappings.
 
-Lifecycle basis: `S4 Implementation Readiness` authorization for the bounded first slice.
-Implementation state: **completion gate PASS**.
-Implementation authorization: only [`first-implementation-slice.md`](first-implementation-slice.md); no subsequent slice is authorized yet.
+Lifecycle state: **S2 REOPEN / REWORK** for source applicability semantics discovered during follow-up planning.
+Implementation authorization: **none** for the next slice.
 
 ## Accepted upstream state
 
 - S0 Problem / Evidence: `PASS`.
 - S1 Requirements: `PASS`.
-- S2 Strategic/Tactical Domain Design: `PASS` for the accepted MVP scope.
-- S3 Architecture: `PASS`; see [`../../architecture/target-architecture.md`](../../architecture/target-architecture.md), ADR-008 and ADR-009.
-- S4 Implementation Readiness: `PASS` for the bounded first slice; see ADR-010 and ADR-011.
+- S2 Strategic/Tactical Domain Design: previously `PASS`; narrowly reopened for production nutrition-reference applicability.
+- S3 Architecture: `PASS` for the existing modular-monolith/planning architecture; no architecture reopen is currently required.
+- First implementation slice: completion gate `PASS`, squash-merged as commit `89e59831f9fd0fe83f9353ef498527f49e392342` via PR #7.
 
-## Completed first slice
+Historical performance evidence for that slice remains in [`../../baseline/first-implementation-slice-performance.md`](../../baseline/first-implementation-slice-performance.md).
 
-Canonical scope: [`first-implementation-slice.md`](first-implementation-slice.md).
+## Current candidate slice
 
-The implemented path crosses all four Bounded Contexts:
+Readiness document: [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
 
-`two current adult profiles + test-only standard fixture -> Household Nutrition Target -> coherent Food/Market snapshot -> policy-optimal solver -> Purchase Plan JSON`.
+Intended outcome:
 
-The slice includes the locked CPython/uv environment, context-owned SQLite/Alembic persistence, coherent WAL read snapshots, the accepted adult target path, canonical Food Knowledge and executable Market Catalog projections, sequential ADR-007 optimization through PySCIPOpt/SCIP, canonical reporting, aggregate-only safety diagnostics and a standard-library CLI outer adapter.
+`complete sourced mvp-v1 reference rows + explicit target mappings -> reproducible versioned import`
 
-Important boundary: `test-slice-v1` remains acceptance/test data only. The slice does not claim that the complete production `mvp-v1` DGE/ÖGE reference data or BLS catalog is implemented. NIDDK/Hall, pediatric/infant paths, HTTP/UI/authentication, saved plans/history, asynchronous planning and production deployment remain outside this slice.
+without BLS food-row import, NIDDK/Hall execution, pediatric energy execution, UI/API or optimization-policy changes.
 
-ADR-011 separates `derivation_date` from timezone-aware `market_as_of`; both are retained in planning provenance. Market observations after `market_as_of` are not executable.
+## Why S2 is reopened
 
-## Completion evidence
+Reviewing the current DGE source against the accepted model exposed source applicability that cannot be selected from the current MVP profile without inventing defaults:
 
-The completion gate is satisfied on GitHub Actions CI run `35016004825` (run #148) for commit `c6453c218d6a2ca273ca299b9a589fc1e13cf8e4`:
+- **P1** — adult zinc recommendations vary by phytate intake;
+- **P1** — adult female iron recommendations vary by menstruation/menopausal state, not age + sex alone;
+- **P1** — protein g/kg production derivation requires an explicit applicable-weight rule and cannot universally use current observed weight.
 
-- locked environment and exact Python/library/SCIP version checks passed;
-- migrations from an empty file-backed SQLite database passed;
-- unit, policy, architecture-boundary, persistence/concurrency, deterministic E2E and CLI tests passed;
-- solver-policy evidence covers package/planned quantities, target kinds, unknown evidence, variety, fulfilment costs, cost-close behavior, hard infeasibility and deterministic technical tie resolution;
-- aggregate Safety Limit diagnostics remain non-guaranteeing and are tested, including known-lower-bound exceedance with unknown remaining contribution;
-- performance characterization completed and uploaded as a CI artifact;
-- every recorded sequential optimization stage in the final benchmark returned `optimal` and the final solver status was `policy_optimal`.
+The first executable slice remains valid because it used the deliberately synthetic `test-slice-v1` standard and made no production `mvp-v1` claim.
 
-Historical performance evidence is recorded in [`../../baseline/first-implementation-slice-performance.md`](../../baseline/first-implementation-slice-performance.md).
+## Recommended direction under review
 
-## Review result
+Prefer storing complete source applicability while returning explicit `unsupported_applicability` when a required source factor is not owned by the MVP profile. Do not add sensitive profile fields or invent medium-phytate/menstruation/menopause defaults merely to force automatic selection.
 
-Final implementation review found no remaining **P0/P1** issue for the bounded slice.
+This direction must be accepted in canonical S2 artifacts before implementation.
 
-Resolved during implementation/review included:
+## Additional implementation-readiness gaps after S2 resolution
 
-- explicit non-legacy SQLite transaction control for coherent WAL read snapshots;
-- version-safe Nutrition Standard Set persistence and single active-version behavior;
-- PAL activity-adjustment provenance and applicability checks;
-- distinct nutrition derivation date and market evaluation instant;
-- future-observation exclusion and timezone-aware Market Catalog timestamps;
-- explicit commercial-value/domain invariants;
-- lower-bound unknown-evidence semantics;
-- solver/reporter mechanical tolerance separation from business thresholds;
-- safety diagnostics that never claim member-allocation safety.
+The current production-standard model must still be extended to preserve:
 
-## Remaining non-blocking risks
+- exact calendar age bands including sub-year groups;
+- sex/general-state applicability;
+- per-1000-kcal energy-density basis;
+- source semantic kind independently from downstream optimizer shape;
+- source unit and row-level source/version/citation provenance;
+- source-owned body-weight basis rules;
+- safety applicability/form scope;
+- complete explicit target-to-canonical-measure crosswalk coverage.
 
-- **P2** — solver scalability: exact technical lexicographic tie resolution adds sequential stages per Offer. Final baseline: 16 Offers = 45 stages / 14.785100 s; 32 Offers = 77 stages / 50.462863 s on the recorded GitHub runner. Re-characterize before materially increasing catalog size or setting latency expectations.
-- **P2** — floating-point solver mechanics remain intentionally isolated from domain thresholds; keep canonical Decimal revalidation and regression tests when changing solver code.
-- **P2** — SQLite remains a first-slice local/single-host choice; network/shared-filesystem deployment is unsupported.
+These are not permission to implement yet; they are the expected S4 work once the P1 domain blockers are closed.
 
-None of these P2 risks justifies changing accepted business semantics inside this slice.
+## Non-blocking carried risks
+
+- **P2** — exact solver technical tie-resolution scales poorly; re-characterize before materially increasing executable catalog size.
+- **P2** — keep floating-point solver tolerances isolated from domain thresholds.
+- **P2** — SQLite remains local/single-host only.
 
 ## Next
 
-Squash-merge PR #7. The last executable/schema change is commit `c6453c218d6a2ca273ca299b9a589fc1e13cf8e4`, which passed the full completion CI; commits after it only record completion evidence and execution state. After merge, open a fresh planning increment from `main` and choose the next bounded slice explicitly; do not implicitly expand this implementation authorization.
+Resolve the three P1 applicability decisions in S2. Then inventory the exact `mvp-v1` reference/mapping corpus and run S4 readiness for the data/import slice. Do not start production standard import until that gate passes.
