@@ -14,7 +14,7 @@ Purchase Planning consumes authoritative facts from three provider contexts:
 
 Optimization can take materially longer than ordinary reads. Holding a database transaction or mutable object graph open while solving would couple planning correctness to concurrent edits and persistence behavior. Re-reading provider state during a solve could also mix nutrition/food/market facts from different moments.
 
-The accepted optimization policy is deterministic and auditable. A persisted Purchase Plan therefore needs to retain the exact facts/provenance on which it was calculated even when the current profile, catalog or offers later change.
+The accepted optimization policy is deterministic for one fixed set of calculation inputs. The product requires provenance in the returned Purchase Plan, but it does **not** currently require saved plan history or exact historical replay of every candidate considered by an old calculation.
 
 The optimizer itself is computational infrastructure. It must not become the owner of target semantics, variety semantics, market executability rules or plan outcome meaning.
 
@@ -24,28 +24,40 @@ The optimizer itself is computational infrastructure. It must not become the own
 
 A Generate Purchase Plan use case first assembles an immutable **Planning Input Snapshot** through provider-owned application contracts.
 
-The snapshot contains only the facts required by the accepted planning policy, including at least:
+The snapshot contains the facts required to choose an executable basket under the accepted planning policy, including at least:
 
 - calculation/derivation date and 30-day horizon;
 - active Nutrition Standard Set/version and resolved Household Nutrition Target with target-mapping provenance;
-- canonical Base Food/Nutrient Measure/category facts required by candidate products and gap suggestions;
+- canonical Base Food/Nutrient Measure/category facts required by executable candidate products;
 - executable Product Card effective nutrient facts and edible package quantities;
 - Merchant/Fulfilment Channel/Offer identifiers, price/currency, availability, observed-at and validity/order conditions;
 - the accepted optimization-policy version/identity.
 
-The snapshot is a technical immutable calculation input. It does not become authoritative Nutrition Targeting, Food Knowledge or Market Catalog state.
+The snapshot is a technical immutable calculation input with the lifetime of one planning execution. It does not become authoritative Nutrition Targeting, Food Knowledge or Market Catalog state and is not required to be persisted in the MVP.
 
 ### Consistent-read boundary
 
-Because ADR-008 uses one relational store, snapshot assembly occurs inside one database-consistent read boundary. Provider modules expose published read/application contracts; Purchase Planning does not query provider tables directly.
+Because ADR-008 uses one relational store, snapshot assembly occurs inside one database-consistent read scope.
 
-The consistent read ends after the snapshot has been assembled. Optimization runs only against the immutable snapshot and does not perform provider reads during solving.
+The application composition/infrastructure layer owns that read-consistency scope. Provider application contracts remain persistence-agnostic; their persistence adapters participate in the same read snapshot without exposing database transaction/session objects through domain or cross-context contracts.
 
-### Planning execution record
+Purchase Planning does not query provider tables directly.
 
-When a Purchase Plan is persisted, Purchase Planning also persists enough immutable snapshot data/provenance to explain and deterministically re-evaluate that plan even if current upstream state later changes.
+The consistent read ends after the optimization snapshot has been assembled. Optimization runs only against that immutable snapshot and does not perform provider reads during solving.
 
-This technical record is not profile history, inventory history or market truth. It is evidence for one calculation run.
+### Returned result and provenance
+
+The MVP returns one Purchase Plan result; it does not require persistent plan history.
+
+The returned plan carries the accepted provenance needed to interpret it, including standards/policy identity, calculation date, selected food/SKU/Offer/Fulfilment facts and their relevant source/observation metadata, plus unsupported/indeterminate diagnostics.
+
+Exact replay of an old optimization against the complete historical candidate universe is outside current requirements. If saved-plan history or audit replay becomes product behavior, S1/S2/S3 must be revisited rather than silently turning the ephemeral snapshot into durable authoritative-looking state.
+
+### Gap-suggestion enrichment
+
+Theoretical Base Food suggestions do not affect executable basket selection or Purchase Plan outcome classification.
+
+After the solver result and mapped gaps are known, Purchase Planning may request theoretical gap suggestions from Food Knowledge through its published contract. That enrichment records the Food Knowledge source/provenance used for the suggestions. It is not part of the executable-market optimization snapshot and therefore does not force the complete theoretical food catalog into every solver input.
 
 ### Optimizer boundary
 
@@ -67,7 +79,7 @@ The solver is not allowed to invent business weights that change ADR-007 priorit
 
 Purchase Planning code owns transformation from Planning Input Snapshot to solver model and owns interpretation of solver output.
 
-Before persisting/returning a Purchase Plan, application/domain policy revalidates material executable invariants and recalculates reportable coverage/variety/cost facts from the returned quantities rather than trusting solver-specific reporting as authoritative domain truth.
+Before returning a Purchase Plan, application/domain policy revalidates material executable invariants and recalculates reportable coverage/variety/cost facts from the returned quantities rather than trusting solver-specific reporting as authoritative domain truth.
 
 A solver/library failure is a technical execution failure and is distinct from the accepted domain outcome `no_executable_plan`.
 
@@ -75,7 +87,7 @@ A solver/library failure is a technical execution failure and is distinct from t
 
 For the same Planning Input Snapshot and optimization-policy version, the application must produce the same primary plan/output ordering subject to the accepted stable tie-breakers.
 
-Any solver randomness must be disabled or use a fixed recorded seed. Numeric tolerances used solely for solver mechanics must not change the accepted domain scoring/tolerance semantics.
+Any solver randomness must be disabled or use a fixed execution seed. Numeric tolerances used solely for solver mechanics must not change the accepted domain scoring/tolerance semantics.
 
 ### Execution mode
 
@@ -83,9 +95,11 @@ The MVP runs plan generation synchronously inside the application process. No qu
 
 ## Consequences
 
-- one planning run never mixes mutable provider facts from different read moments;
-- long optimization does not keep a database transaction open;
-- persisted plans remain auditable after current profiles/catalog/offers change;
+- one optimization run never mixes mutable provider facts from different read moments;
+- optimization does not keep a database read scope open;
+- snapshot consistency is implemented without leaking persistence/session objects into domain or cross-context contracts;
+- no full-catalog historical snapshot or saved-plan subsystem is introduced without a product requirement;
+- theoretical suggestion enrichment remains lightweight and cannot affect executable-plan selection retroactively;
 - Purchase Planning remains the owner of optimization semantics while a third-party solver remains replaceable infrastructure;
 - no optimizer microservice, message broker or asynchronous worker is required for MVP;
 - solver/library selection is a bounded S4 choice constrained by the accepted port/problem shape.
@@ -94,11 +108,19 @@ The MVP runs plan generation synchronously inside the application process. No qu
 
 ### Query provider modules repeatedly during optimization
 
-Rejected because a solve could observe inconsistent versions/timestamps and become non-reproducible.
+Rejected because a solve could observe inconsistent versions/timestamps and become non-deterministic for one logical run.
 
 ### Hold one database transaction for the whole solve
 
 Rejected because optimization may be comparatively long-running and should not extend database locks/snapshots for computational convenience.
+
+### Persist the complete Planning Input Snapshot for every run
+
+Rejected for MVP because saved-plan history/exact replay is not an accepted requirement and the candidate snapshot may duplicate a large food/catalog dataset. The returned plan already carries the provenance required by S2.
+
+### Put the complete theoretical food catalog in the solver snapshot for gap suggestions
+
+Rejected because theoretical suggestions are post-plan advisory enrichment and do not affect executable basket selection. Fetching them after gaps are known is smaller and preserves the Food Knowledge boundary.
 
 ### Let the solver library own business scoring and result semantics
 
@@ -107,10 +129,6 @@ Rejected because it would move accepted Purchase Planning policy into infrastruc
 ### Run optimization as a separate service or background worker immediately
 
 Rejected because no accepted latency, scale or availability requirement justifies the operational/distributed-systems cost. The solver adapter boundary preserves a later extraction path if evidence appears.
-
-### Persist only the final basket
-
-Rejected because current upstream data is mutable and the product explicitly preserves standard/market provenance. A final basket without its calculation evidence would lose explainability after later edits.
 
 ## Supersession
 
