@@ -1,6 +1,6 @@
 # MVP Target Architecture
 
-Status: `proposed` while S3 review is in progress.
+Status: `accepted` for the MVP S3 baseline.
 Lifecycle layer: `S3 Architecture`.
 
 ## Purpose
@@ -273,13 +273,16 @@ S4 may choose these only within the architecture constraints above.
 - no domain Purchase Plan is returned until the complete accepted optimization policy is established as optimal for that snapshot, or hard infeasibility is established;
 - technical execution failures remain distinct from accepted domain outcomes.
 
-## S3 review questions
+## S3 gate result
 
-Before marking S3 `PASS`, verify:
+Architecture review against accepted requirements, domain ownership, ADRs and KISS found no remaining P0/P1 finding for the accepted MVP scope.
 
-1. whether one physical relational store is sufficient for every accepted consistency/provenance requirement;
-2. whether the ephemeral Planning Input Snapshot is the minimum consistency mechanism rather than duplicate authoritative state;
-3. whether the solver port is narrow enough to remain replaceable while preserving deterministic ADR-007 policy;
-4. whether any proposed cross-context dependency bypasses the accepted Context Map;
-5. whether the neutral read-snapshot coordination leaks persistence concerns into provider/domain contracts;
-6. whether any runtime/asynchronous component is being introduced without requirement evidence.
+Resolved during review:
+
+- rejected durable full-snapshot/saved-plan machinery that had no upstream requirement;
+- made the one-run consistency mechanism ephemeral and persistence-agnostic at context boundaries;
+- added stable non-business tie resolution after all ADR-007 dimensions;
+- required proven completion of the full optimization policy before returning a Purchase Plan;
+- kept timeout/unknown/solver failure distinct from the domain result `partial`.
+
+Non-blocking S4 verification remains for concrete database snapshot semantics, realistic synchronous solve time and exact solver numeric/determinism behavior.
