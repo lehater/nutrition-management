@@ -36,5 +36,6 @@ def generate_purchase_plan(
             represented_base_foods=(),
             max_food_energy_share=Decimal(0),
             provenance_offer_ids=(),
+            target_member_provenance=snapshot.target_member_provenance,
         )
     return build_purchase_plan(snapshot, decision)
