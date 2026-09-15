@@ -17,7 +17,14 @@ class FulfilmentMode(StrEnum):
     DELIVERY = "delivery"
 
 
+def _validate_instant(value: datetime | None, field: str) -> None:
+    if value is not None and (value.tzinfo is None or value.utcoffset() is None):
+        raise ValueError(f"{field} must be timezone-aware")
+
+
 def _validate_interval(valid_from: datetime | None, valid_until: datetime | None) -> None:
+    _validate_instant(valid_from, "valid_from")
+    _validate_instant(valid_until, "valid_until")
     if valid_from is not None and valid_until is not None and valid_from > valid_until:
         raise ValueError("valid_from must not be later than valid_until")
 
@@ -65,6 +72,7 @@ class FulfilmentChannel:
             raise ValueError("fulfilment fee must be non-negative")
         if self.free_delivery_threshold is not None and self.free_delivery_threshold < 0:
             raise ValueError("free-delivery threshold must be non-negative")
+        _validate_instant(self.observed_at, "observed_at")
         _validate_interval(self.valid_from, self.valid_until)
 
     def is_valid_at(self, at: datetime) -> bool:
@@ -92,6 +100,7 @@ class Offer:
     def __post_init__(self) -> None:
         if self.price < 0:
             raise ValueError("offer price must be non-negative")
+        _validate_instant(self.observed_at, "observed_at")
         _validate_interval(self.valid_from, self.valid_until)
 
     def is_executable_at(self, at: datetime) -> bool:
