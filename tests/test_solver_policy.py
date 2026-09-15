@@ -116,7 +116,7 @@ def test_integer_packages_continuous_planned_quantity_and_free_delivery_threshol
     assert plan.lines[0].surplus_grams > 0
 
 
-def test_unknown_nutrient_use_is_avoided_before_cost_when_determinate_alternative_exists():
+def test_lower_bound_can_be_proven_with_known_contribution_while_unknown_evidence_remains_visible():
     unknown = candidate(
         "cheap-unknown",
         sku="u",
@@ -143,7 +143,14 @@ def test_unknown_nutrient_use_is_avoided_before_cost_when_determinate_alternativ
         targets=(TargetDimension("FIBT", TargetKind.ADEQUACY_FLOOR, lower=Decimal("10")),),
     )
     decision = solver_adapter.solve(snap)
-    assert {line.offer_id for line in decision.lines} == {"known"}
+    chosen = {line.offer_id for line in decision.lines}
+    assert "known" in chosen
+
+    plan = build_purchase_plan(snap, decision)
+    fibre = next(item for item in plan.assessments if item.measure == "FIBT")
+    assert fibre.penalty == 0
+    assert fibre.indeterminate is False
+    assert fibre.unknown_evidence is ("cheap-unknown" in chosen)
 
 
 def test_empty_executable_market_is_hard_infeasible():
