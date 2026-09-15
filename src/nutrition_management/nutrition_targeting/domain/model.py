@@ -62,6 +62,39 @@ class ReferenceDefinition:
     point: Decimal | None = None
     energy_kcal_per_g: Decimal | None = None
 
+    def __post_init__(self) -> None:
+        if not self.reference_id or not self.nutrient_measure:
+            raise ValueError("reference identity and nutrient measure are required")
+        for value in (self.lower, self.upper, self.point):
+            if value is not None and value < 0:
+                raise ValueError("reference values must be non-negative")
+
+        if self.kind in {ReferenceKind.ADEQUACY_FLOOR, ReferenceKind.LOWER_BOUND}:
+            if self.lower is None or self.lower <= 0 or self.upper is not None or self.point is not None:
+                raise ValueError("lower-bound reference requires only a positive lower value")
+        elif self.kind == ReferenceKind.UPPER_BOUND:
+            if self.upper is None or self.upper <= 0 or self.lower is not None or self.point is not None:
+                raise ValueError("upper-bound reference requires only a positive upper value")
+        elif self.kind == ReferenceKind.INTERVAL:
+            if (
+                self.lower is None
+                or self.upper is None
+                or self.lower <= 0
+                or self.upper <= 0
+                or self.lower > self.upper
+                or self.point is not None
+            ):
+                raise ValueError("interval reference requires a positive ordered lower/upper pair")
+        elif self.kind == ReferenceKind.POINT:
+            if self.point is None or self.point <= 0 or self.lower is not None or self.upper is not None:
+                raise ValueError("point reference requires only a positive point value")
+
+        if self.basis == ReferenceBasis.PERCENT_ENERGY:
+            if self.energy_kcal_per_g is None or self.energy_kcal_per_g <= 0:
+                raise ValueError("percent-energy reference requires a positive energy factor")
+        elif self.energy_kcal_per_g is not None:
+            raise ValueError("energy factor is only valid for percent-energy references")
+
 
 @dataclass(frozen=True)
 class SafetyDefinition:
@@ -69,12 +102,28 @@ class SafetyDefinition:
     nutrient_measure: str
     daily_upper: Decimal
 
+    def __post_init__(self) -> None:
+        if not self.reference_id or not self.nutrient_measure:
+            raise ValueError("safety reference identity and nutrient measure are required")
+        if self.daily_upper <= 0:
+            raise ValueError("safety daily upper must be positive")
+
 
 @dataclass(frozen=True)
 class NutritionStandardSet:
     version: str
     references: tuple[ReferenceDefinition, ...]
     safety_limits: tuple[SafetyDefinition, ...] = ()
+
+    def __post_init__(self) -> None:
+        if not self.version:
+            raise ValueError("standard version is required")
+        reference_ids = [item.reference_id for item in self.references]
+        safety_ids = [item.reference_id for item in self.safety_limits]
+        if len(reference_ids) != len(set(reference_ids)):
+            raise ValueError("reference ids must be unique within a standard version")
+        if len(safety_ids) != len(set(safety_ids)):
+            raise ValueError("safety reference ids must be unique within a standard version")
 
 
 @dataclass(frozen=True)
