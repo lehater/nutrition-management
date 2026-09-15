@@ -99,6 +99,7 @@ def run_case(offer_count: int) -> dict:
 
     def traced(model, expression, *, sense, name, allow_initial_infeasible=False, fix=True):
         started = perf_counter()
+        status = "error"
         try:
             result = original(
                 model,
@@ -108,18 +109,26 @@ def run_case(offer_count: int) -> dict:
                 allow_initial_infeasible=allow_initial_infeasible,
                 fix=fix,
             )
+            # _optimize_stage returns only after observing SCIP status `optimal`.
+            # It then frees the transformed problem to add the fixing constraint,
+            # which resets Model.getStatus() to `unknown`; record the proven stage
+            # result rather than that post-transform lifecycle state.
+            status = "optimal"
+            return result
+        except Exception:
+            status = str(model.getStatus()).lower()
+            raise
         finally:
             stages.append(
                 {
                     "name": name,
                     "sense": sense,
-                    "status": str(model.getStatus()).lower(),
+                    "status": status,
                     "wall_seconds": round(perf_counter() - started, 6),
                     "variables": model.getNVars(),
                     "constraints": model.getNConss(),
                 }
             )
-        return result
 
     scip_solver._optimize_stage = traced
     started = perf_counter()
