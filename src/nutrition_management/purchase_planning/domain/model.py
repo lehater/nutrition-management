@@ -102,6 +102,7 @@ class SolverDecision:
 @dataclass(frozen=True)
 class NutrientAssessment:
     measure: str
+    unknown_evidence: bool
     indeterminate: bool
     amount: Decimal
     penalty: Decimal
