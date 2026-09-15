@@ -43,7 +43,7 @@ The application composition/infrastructure layer owns that read-consistency scop
 
 Purchase Planning does not query provider tables directly.
 
-The consistent read ends after the optimization snapshot has been assembled. Optimization runs only against that immutable snapshot and does not perform provider reads during solving.
+The consistent read ends after the optimization snapshot has been assembled. Optimization runs only against the immutable snapshot and does not perform provider reads during solving.
 
 ### Returned result and provenance
 
@@ -63,7 +63,7 @@ After the solver result and mapped gaps are known, Purchase Planning may request
 
 Purchase Planning defines an `Optimization Solver` port owned by its application/architecture boundary.
 
-The MVP solver is an **in-process library adapter**, not a network service. The adapter receives a solver-ready problem derived from the immutable snapshot and returns a candidate solution/status.
+The MVP solver is an **in-process library adapter**, not a network service. The adapter receives a solver-ready problem derived from the immutable snapshot and returns a solution/status.
 
 The concrete solver library is selected in S4. It must support the accepted problem shape, including:
 
@@ -71,9 +71,20 @@ The concrete solver library is selected in S4. It must support the accepted prob
 - continuous planned-utilized quantities;
 - binary/conditional decisions needed for Purchase Groups and bounded variety semantics;
 - linearizable commercial conditions such as minimum order, delivery fee and free-delivery threshold;
-- deterministic lexicographic/sequential objective evaluation or an equivalent implementation that preserves ADR-007 ordering.
+- lexicographic/sequential objective evaluation that can prove completion of the accepted ADR-007 ordering for the returned primary plan.
 
 The solver is not allowed to invent business weights that change ADR-007 priority semantics.
+
+### Accepted solver outcomes
+
+The application accepts only these solver outcomes as domain-relevant:
+
+- **policy-optimal** — all hard constraints and every sequential/lexicographic business objective stage are completed, including the final technical tie resolution;
+- **hard-model-infeasible** — the accepted hard executability model has no non-empty solution and can therefore map to `no_executable_plan`.
+
+`unknown`, numeric failure, adapter failure, cancellation or timeout before policy optimality is established is a **technical execution failure**.
+
+A feasible incumbent returned on timeout is not sufficient for the primary MVP recommendation because it may violate the accepted global/lexicographic ranking even when it satisfies hard constraints. Such an incumbent must not be relabeled as `partial`; `partial` describes the best policy-optimal executable basket with nutritional/variety gaps, not an unfinished optimization process.
 
 ### Domain-policy ownership and validation
 
@@ -81,7 +92,7 @@ Purchase Planning code owns transformation from Planning Input Snapshot to solve
 
 Before returning a Purchase Plan, application/domain policy revalidates material executable invariants and recalculates reportable coverage/variety/cost facts from the returned quantities rather than trusting solver-specific reporting as authoritative domain truth.
 
-A solver/library failure is a technical execution failure and is distinct from the accepted domain outcome `no_executable_plan`.
+A solver/library failure is distinct from the accepted domain outcome `no_executable_plan`.
 
 ### Determinism and final technical tie resolution
 
@@ -107,7 +118,8 @@ The MVP runs plan generation synchronously inside the application process. No qu
 - no full-catalog historical snapshot or saved-plan subsystem is introduced without a product requirement;
 - theoretical suggestion enrichment remains lightweight and cannot affect executable-plan selection retroactively;
 - Purchase Planning remains the owner of optimization semantics while a third-party solver remains replaceable infrastructure;
-- business-equivalent solver optima still resolve to one reproducible primary recommendation without adding a hidden business preference;
+- business-equivalent solver optima resolve to one reproducible primary recommendation without adding a hidden business preference;
+- an unfinished solver run cannot masquerade as the accepted best partial plan;
 - no optimizer microservice, message broker or asynchronous worker is required for MVP;
 - solver/library selection is a bounded S4 choice constrained by the accepted port/problem shape.
 
@@ -132,6 +144,10 @@ Rejected because theoretical suggestions are post-plan advisory enrichment and d
 ### Let the solver choose arbitrarily among business-equivalent optima
 
 Rejected because the MVP produces one primary recommendation and the accepted policy is intended to be deterministic. A final technical order is harmless only after every business criterion is equal.
+
+### Return a feasible timeout incumbent as `partial`
+
+Rejected because `partial` is a domain quality outcome after completed policy optimization, not a solver-progress state. Returning an unproven incumbent would weaken the accepted global deterministic policy without an upstream requirement.
 
 ### Let the solver library own business scoring and result semantics
 
