@@ -1,6 +1,8 @@
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 
+import pytest
+
 from nutrition_management.food_knowledge.application.contracts import FoodFact, NutrientEvidenceStatus, NutrientFact
 from nutrition_management.market_catalog.application.service import executable_market_projection
 from nutrition_management.market_catalog.domain.model import (
@@ -50,9 +52,16 @@ def test_product_override_replaces_only_matching_normalized_component():
     assert fiber.status == NutrientEvidenceStatus.TRACE
 
 
-def test_unavailable_and_expired_offers_do_not_enter_projection():
+def test_unavailable_expired_and_future_observations_do_not_enter_projection():
     product = ProductCard("sku-1", "food-1", "SKU", Decimal("500"))
-    channel = FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR")
+    channel = FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", observed_at=NOW)
+    future_channel = FulfilmentChannel(
+        "future-channel",
+        "merchant",
+        FulfilmentMode.PICKUP,
+        "EUR",
+        observed_at=NOW + timedelta(minutes=1),
+    )
     offers = (
         Offer("ok", "sku-1", "channel", Decimal("2"), "EUR", Availability.AVAILABLE, NOW),
         Offer("unavailable", "sku-1", "channel", Decimal("1"), "EUR", Availability.UNAVAILABLE, NOW),
@@ -66,8 +75,39 @@ def test_unavailable_and_expired_offers_do_not_enter_projection():
             NOW - timedelta(days=2),
             valid_until=NOW - timedelta(days=1),
         ),
+        Offer(
+            "future-offer",
+            "sku-1",
+            "channel",
+            Decimal("1"),
+            "EUR",
+            Availability.AVAILABLE,
+            NOW + timedelta(minutes=1),
+        ),
+        Offer(
+            "future-channel-offer",
+            "sku-1",
+            "future-channel",
+            Decimal("1"),
+            "EUR",
+            Availability.AVAILABLE,
+            NOW,
+        ),
     )
     facts = executable_market_projection(
-        products=(product,), channels=(channel,), offers=offers, food_lookup=food_lookup, as_of=NOW
+        products=(product,),
+        channels=(channel, future_channel),
+        offers=offers,
+        food_lookup=food_lookup,
+        as_of=NOW,
     )
     assert [item.offer_id for item in facts] == ["ok"]
+
+
+def test_negative_commercial_values_and_nonpositive_edible_quantity_are_rejected():
+    with pytest.raises(ValueError, match="edible package quantity"):
+        ProductCard("sku", "food", "SKU", Decimal("0"))
+    with pytest.raises(ValueError, match="offer price"):
+        Offer("offer", "sku", "channel", Decimal("-0.01"), "EUR", Availability.AVAILABLE, NOW)
+    with pytest.raises(ValueError, match="minimum order"):
+        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", minimum_order=Decimal("-1"))
