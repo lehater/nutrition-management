@@ -40,13 +40,9 @@ class _Vars:
     planned: dict[str, object]
     groups: dict[str, object]
     merchants: dict[str, object]
-    currencies: dict[str, object]
-    free_delivery: dict[str, object]
     indeterminate: dict[str, object]
     directed_penalties: list[object]
     point_penalties: list[object]
-    food_rep: dict[str, object]
-    category_rep: dict[str, object]
     core_score: object
     food_score: object
     concentration_penalty: object
@@ -56,10 +52,6 @@ class _Vars:
 
 def _f(value: Decimal | int | float) -> float:
     return float(value)
-
-
-def _target_key(index: int, target: TargetDimension) -> str:
-    return f"{index}:{target.measure}:{target.kind.value}"
 
 
 def _all_targets(snapshot: PlanningInputSnapshot) -> tuple[TargetDimension, ...]:
@@ -93,11 +85,47 @@ def _add_penalty(model: Model, target: TargetDimension, amount, name: str):
     if target.kind == TargetKind.POINT:
         if target.point is None or target.point <= 0:
             raise ValueError(f"{name}: missing positive point")
-        lower, upper = _f(target.point * Decimal("0.95")), _f(target.point * Decimal("1.05"))
+        lower = _f(target.point * Decimal("0.95"))
+        upper = _f(target.point * Decimal("1.05"))
         model.addCons(penalty >= (lower - amount) / lower, name=f"{name}_low")
         model.addCons(penalty >= (amount - upper) / upper, name=f"{name}_high")
         return penalty, "point"
     raise ValueError(f"unsupported target kind {target.kind}")
+
+
+def _add_indeterminate_semantics(
+    model: Model,
+    *,
+    target: TargetDimension,
+    known_amount,
+    unknown_quantities: list[object],
+    index: int,
+):
+    unknown_used = model.addVar(name=f"unknown_{index}_{target.measure}", vtype="B")
+    for quantity in unknown_quantities:
+        # If unknown_used == 0 no quantitatively unknown food may contribute.
+        # Any positive selected quantity therefore forces unknown_used == 1.
+        model.addConsIndicator(quantity <= 0, binvar=unknown_used, activeone=False)
+
+    if target.kind not in {TargetKind.ADEQUACY_FLOOR, TargetKind.LOWER_BOUND}:
+        return unknown_used
+
+    if target.lower is None or target.lower <= 0:
+        raise ValueError(f"{target.measure}: lower-bound target requires a positive lower value")
+
+    # For adequacy/lower-bound semantics, unknown evidence does not make compliance
+    # indeterminate when known contributions alone already prove the floor.
+    proven_from_known = model.addVar(name=f"proven_{index}_{target.measure}", vtype="B")
+    model.addConsIndicator(
+        known_amount >= _f(target.lower),
+        binvar=proven_from_known,
+        activeone=True,
+    )
+    indeterminate = model.addVar(name=f"indet_{index}_{target.measure}", vtype="B")
+    model.addCons(indeterminate >= unknown_used - proven_from_known)
+    model.addCons(indeterminate <= unknown_used)
+    model.addCons(indeterminate <= 1 - proven_from_known)
+    return indeterminate
 
 
 def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
@@ -127,9 +155,9 @@ def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
         )
     model.addCons(quicksum(packages.values()) >= 1, name="non_empty_basket")
 
-    by_channel = defaultdict(list)
-    by_merchant = defaultdict(set)
-    by_currency = defaultdict(list)
+    by_channel: dict[str, list] = defaultdict(list)
+    by_merchant: dict[str, set[str]] = defaultdict(set)
+    by_currency: dict[str, list] = defaultdict(list)
     for item in candidates:
         by_channel[item.channel_id].append(item)
         by_merchant[item.merchant_id].add(item.channel_id)
@@ -169,31 +197,35 @@ def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
             model.addConsIndicator(packages[item.offer_id] <= 0, binvar=marker, activeone=False)
     model.addCons(quicksum(currencies.values()) <= 1, name="single_currency")
 
-    targets = _all_targets(snapshot)
     indeterminate: dict[str, object] = {}
     directed_penalties: list[object] = []
     point_penalties: list[object] = []
-
-    for index, target in enumerate(targets):
-        key = _target_key(index, target)
-        indet = model.addVar(name=f"indet_{index}_{target.measure}", vtype="B")
-        indeterminate[key] = indet
-        amount_terms = []
+    for index, target in enumerate(_all_targets(snapshot)):
+        known_terms = []
+        unknown_quantities = []
         for item in candidates:
             evidence = item.nutrient(target.measure)
             if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
-                model.addConsIndicator(planned[item.offer_id] <= 0, binvar=indet, activeone=False)
+                unknown_quantities.append(planned[item.offer_id])
             elif evidence.amount_per_100g is not None:
-                amount_terms.append(_f(evidence.amount_per_100g / Decimal(100)) * planned[item.offer_id])
-        amount = quicksum(amount_terms) if amount_terms else 0.0
-        penalty, family = _add_penalty(model, target, amount, f"pen_{index}_{target.measure}")
+                known_terms.append(_f(evidence.amount_per_100g / Decimal(100)) * planned[item.offer_id])
+        known_amount = quicksum(known_terms) if known_terms else 0.0
+        indeterminate[f"{index}:{target.measure}:{target.kind.value}"] = _add_indeterminate_semantics(
+            model,
+            target=target,
+            known_amount=known_amount,
+            unknown_quantities=unknown_quantities,
+            index=index,
+        )
+        penalty, family = _add_penalty(model, target, known_amount, f"pen_{index}_{target.measure}")
         if family == "point":
             point_penalties.append(penalty)
         else:
             directed_penalties.append(penalty)
 
-    # Variety representation. The energy point objective is optimized before these stages,
-    # so total planned energy is positive for the accepted fixture whenever a plan is returned.
+    # Variety representation is based on planned utilized quantity. Threshold comparisons
+    # are linear expressions; concentration itself is a ratio and SCIP handles the small
+    # nonlinear constraint directly for this first validation slice.
     food_ids = sorted({item.base_food_id for item in candidates})
     food_rep = {food_id: model.addVar(name=f"foodrep_{food_id}", vtype="B") for food_id in food_ids}
     mass_rep = {food_id: model.addVar(name=f"massrep_{food_id}", vtype="B") for food_id in food_ids}
@@ -206,34 +238,46 @@ def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
     for food_id in food_ids:
         food_items = [item for item in candidates if item.base_food_id == food_id]
         food_mass[food_id] = quicksum(planned[item.offer_id] for item in food_items)
-        e_terms = []
+        terms = []
         for item in food_items:
             evidence = item.nutrient("ENERCC")
             if evidence.amount_per_100g is not None:
                 term = _f(evidence.amount_per_100g / Decimal(100)) * planned[item.offer_id]
-                e_terms.append(term)
+                terms.append(term)
                 energy_terms.append(term)
-        food_energy[food_id] = quicksum(e_terms) if e_terms else 0.0
-
-        model.addConsIndicator(food_mass[food_id] >= 0.01 * total_mass, binvar=mass_rep[food_id], activeone=True)
+        food_energy[food_id] = quicksum(terms) if terms else 0.0
+        model.addConsIndicator(
+            food_mass[food_id] >= 0.01 * total_mass,
+            binvar=mass_rep[food_id],
+            activeone=True,
+        )
         model.addCons(food_rep[food_id] >= mass_rep[food_id])
         model.addCons(food_rep[food_id] >= energy_rep[food_id])
         model.addCons(food_rep[food_id] <= mass_rep[food_id] + energy_rep[food_id])
 
     total_energy = quicksum(energy_terms) if energy_terms else 0.0
     for food_id in food_ids:
-        model.addConsIndicator(food_energy[food_id] >= 0.01 * total_energy, binvar=energy_rep[food_id], activeone=True)
+        model.addConsIndicator(
+            food_energy[food_id] >= 0.01 * total_energy,
+            binvar=energy_rep[food_id],
+            activeone=True,
+        )
 
     categories = sorted({item.category for item in candidates if item.category in _CORE_CATEGORIES})
     category_rep = {category: model.addVar(name=f"catrep_{category}", vtype="B") for category in categories}
     for category in categories:
-        represented = [food_rep[food_id] for food_id in food_ids if any(
-            item.base_food_id == food_id and item.category == category for item in candidates
-        )]
+        represented = [
+            food_rep[food_id]
+            for food_id in food_ids
+            if any(item.base_food_id == food_id and item.category == category for item in candidates)
+        ]
         model.addCons(category_rep[category] <= quicksum(represented))
 
     core_score = model.addVar(name="core_score", vtype="C", lb=0.0, ub=4.0)
-    model.addCons(core_score <= quicksum(category_rep.values()) if category_rep else core_score <= 0)
+    if category_rep:
+        model.addCons(core_score <= quicksum(category_rep.values()))
+    else:
+        model.addCons(core_score <= 0)
     food_score = model.addVar(name="food_score", vtype="C", lb=0.0, ub=8.0)
     model.addCons(food_score <= quicksum(food_rep.values()))
 
@@ -265,13 +309,9 @@ def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
         planned=planned,
         groups=groups,
         merchants=merchants,
-        currencies=currencies,
-        free_delivery=free_delivery,
         indeterminate=indeterminate,
         directed_penalties=directed_penalties,
         point_penalties=point_penalties,
-        food_rep=food_rep,
-        category_rep=category_rep,
         core_score=core_score,
         food_score=food_score,
         concentration_penalty=concentration_penalty,
@@ -280,7 +320,15 @@ def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
     )
 
 
-def _optimize_stage(model: Model, expression, *, sense: str, name: str, allow_initial_infeasible: bool = False) -> float:
+def _optimize_stage(
+    model: Model,
+    expression,
+    *,
+    sense: str,
+    name: str,
+    allow_initial_infeasible: bool = False,
+    fix: bool = True,
+) -> float:
     model.setObjective(expression, sense)
     model.optimize()
     status = str(model.getStatus()).lower()
@@ -290,18 +338,24 @@ def _optimize_stage(model: Model, expression, *, sense: str, name: str, allow_in
         raise SolverTechnicalFailure(f"solver stage {name!r} ended with {status!r}, not proven optimal")
     optimum = float(model.getObjVal())
     model.freeTransform()
-    if sense == "minimize":
-        model.addCons(expression <= optimum + _EPS, name=f"fix_{name}")
-    else:
-        model.addCons(expression >= optimum - _EPS, name=f"fix_{name}")
+    if fix:
+        if sense == "minimize":
+            model.addCons(expression <= optimum + _EPS, name=f"fix_{name}")
+        else:
+            model.addCons(expression >= optimum - _EPS, name=f"fix_{name}")
     return optimum
 
 
 def solve(snapshot: PlanningInputSnapshot) -> SolverDecision:
     model, vars_ = _build_model(snapshot)
 
-    indeterminate_total = quicksum(vars_.indeterminate.values())
-    _optimize_stage(model, indeterminate_total, sense="minimize", name="indeterminate", allow_initial_infeasible=True)
+    _optimize_stage(
+        model,
+        quicksum(vars_.indeterminate.values()),
+        sense="minimize",
+        name="indeterminate",
+        allow_initial_infeasible=True,
+    )
 
     directed_max = model.addVar(name="directed_max", vtype="C", lb=0.0)
     for penalty in vars_.directed_penalties:
@@ -319,9 +373,13 @@ def solve(snapshot: PlanningInputSnapshot) -> SolverDecision:
     _optimize_stage(model, vars_.food_score, sense="maximize", name="variety_foods")
     _optimize_stage(model, vars_.concentration_penalty, sense="minimize", name="variety_concentration")
 
-    minimum_cost = _optimize_stage(model, vars_.total_cost, sense="minimize", name="minimum_cost")
-    # Cost-close is a band, not a fixed Cmin objective: release the Cmin equality and replace it.
-    model.delCons(model.getConss()[-1])
+    minimum_cost = _optimize_stage(
+        model,
+        vars_.total_cost,
+        sense="minimize",
+        name="minimum_cost",
+        fix=False,
+    )
     model.addCons(vars_.total_cost <= minimum_cost * 1.05 + _EPS, name="cost_close")
 
     _optimize_stage(model, quicksum(vars_.groups.values()), sense="minimize", name="purchase_groups")
