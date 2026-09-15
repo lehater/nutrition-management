@@ -1,67 +1,77 @@
 # Active execution
 
-Current product work: define and unblock the next bounded slice for sourced `mvp-v1` Nutrition Standard Set data and target mappings.
+Current product work: finalize and merge the planning/readiness increment for sourced `mvp-v1` Nutrition Standard Set data and target-mapping decisions.
 
-Lifecycle state: **S2 REOPEN / REWORK** for source applicability semantics discovered during follow-up planning.
-Implementation authorization: **none** for the next slice.
+Lifecycle state: **S2 PASS / S4 PASS** for the bounded `mvp-v1` standard-data slice.
+Implementation authorization: **only** [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md), after this planning PR is merged and implementation starts from a fresh branch.
 
 ## Accepted upstream state
 
 - S0 Problem / Evidence: `PASS`.
 - S1 Requirements: `PASS`.
-- S2 Strategic/Tactical Domain Design: previously `PASS`; narrowly reopened for production nutrition-reference applicability.
-- S3 Architecture: `PASS` for the existing modular-monolith/planning architecture; no architecture reopen is currently required.
+- S2 Strategic/Tactical Domain Design: `PASS`; the narrow source-applicability reopen is resolved by ADR-012.
+- S3 Architecture: `PASS`; the existing modular monolith, Nutrition Targeting ownership and one relational store remain valid.
+- S4 Implementation Readiness: `PASS` for the bounded standard-data/model/import slice.
 - First implementation slice: completion gate `PASS`, squash-merged as commit `89e59831f9fd0fe83f9353ef498527f49e392342` via PR #7.
 
-Historical performance evidence for that slice remains in [`../../baseline/first-implementation-slice-performance.md`](../../baseline/first-implementation-slice-performance.md).
+Historical performance evidence for the first slice remains in [`../../baseline/first-implementation-slice-performance.md`](../../baseline/first-implementation-slice-performance.md).
 
-## Current candidate slice
+## Authorized next slice
 
-Readiness document: [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
+Canonical readiness document: [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
 
-Intended outcome:
+Outcome:
 
-`complete sourced mvp-v1 reference rows + explicit target mappings -> reproducible versioned import`
+`complete sourced mvp-v1 reference/safety corpus + complete explicit mapping-decision registry -> deterministic versioned import -> production adult target derivation with explicit unsupported coverage`
 
-without BLS food-row import, NIDDK/Hall execution, pediatric energy execution, UI/API or optimization-policy changes.
+The mapping registry is complete when every active reference family has either an accepted ADR-004 mapping or an explicit unsupported reason. Completeness does not mean forcing every DGE concept onto a similarly named BLS component.
 
-## Why S2 is reopened
+## S2 reopen resolution
 
-Reviewing the current DGE source against the accepted model exposed source applicability that cannot be selected from the current MVP profile without inventing defaults:
+ADR-012 resolves the three former P1 blockers:
 
-- **P1** — adult zinc recommendations vary by phytate intake;
-- **P1** — adult female iron recommendations vary by menstruation/menopausal state, not age + sex alone;
-- **P1** — protein g/kg production derivation requires an explicit applicable-weight rule and cannot universally use current observed weight.
+- adult zinc source variants depend on phytate class; the current MVP profile does not own that fact, so automatic adult zinc resolution is `unsupported_applicability` rather than a medium-phytate default;
+- affected female iron source variants depend on menstruation/menopausal applicability; the MVP does not infer those states from age, so unresolved families remain `unsupported_applicability`;
+- adult DGE protein uses current observed weight for normal BMI, BMI-22 reference weight for overweight BMI, and becomes `source_inapplicable` for the general automatic rule at BMI `<18.5` or `>=30.0`.
 
-The first executable slice remains valid because it used the deliberately synthetic `test-slice-v1` standard and made no production `mvp-v1` claim.
+Member and Household Nutrition Targets preserve those active applicability gaps. Purchase Planning reports them as unsupported coverage and does not invent numeric objectives.
 
-## Recommended direction under review
+No new phytate, menstruation or menopause profile fields are added.
 
-Prefer storing complete source applicability while returning explicit `unsupported_applicability` when a required source factor is not owned by the MVP profile. Do not add sensitive profile fields or invent medium-phytate/menstruation/menopause defaults merely to force automatic selection.
+## S4 implementation shape
 
-This direction must be accepted in canonical S2 artifacts before implementation.
+The authorized implementation uses committed JSON under `data/nutrition/mvp-v1/`, with a source/digest manifest, reference rows, safety rows and mapping decisions. It extends the existing Nutrition Targeting model/persistence rather than adding another standards store or service.
 
-## Additional implementation-readiness gaps after S2 resolution
+The source manifest accounts for every current DGE reference-overview topic. Alcohol is explicitly non-active because the DGE states that its 2024 position paper replaced the former alcohol reference value; legacy alcohol limits must not reappear as an `mvp-v1` nutrient target.
 
-The current production-standard model must still be extended to preserve:
+The model adds stable reference-family identity, source-row applicability, source semantic kind/unit/provenance, the accepted per-1000-kcal basis, source-owned applicable-weight metadata, Safety Limit form scope and an explicit mapping registry. Cross-context canonical measure IDs remain scalar references with no SQL foreign key.
 
-- exact calendar age bands including sub-year groups;
-- sex/general-state applicability;
-- per-1000-kcal energy-density basis;
-- source semantic kind independently from downstream optimizer shape;
-- source unit and row-level source/version/citation provenance;
-- source-owned body-weight basis rules;
-- safety applicability/form scope;
-- complete explicit target-to-canonical-measure crosswalk coverage.
+Import is offline, transactional and immutable by version/content digest: identical data is idempotent; a conflicting same-version redefinition fails.
 
-These are not permission to implement yet; they are the expected S4 work once the P1 domain blockers are closed.
+## Gate review
 
-## Non-blocking carried risks
+Open P0: `0`.
+Open P1: `0`.
 
-- **P2** — exact solver technical tie-resolution scales poorly; re-characterize before materially increasing executable catalog size.
-- **P2** — keep floating-point solver tolerances isolated from domain thresholds.
-- **P2** — SQLite remains local/single-host only.
+Known P2 risks:
+
+- normalized source transcription can contain human errors; mitigate with row citations, deterministic validators and sentinel review tests;
+- some reference/safety families remain quantitatively unsupported because no accepted ADR-004 food-side mapping exists;
+- solver scalability, numeric-tolerance isolation and SQLite local/single-host constraints from the first slice remain carried risks but are not changed by this data slice.
+
+No P2 authorizes semantic fallback or name-based mapping.
+
+## Explicitly not authorized
+
+- BLS 4.0 food-row import;
+- NIDDK/Hall execution;
+- pediatric/infant energy execution;
+- pregnancy/lactation targeting;
+- new sensitive applicability profile inputs;
+- optimizer-policy changes;
+- UI/API;
+- network scraping/synchronization.
 
 ## Next
 
-Resolve the three P1 applicability decisions in S2. Then inventory the exact `mvp-v1` reference/mapping corpus and run S4 readiness for the data/import slice. Do not start production standard import until that gate passes.
+Complete final PR #8 review, squash-merge this planning/domain-readiness increment, then create a fresh implementation branch from `main` and implement only the authorized `mvp-v1` standard-data slice.
