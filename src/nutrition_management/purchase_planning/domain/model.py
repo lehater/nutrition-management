@@ -82,8 +82,8 @@ class PlanningInputSnapshot:
     policy_version: str
     energy_target_kcal: Decimal
     targets: tuple[TargetDimension, ...]
-    member_safety_limits: tuple[MemberSafetyLimit, ...]
     candidates: tuple[PurchaseCandidate, ...]
+    member_safety_limits: tuple[MemberSafetyLimit, ...] = ()
 
 
 @dataclass(frozen=True)
