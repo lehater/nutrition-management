@@ -28,6 +28,7 @@ member_table = Table(
     Column("current_weight_kg", String, nullable=False),
     Column("current_weight_date", String, nullable=False),
     Column("pal", String, nullable=False),
+    Column("pal_activity_adjustment_applied", Boolean, nullable=False),
     Column("target_weight_kg", String),
     Column("target_date", String),
 )
@@ -82,6 +83,7 @@ class NutritionTargetingRepository:
                 current_weight_kg=str(profile.current_weight_kg),
                 current_weight_date=profile.current_weight_date.isoformat(),
                 pal=str(profile.pal),
+                pal_activity_adjustment_applied=profile.pal_activity_adjustment_applied,
                 target_weight_kg=None if profile.target_weight_kg is None else str(profile.target_weight_kg),
                 target_date=None if profile.target_date is None else profile.target_date.isoformat(),
             )
@@ -100,6 +102,7 @@ class NutritionTargetingRepository:
                 current_weight_kg=Decimal(row["current_weight_kg"]),
                 current_weight_date=date.fromisoformat(row["current_weight_date"]),
                 pal=Decimal(row["pal"]),
+                pal_activity_adjustment_applied=bool(row["pal_activity_adjustment_applied"]),
                 target_weight_kg=_decimal(row["target_weight_kg"]),
                 target_date=None if row["target_date"] is None else date.fromisoformat(row["target_date"]),
             )
