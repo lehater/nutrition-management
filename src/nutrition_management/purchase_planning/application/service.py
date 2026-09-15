@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import date, datetime
 from decimal import Decimal
 
+from nutrition_management.purchase_planning.application.ports import HardModelInfeasible
 from nutrition_management.purchase_planning.domain.model import PlanOutcome, PurchasePlan
 from nutrition_management.purchase_planning.domain.reporting import build_purchase_plan
-from nutrition_management.purchase_planning.infrastructure.scip_solver import HardModelInfeasible
 
 
 def generate_purchase_plan(
