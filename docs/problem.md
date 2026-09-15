@@ -5,7 +5,7 @@ Lifecycle layer: `S0 Problem / Evidence`.
 
 ## Problem
 
-A household with several members can have materially different nutritional needs because of age, sex, body size, physical activity, growth stage and weight goals. The practical problem is to determine what food should be purchased for a calculation period so that the household's combined nutritional needs are reasonably covered without unnecessary spending or ad-hoc purchases.
+A household with several members can have materially different nutritional needs because of age, sex, body size, physical activity and weight goals. The practical problem is to determine what food should be purchased for a calculation period so that the household's combined nutritional needs are reasonably covered without unnecessary spending or ad-hoc purchases.
 
 The user also needs to understand the budget required to achieve that nutritional coverage and where concrete purchasable goods should be bought at the best overall acquisition cost.
 
@@ -13,7 +13,7 @@ The user also needs to understand the budget required to achieve that nutritiona
 
 The MVP targets a household with one or more members and a single calculation horizon of 30 days.
 
-Each member has one current nutrition profile. Medical diets, allergies and therapeutic restrictions are outside the MVP.
+Each member has one current nutrition profile. Pregnancy/lactation-specific targeting, medical diets, allergies and therapeutic restrictions are outside the MVP.
 
 ## Desired outcome
 
