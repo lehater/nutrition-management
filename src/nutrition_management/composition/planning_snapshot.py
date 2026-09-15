@@ -15,6 +15,7 @@ from nutrition_management.purchase_planning.domain.model import (
     PurchaseCandidate,
     TargetDimension,
     TargetKind,
+    TargetMemberProvenance,
 )
 
 POLICY_VERSION = "ADR-007-v1"
@@ -70,6 +71,17 @@ class PlanningSnapshotSource:
                             daily_upper=item.daily_upper,
                         )
                         for item in target.member_safety_limits
+                    ),
+                    target_member_provenance=tuple(
+                        TargetMemberProvenance(
+                            member_id=item.member_id,
+                            age_years=item.age_years,
+                            current_weight_kg=item.current_weight_kg,
+                            current_weight_date=item.current_weight_date,
+                            pal=item.pal,
+                            pal_activity_adjustment_applied=item.pal_activity_adjustment_applied,
+                        )
+                        for item in target.member_provenance
                     ),
                     candidates=tuple(
                         PurchaseCandidate(
