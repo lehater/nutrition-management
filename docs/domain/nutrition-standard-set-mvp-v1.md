@@ -56,16 +56,25 @@ A point reference remains a point reference. A safety limit is not combined with
 
 ## Applicability dimensions
 
-A source reference may depend on:
+For active MVP derivation, source applicability may depend on:
 
-- age or age band;
+- chronological age or age band derived from date of birth at the derivation date;
 - sex where the source distinguishes male/female values;
-- physiological state where explicitly modeled;
 - body weight or a source-defined reference-weight rule;
 - final energy target;
 - physical activity expressed as PAL.
 
-The MVP currently derives ordinary age/sex targets. Pregnancy and lactation source rows are retained as available source knowledge but are not selected until Nutrition Profile gains an accepted physiological-state semantic.
+DGE/ÖGE also contains special reference rows for pregnancy and lactation. `mvp-v1` retains their source provenance but does not select them because pregnancy/lactation-specific targeting is outside the MVP profile and requirements.
+
+There is no independent development/growth-stage input in `mvp-v1`. Ordinary age-group applicability and the pediatric growth-energy factor are selected from chronological age.
+
+### Age-resolution rule
+
+`date_of_birth` is the authoritative profile fact. `derivation_date` is the date on which the 30-day target is derived.
+
+Chronological age and source age band are resolved from those two dates without an independently entered age value. Exact calendar boundaries determine age-band membership, including sub-year infant bands.
+
+For KISS in the MVP, the age/age-band selection at `derivation_date` applies to the whole 30-day Calculation Period. If a member crosses an age-band boundary inside that period, the target is not split into subperiods; a later target derivation will select the newly applicable band.
 
 ## Physical Activity Level
 
@@ -87,14 +96,14 @@ The resolved numeric PAL used in a target derivation is retained as derivation p
 
 Variables:
 
-- `A` — age in years at derivation time;
+- `A` — chronological age in years derived from date of birth at derivation time;
 - `W` — current body weight in kg applicable to the derivation;
 - `H` — height in metres;
 - `PAL` — resolved physical-activity multiplier.
 
 ### Infants: age < 1 year
 
-Use the DGE age/sex energy guiding value. The active DGE reference derives infant energy independently of PAL.
+Use the DGE age/sex energy guiding value selected by the applicable infant age band. The active DGE reference derives infant energy independently of PAL.
 
 ### Children and adolescents: 1 <= age < 19 years
 
@@ -134,7 +143,7 @@ Inputs:
 - current weight and its observation date;
 - target weight;
 - target date;
-- age, sex, height and resolved physical activity required by the accepted adult model.
+- date of birth, sex, height and resolved physical activity required by the accepted adult model.
 
 Rules:
 
@@ -208,7 +217,9 @@ Member safety limits remain member-level evidence. The MVP may expose aggregate 
 A rebuildable Member Nutrition Target identifies at least:
 
 - `Nutrition Standard Set = mvp-v1`;
-- the profile inputs used;
+- derivation date;
+- profile inputs used, including date of birth;
+- resolved chronological age and source age band;
 - resolved PAL;
 - selected energy formula/policy;
 - selected nutrient-reference identities and source semantic kinds;
