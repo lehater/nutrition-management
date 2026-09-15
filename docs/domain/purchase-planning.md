@@ -22,26 +22,45 @@ Provider-owned facts remain authoritative in their source contexts.
 
 The MVP produces one primary recommended Purchase Plan containing:
 - selected Product Cards/SKUs;
-- integer package counts;
+- integer package counts and purchased edible quantity;
+- planned utilized edible quantity for the 30-day basket;
+- unavoidable package surplus;
 - selected Offers, Fulfilment Channels and Merchants;
 - Purchase Groups formed by Fulfilment Channel;
 - line costs, group-level fulfilment/delivery costs and total acquisition cost;
 - price/condition observation provenance;
-- mapped nutritional coverage/deviation assessment;
+- mapped nutritional coverage/deviation assessment based on planned utilized quantity;
 - unsupported target mappings and indeterminate nutrient evidence;
 - member-level safety-limit diagnostics where a compatible comparison signal exists, without claiming individual safety;
-- variety/category assessment;
+- variety/category assessment based on planned utilized quantity;
 - outcome: `mapped_complete`, `partial`, or `no_executable_plan`;
 - material mapped nutrient gaps;
 - theoretical Base Food suggestions for mapped positive adequacy gaps when the purchasable catalog cannot close them.
 
 `mapped_complete` means complete only against active target references that have accepted food-side mappings. It is not a claim of complete nutrition, member-level adequacy, safety or actual consumption adequacy.
 
+## Purchased versus planned-utilized quantity
+
+For each selected SKU line:
+
+`purchased edible quantity = package count × edible quantity per package`.
+
+`planned utilized quantity` is the quantity assigned by the plan to the 30-day household basket and must satisfy:
+
+`0 <= planned utilized quantity <= purchased edible quantity`.
+
+`package surplus = purchased edible quantity - planned utilized quantity`.
+
+Nutritional coverage, energy fit and variety use planned utilized quantity. Cost uses integer purchased packages. Package surplus therefore increases cost without fabricating nutrient coverage or variety.
+
+Planned utilized quantity is a planning quantity, not a record or prediction of actual consumption. Package surplus does not create household inventory state in the MVP.
+
 ## Executability
 
 A candidate basket is executable only when:
 - package counts are non-negative integers;
 - each selected Product Card resolves package quantity to edible grams;
+- planned utilized quantity is non-negative and does not exceed purchased edible quantity for each line;
 - each selected Offer is `available` and inside explicit validity bounds when present;
 - each selected Fulfilment Channel is inside explicit condition validity bounds when present;
 - all selected monetary values use one compatible currency;
@@ -74,7 +93,7 @@ Unmapped active Nutrition References are reported as `unsupported coverage` and 
 
 Member Safety Limits do not become household hard constraints in the MVP.
 
-Where compatible member-level data permits an aggregate comparison signal, Purchase Planning may report a diagnostic warning. The signal does not prove that any member will or will not exceed a Safety Limit because the MVP does not model allocation or actual consumption.
+Where compatible member-level data permits an aggregate comparison signal from planned utilized quantities, Purchase Planning may report a diagnostic warning. The signal does not prove that any member will or will not exceed a Safety Limit because the MVP does not model allocation or actual consumption.
 
 ## Nutritional ranking
 
@@ -92,16 +111,16 @@ This keeps nutritional adequacy ahead of price while avoiding a weighted sum tha
 
 ## Variety semantics
 
-Variety uses ADR-005 material representation: a Base Food/category counts when it contributes at least `1%` of total edible mass or `1%` of total food energy.
+Variety uses ADR-005 material representation, calculated from planned utilized quantity: a Base Food/category counts when it contributes at least `1%` of total planned edible mass or `1%` of total planned food energy.
 
 The MVP variety target is:
 - at least `4` of `6` core top-level Food Categories materially represented;
 - at least `8` distinct Base Foods materially represented;
-- no single Base Food above `25%` of total plan food energy.
+- no single Base Food above `25%` of total planned food energy.
 
 These are product heuristics, not medical or DGE population requirements.
 
-Once all three conditions are met, extra variety does not outrank cost. If they cannot all be met, prefer in order: category count capped at 4, Base Food count capped at 8, then lower single-food energy concentration down to 25%.
+Once all three conditions are met, extra variety does not outrank cost. If they cannot all be met, prefer in order: category count capped at 4, Base Food count capped at 8, then lower single-food planned energy concentration down to 25%.
 
 ## Cost and procurement simplicity
 
@@ -109,7 +128,7 @@ After nutritional quality and variety are optimized:
 
 `total acquisition cost = package line costs + applicable Purchase Group fulfilment/delivery fees`.
 
-Unavoidable whole-package surplus contributes to purchased nutrient quantities and cost but creates no inventory state.
+Unavoidable whole-package surplus contributes to cost but not to planned nutrient totals or variety and creates no inventory state.
 
 Let `Cmin` be the lowest cost among candidates tied on the preceding nutrition/variety policy. Candidates costing no more than `1.05 × Cmin` are `cost-close`.
 
@@ -117,7 +136,7 @@ Among cost-close candidates prefer:
 1. fewer Purchase Groups;
 2. fewer distinct Merchants;
 3. lower total acquisition cost;
-4. lower total edible package surplus mass.
+4. lower total package surplus mass.
 
 The MVP therefore allows up to a 5% premium over the cheapest nutrition/variety-equivalent basket when that materially simplifies procurement.
 
@@ -145,9 +164,11 @@ A Base Food without an executable Product Card/Offer remains only a theoretical 
 
 ## Invariants
 
-- actual integer package counts determine purchased quantities and line cost;
+- actual integer package counts determine purchased quantity and line cost;
+- planned utilized quantity never exceeds purchased edible quantity;
+- nutritional coverage and variety use planned utilized quantity, not package surplus;
 - Purchase Group conditions/fees are evaluated once per Fulfilment Channel;
-- unavoidable package surplus contributes to cost and nutrient totals but does not create inventory state;
+- unavoidable package surplus contributes to cost but not planned nutritional coverage and does not create inventory state;
 - a Purchase Plan selects only executable Product Cards/Offers;
 - theoretical Base Foods without executable Offers cannot appear as purchase lines;
 - target semantic kind supplied by Nutrition Targeting is not reinterpreted;
