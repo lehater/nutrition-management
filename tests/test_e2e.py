@@ -36,7 +36,13 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
         market_as_of=MARKET_AS_OF,
     )
 
-    assert first.outcome == PlanOutcome.MAPPED_COMPLETE
+    outcome_evidence = {
+        "assessments": first.assessments,
+        "represented_categories": first.represented_categories,
+        "represented_base_foods": first.represented_base_foods,
+        "max_food_energy_share": first.max_food_energy_share,
+    }
+    assert first.outcome == PlanOutcome.MAPPED_COMPLETE, outcome_evidence
     assert first.lines
     assert len(first.represented_base_foods) >= 8
     assert len(set(first.represented_categories)) >= 4
