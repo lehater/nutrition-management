@@ -26,6 +26,7 @@ def upgrade() -> None:
         sa.Column("current_weight_kg", sa.String(), nullable=False),
         sa.Column("current_weight_date", sa.String(), nullable=False),
         sa.Column("pal", sa.String(), nullable=False),
+        sa.Column("pal_activity_adjustment_applied", sa.Boolean(), nullable=False),
         sa.Column("target_weight_kg", sa.String()),
         sa.Column("target_date", sa.String()),
     )
