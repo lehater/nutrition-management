@@ -112,21 +112,27 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
     assessments: list[NutrientAssessment] = []
     for target in _target_dimensions(snapshot):
         amount = Decimal(0)
-        indeterminate = False
+        unknown_evidence = False
         for offer_id, grams in planned_by_offer.items():
             if grams <= 0:
                 continue
             evidence = candidates[offer_id].nutrient(target.measure)
             if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
-                indeterminate = True
+                unknown_evidence = True
             elif evidence.amount_per_100g is not None:
                 amount += evidence.amount_per_100g * grams / Decimal(100)
+        penalty = target_penalty(target, amount)
+        if target.kind in {TargetKind.ADEQUACY_FLOOR, TargetKind.LOWER_BOUND}:
+            indeterminate = unknown_evidence and penalty > 0
+        else:
+            indeterminate = unknown_evidence
         assessments.append(
             NutrientAssessment(
                 measure=target.measure,
+                unknown_evidence=unknown_evidence,
                 indeterminate=indeterminate,
                 amount=amount,
-                penalty=target_penalty(target, amount),
+                penalty=penalty,
             )
         )
 
