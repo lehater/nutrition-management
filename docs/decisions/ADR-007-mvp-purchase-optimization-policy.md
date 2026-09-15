@@ -83,13 +83,14 @@ For `[L, U]`:
 A source point guideline `T` remains a point upstream. Purchase Planning defines an MVP optimization tolerance of `±5%` around it.
 
 - penalty is `0` for `0.95T <= x <= 1.05T`;
-- outside that band, penalty is relative distance from the nearest band edge.
+- below the band: `(0.95T - x) / (0.95T)`;
+- above the band: `(x - 1.05T) / (1.05T)`.
 
 This tolerance is optimizer policy, not a rewritten Nutrition Reference.
 
 #### Energy target
 
-The final household energy target is evaluated as a point-guideline dimension with the same `±5%` zero-penalty band. Outside the band, relative deviation from the nearest edge is penalized.
+The final household energy target is evaluated as a point-guideline dimension with the same `±5%` zero-penalty band.
 
 ### Safety-limit treatment
 
@@ -109,7 +110,7 @@ For each executable candidate, Purchase Planning forms these ordered quality fac
 
 Candidates are compared lexicographically in this order. Once a dimension reaches zero, no additional benefit is created by oversupplying that condition.
 
-This makes adequacy failures dominate cost without inventing cross-unit nutritional weights, while still distinguishing partial plans when full coverage is impossible.
+This makes adequacy failures dominate cost without inventing cross-unit nutritional weights, while still distinguishing partial plans when full mapped coverage is impossible.
 
 ### Variety target
 
@@ -156,13 +157,15 @@ Thus the MVP may pay up to 5% above the absolute cheapest nutrition/variety-equi
 
 An executable result is classified as:
 
-- `complete` — all supported mapped target assessments are determinate and have zero nutrition/energy penalty under the policy, and the variety target is satisfied;
-- `partial` — an executable basket exists but at least one supported target is violated/indeterminate or the variety target cannot be met;
+- `mapped_complete` — every active Nutrition Reference that has an accepted food-side mapping is determinate and has zero nutrition/energy penalty under the policy, and the variety target is satisfied;
+- `partial` — an executable basket exists but at least one mapped target is violated/indeterminate or the variety target cannot be met;
 - `no_executable_plan` — no non-empty basket can be constructed from executable Offers under current market constraints.
 
-A `partial` plan is still returned when it is the best available result. It must report every material violation/indeterminate dimension and must not be described as fully nutritionally adequate.
+`mapped_complete` is deliberately qualified: it is completeness only against the active **mapped** target set. It is never presented as proof of complete nutrition, individual adequacy, individual safety or consumption adequacy.
 
-Unmapped source references are reported separately as `unsupported coverage`; they do not become false zero gaps and do not prevent the mapped portion of a plan from being optimized.
+A `partial` plan is still returned when it is the best available result. It must report every mapped violation/indeterminate dimension and must not be described as nutritionally complete.
+
+Unmapped active source references are always reported separately as `unsupported coverage`; they do not become false zero gaps and do not prevent the mapped portion of a plan from being optimized. Their presence must remain visible even when the plan is `mapped_complete`.
 
 ### Gap-closing theoretical suggestions
 
@@ -186,6 +189,7 @@ Suggestions are theoretical Food Knowledge output. Without an executable Product
 - recommended/estimated intake points behave as adequacy floors rather than hard equalities;
 - point-guideline tolerance is explicitly downstream Purchase Planning policy;
 - unknown composition produces indeterminate evidence instead of false precision;
+- unsupported target mappings remain visible and prevent overclaiming even when mapped targets are satisfied;
 - safety-limit diagnostics remain honest about the absence of member allocation/consumption semantics;
 - variety has a finite target, so tiny improvements in variety cannot justify unlimited extra cost;
 - `5%` gives concrete meaning to “close in value” for procurement simplification;
