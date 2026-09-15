@@ -18,11 +18,16 @@ Status: `accepted` for the current MVP domain baseline.
 | Canonical Nutrient Component | accepted | Food-composition nutrient identity based on the BLS 4.0 component vocabulary, with component-specific canonical unit and semantics. | Food Knowledge |
 | Nutrient Measure | accepted | Quantitative nutrient meaning used for comparison; either one canonical component or an explicit derived expression over compatible components. | Food Knowledge / Nutrition Targeting cross-context contract |
 | Base Food | accepted | Normalized theoretical food with nutrient profile and category semantics, independent of a concrete commercial SKU. | Food Knowledge |
-| Food Category | accepted | Hierarchical classification used for variety rules; top-level categories are controlled and subcategories extensible. | Food Knowledge |
+| Food Category | accepted | Hierarchical variety classification with a controlled DGE-aligned MVP top-level set plus `other_or_composite`; each Base Food has one primary top-level category. | Food Knowledge |
+| Materially Represented | accepted | A Base Food/category contributes at least 1% of total plan edible mass or 1% of total plan food energy and therefore counts toward MVP variety assessment. | Food Knowledge / Purchase Planning contract |
 | Nutrition Data Source | accepted | Provenance metadata for nutritional data, including source name and optional URL/version/date; nutrient-level provenance is retained where available. | Food Knowledge |
 | Product Card / SKU | accepted | Concrete commercial food product based on a Base Food, with package data, edible-quantity conversion when required, and optional nutrient overrides. | Market Catalog |
 | Edible Quantity | accepted | Quantity of edible food represented by one package, resolved to grams for quantitative nutrition calculation. | Market Catalog |
 | Effective Nutrient Profile | accepted | Derived SKU nutrient profile formed from Base Food defaults plus semantically identical normalized SKU overrides. | Market Catalog |
-| Merchant | accepted | Seller/store identity relevant to acquisition planning. | Market Catalog |
-| Offer | accepted | Merchant-specific commercial terms for purchasing an SKU, including price and relevant fulfilment conditions. | Market Catalog |
-| Purchase Plan | accepted | Recommended 30-day basket of concrete SKUs/offers, package quantities, merchants, total cost and nutritional/variety assessment. | Purchase Planning |
+| Merchant | accepted | Seller identity relevant to acquisition planning. | Market Catalog |
+| Fulfilment Channel | accepted | Concrete pickup or delivery acquisition context for one Merchant, owning shared order-level conditions for multiple Offers. | Market Catalog |
+| Offer | accepted | Channel-specific commercial observation for one SKU, including price/currency, availability, observation time and explicit validity when known. | Market Catalog |
+| Purchase Group | accepted | Set of selected Offer lines acquired through one Fulfilment Channel, to which shared minimum-order and fulfilment-fee conditions are applied once. | Purchase Planning |
+| Purchase Plan | accepted | Primary recommended 30-day basket of executable SKUs/offers with integer package quantities, Purchase Groups, total cost and mapped nutritional/variety assessment. | Purchase Planning |
+| Mapped Complete | accepted | Purchase Plan outcome where all active target references with accepted food-side mappings are determinate and satisfied under the MVP policy and the variety target is met; it is not a claim of complete nutrition or member-level safety. | Purchase Planning |
+| Partial Purchase Plan | accepted | Best executable plan when at least one mapped target is violated/indeterminate or the variety target cannot be met; gaps and uncertainty remain explicit. | Purchase Planning |
