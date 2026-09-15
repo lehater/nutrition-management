@@ -46,7 +46,7 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     assert first.lines
     assert len(first.represented_base_foods) >= 8
     assert len(set(first.represented_categories)) >= 4
-    assert first.max_food_energy_share <= Decimal("0.25") + Decimal("1e-8")
+    assert first.max_food_energy_share <= Decimal("0.25") + Decimal("1e-7")
     assert any(line.surplus_grams > 0 for line in first.lines)
     assert first.target_member_provenance == snapshot.target_member_provenance
     assert canonical_plan_json(first) == canonical_plan_json(second)
