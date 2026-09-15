@@ -72,11 +72,13 @@ class FulfilmentChannel:
             raise ValueError("fulfilment fee must be non-negative")
         if self.free_delivery_threshold is not None and self.free_delivery_threshold < 0:
             raise ValueError("free-delivery threshold must be non-negative")
+        if self.observed_at is None:
+            raise ValueError("fulfilment channel observed_at is required")
         _validate_instant(self.observed_at, "observed_at")
         _validate_interval(self.valid_from, self.valid_until)
 
     def is_valid_at(self, at: datetime) -> bool:
-        if self.observed_at is not None and self.observed_at > at:
+        if self.observed_at > at:
             return False
         if self.valid_from is not None and at < self.valid_from:
             return False
