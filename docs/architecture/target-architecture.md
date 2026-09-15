@@ -27,8 +27,8 @@ presentation/import adapters
 |      |                     |                |                |              |
 |  domain                domain            domain            domain          |
 |      ^                     ^                ^                ^              |
-|  persistence/import    persistence      persistence       solver/result    |
-|  adapters              adapters         adapters          adapters         |
+|  persistence/import    persistence      persistence       solver adapter   |
+|  adapters              adapters         adapters                           |
 |                                                                           |
 +---------------------------------------------------------------------------+
                               |
@@ -61,7 +61,7 @@ Owns application use cases and persistence for:
 - source/provenance data;
 - Food Categories and category membership.
 
-Publishes planning/catalog-facing canonical food facts. It never exposes persistence entities as a cross-context contract.
+Publishes planning/catalog-facing canonical food facts and theoretical gap-suggestion queries. It never exposes persistence entities as a cross-context contract.
 
 ### Market Catalog
 
@@ -83,14 +83,16 @@ Publishes an executable-market projection for an `as_of` planning time.
 Owns:
 
 - planning-run orchestration;
-- immutable Planning Input Snapshot capture;
+- ephemeral immutable Planning Input Snapshot capture;
 - solver model construction;
 - accepted ADR-007 ranking/tie-breaking semantics;
 - solver adapter boundary;
 - post-solver invariant validation and reporting calculation;
-- persisted Purchase Plan/result and calculation evidence.
+- returned Purchase Plan composition and diagnostics.
 
 Purchase Planning does not own authoritative member, food or market facts copied into a snapshot.
+
+The MVP does not require saved Purchase Plan history or persistence of the complete Planning Input Snapshot.
 
 ## Internal dependency rules
 
@@ -129,36 +131,59 @@ Architecture constraints:
 
 The concrete database product and migration framework are S4 choices.
 
+## Consistent-read coordination
+
+Planning snapshot assembly requires one coherent relational-database read snapshot across provider modules.
+
+A neutral infrastructure-level read-snapshot coordinator at the application composition boundary opens/closes that consistent read scope. Provider application contracts remain persistence-agnostic; their persistence adapters participate in the scope without transaction/session/database objects appearing in domain or cross-context APIs.
+
+This coordination is technical consistency infrastructure, not a new semantic owner.
+
 ## Primary planning flow
 
 The Generate Purchase Plan application flow is:
 
 1. accept a household/planning request and establish one planning `as_of` / derivation date;
-2. inside one consistent-read boundary, request the planning contracts from Nutrition Targeting, Food Knowledge and Market Catalog;
-3. assemble an immutable Planning Input Snapshot with provider identifiers, versions and observation provenance;
-4. end the database read boundary;
-5. transform the snapshot into the solver problem while preserving ADR-007 semantics;
-6. invoke the in-process Optimization Solver adapter;
-7. revalidate material executable invariants and calculate reportable nutrition/variety/cost facts from the returned quantities;
-8. persist the Purchase Plan together with sufficient immutable calculation evidence/provenance;
-9. return one primary plan, or the accepted `partial` / `no_executable_plan` domain outcome.
+2. enter one infrastructure-managed consistent-read scope;
+3. request the optimization-facing contracts from Nutrition Targeting, Food Knowledge and Market Catalog;
+4. assemble an immutable Planning Input Snapshot with provider identifiers, versions and observation provenance;
+5. end the database read scope;
+6. transform the snapshot into the solver problem while preserving ADR-007 semantics;
+7. invoke the in-process Optimization Solver adapter;
+8. revalidate material executable invariants and calculate reportable nutrition/variety/cost facts from the returned quantities;
+9. when positive mapped gaps remain, query Food Knowledge for theoretical suggestions and retain suggestion-source provenance;
+10. return one primary Purchase Plan, or the accepted `partial` / `no_executable_plan` domain outcome.
 
 A technical solver/import/database failure is not represented as `partial` or `no_executable_plan`; technical failure remains a separate application error.
 
 ## Planning snapshot contract
 
-The Planning Input Snapshot is immutable after assembly and is private to Purchase Planning execution/persistence.
+The Planning Input Snapshot is immutable after assembly and private to one Purchase Planning execution.
 
-It records the exact calculation evidence necessary to prevent later upstream edits from changing the meaning of an already produced plan. At minimum it identifies:
+It contains the exact facts needed for executable basket optimization at that run's `as_of` point, including:
 
 - calculation date/horizon;
 - standards/policy version;
 - resolved household target and target mappings;
-- food/component/measure/category facts used by candidate SKUs and suggestions;
+- food/component/measure/category facts required by executable candidate SKUs;
 - effective SKU nutrient facts and edible package quantities;
 - executable offers/channels with price/currency/availability/observation/validity/order conditions.
 
-Snapshot copies are evidence, not new authoritative provider state.
+The snapshot is released after the run. It is not authoritative provider state and is not required to be stored.
+
+Theoretical gap suggestions are intentionally fetched after the executable optimization result is known. They do not alter executable basket selection or outcome classification and carry their own Food Knowledge provenance in the returned result.
+
+## Returned-plan provenance
+
+The returned Purchase Plan carries the provenance required to interpret the recommendation at calculation time, including:
+
+- derivation/calculation date and standards/policy version;
+- selected Base Food/SKU/Offer/Fulfilment identifiers;
+- selected price/condition observation and validity provenance;
+- mapped coverage plus unsupported/indeterminate dimensions;
+- suggestion-source provenance where theoretical alternatives are shown.
+
+Exact historical replay of every candidate considered by an old run is not an MVP guarantee. Adding saved plan history or audit replay is future product behavior and must reopen the appropriate upstream lifecycle layer.
 
 ## Optimization integration
 
@@ -170,7 +195,7 @@ Architecture requirements for the S4 solver choice:
 - supports integer and continuous decisions plus conditional/binary constraints required by the accepted planning model;
 - can preserve ADR-007 lexicographic/sequential objective order without hidden weighted compromises;
 - exposes infeasible/optimal/technical-error states distinctly;
-- supports deterministic execution or a fixed recorded seed;
+- supports deterministic execution or a fixed execution seed;
 - does not become the source of reportable business calculations.
 
 Purchase Planning owns model construction and output interpretation. Domain/report calculations are performed from the returned decision quantities using project policy.
@@ -196,9 +221,9 @@ Architecture preserves accepted time/version facts rather than replacing them wi
 
 - target derivation uses an explicit derivation date and immutable standard-set version;
 - Offer/Fulfilment observations preserve `observed_at` and explicit validity bounds;
-- planning uses one `as_of` snapshot point;
-- an already persisted plan remains attached to the evidence used at calculation time;
-- later standards/catalog/price changes do not mutate historical planning evidence.
+- executable optimization uses one `as_of` snapshot point;
+- post-plan theoretical suggestions carry their own Food Knowledge provenance;
+- later standards/catalog/price changes do not retroactively change the already returned plan meaning/provenance, even though the MVP does not guarantee exact replay.
 
 ## Error boundaries
 
@@ -231,9 +256,10 @@ S4 may choose these only within the architecture constraints above.
 - no Bounded Context is split into an independently deployed service without reopening S3;
 - no consumer directly reads/writes another context's persistence model;
 - domain policy depends on no framework, persistence or solver API;
-- one planning solve operates only on one immutable Planning Input Snapshot;
+- one executable-basket optimization operates only on one immutable Planning Input Snapshot;
 - provider reads do not occur during the optimization phase after snapshot assembly;
-- persisted plan evidence does not become authoritative provider state;
+- database transaction/session objects do not cross domain or context application-contract boundaries;
+- full planning snapshots and plan history are not introduced as durable product state without an upstream requirement;
 - solver configuration cannot change ADR-007 business ordering through hidden weights/tolerances;
 - technical execution failures remain distinct from accepted domain outcomes.
 
@@ -242,7 +268,8 @@ S4 may choose these only within the architecture constraints above.
 Before marking S3 `PASS`, verify:
 
 1. whether one physical relational store is sufficient for every accepted consistency/provenance requirement;
-2. whether the Planning Input Snapshot carries enough evidence for plan explanation without becoming duplicate authoritative state;
+2. whether the ephemeral Planning Input Snapshot is the minimum consistency mechanism rather than duplicate authoritative state;
 3. whether the solver port is narrow enough to remain replaceable while preserving deterministic ADR-007 policy;
 4. whether any proposed cross-context dependency bypasses the accepted Context Map;
-5. whether any runtime/asynchronous component is being introduced without requirement evidence.
+5. whether the neutral read-snapshot coordination leaks persistence concerns into provider/domain contracts;
+6. whether any runtime/asynchronous component is being introduced without requirement evidence.
