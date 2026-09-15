@@ -52,7 +52,7 @@ The controlled MVP top-level categories are:
 7. `fish_meat_sausage_eggs`;
 8. `other_or_composite`.
 
-The first seven align with the current DGE food-circle groups at project vocabulary granularity. `other_or_composite` is the project fallback for foods that do not honestly belong to one DGE group or whose composition spans groups without one clear primary role.
+The first seven align with the current DGE food-circle groups at project vocabulary granularity; seeds are an explicit project extension of the legumes/nuts group. `other_or_composite` is the project fallback for foods that do not honestly belong to one DGE group or whose composition spans groups without one clear primary role.
 
 For the MVP:
 - every Base Food has exactly one primary top-level category;
@@ -62,7 +62,9 @@ For the MVP:
 
 `Core variety categories` are the six top-level groups other than `beverages` and `other_or_composite`.
 
-A category or Base Food is `materially represented` in a Purchase Plan when it contributes at least `1%` of total edible food mass or at least `1%` of total food energy. This shared semantic prevents token quantities from creating artificial variety credit while allowing both low-energy/high-mass and low-mass/high-energy foods to count meaningfully.
+A category or Base Food is `materially represented` when its **planned utilized quantity** in a candidate Purchase Plan contributes at least `1%` of total planned edible food mass or at least `1%` of total planned food energy. Purchased package surplus is excluded from this assessment.
+
+This shared semantic prevents token quantities and packaging artifacts from creating artificial variety credit while allowing both low-energy/high-mass and low-mass/high-energy foods to count meaningfully.
 
 ### Nutrition Data Source
 
@@ -81,7 +83,7 @@ BLS 4.0 is the canonical MVP semantic vocabulary and preferred baseline source f
 - preserve known numeric, known-zero, trace and unknown states;
 - evaluate accepted derived Nutrient Measures from canonical components when their inputs are sufficiently known;
 - classify a Base Food into exactly one MVP top-level Food Category and optional subcategories;
-- determine whether a category/Base Food is materially represented in a candidate plan;
+- determine whether a category/Base Food is materially represented from planned utilized quantity;
 - identify theoretical food alternatives that are relevant to an observed nutrient gap.
 
 ## Relationship to Nutrition Targeting
@@ -92,12 +94,12 @@ A nutrient can participate in deterministic coverage only when the target refere
 
 ## Relationship to Purchase Planning
 
-Food Knowledge publishes category identity and material-representation semantics. Purchase Planning owns the optimization policy that uses them.
+Food Knowledge publishes category identity and material-representation semantics. Purchase Planning owns planned utilized quantities and the optimization policy that uses those semantics.
 
 For the MVP, variety assessment may use:
 - count of materially represented core top-level categories;
 - count of materially represented distinct Base Foods, with diminishing value for additional foods;
-- concentration of total plan energy in individual Base Foods, where greater concentration is less desirable.
+- concentration of total planned food energy in individual Base Foods, where greater concentration is less desirable.
 
 These are advisory variety facts. Food Knowledge does not assign optimization weights or turn DGE adult portion values into universal household requirements.
 
@@ -117,6 +119,7 @@ An override can replace a Base Food component only after it is normalized to the
 - missing/trace nutrient values are not silently treated as zero;
 - nutritional provenance is retained with normalized data;
 - every Base Food has exactly one primary MVP top-level category;
+- variety material representation is based on planned utilized quantity, not purchased package surplus;
 - `other_or_composite` does not count as a core variety category;
 - DGE adult portion values are not household-level constraints in the MVP;
 - commercial availability does not determine whether a Base Food exists;
