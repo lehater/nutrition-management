@@ -68,4 +68,4 @@ None of these P2 risks justifies changing accepted business semantics inside thi
 
 ## Next
 
-Squash-merge PR #7 after its documentation-only completion commit passes CI. After merge, open a fresh planning increment from `main` and choose the next bounded slice explicitly; do not implicitly expand this implementation authorization.
+Squash-merge PR #7. The last executable/schema change is commit `c6453c218d6a2ca273ca299b9a589fc1e13cf8e4`, which passed the full completion CI; commits after it only record completion evidence and execution state. After merge, open a fresh planning increment from `main` and choose the next bounded slice explicitly; do not implicitly expand this implementation authorization.
