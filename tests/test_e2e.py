@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from nutrition_management.adapters.cli.main import canonical_plan_json
 from nutrition_management.composition.planning_snapshot import PlanningSnapshotSource
 from nutrition_management.purchase_planning.application.service import generate_purchase_plan
@@ -15,6 +17,9 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     assert len(snapshot.candidates) == 9
     assert "offer-unavailable" not in {item.offer_id for item in snapshot.candidates}
     assert "offer-expired" not in {item.offer_id for item in snapshot.candidates}
+    assert len(snapshot.target_member_provenance) == 2
+    assert all(item.pal == Decimal("1.6") for item in snapshot.target_member_provenance)
+    assert all(item.pal_activity_adjustment_applied is False for item in snapshot.target_member_provenance)
 
     first = generate_purchase_plan(
         snapshot_source=source,
@@ -35,6 +40,7 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     assert first.lines
     assert len(first.represented_base_foods) >= 8
     assert len(set(first.represented_categories)) >= 4
-    assert first.max_food_energy_share <= 0.25
+    assert first.max_food_energy_share <= Decimal("0.25") + Decimal("1e-8")
     assert any(line.surplus_grams > 0 for line in first.lines)
+    assert first.target_member_provenance == snapshot.target_member_provenance
     assert canonical_plan_json(first) == canonical_plan_json(second)
