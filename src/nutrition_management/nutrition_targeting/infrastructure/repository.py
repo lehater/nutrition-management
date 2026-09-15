@@ -43,8 +43,8 @@ standard_table = Table(
 reference_table = Table(
     "nt_standard_reference",
     metadata,
+    Column("standard_version", String, ForeignKey("nt_standard_set.version"), primary_key=True),
     Column("reference_id", String, primary_key=True),
-    Column("standard_version", String, ForeignKey("nt_standard_set.version"), nullable=False),
     Column("nutrient_measure", String, nullable=False),
     Column("kind", String, nullable=False),
     Column("basis", String, nullable=False),
@@ -57,8 +57,8 @@ reference_table = Table(
 safety_table = Table(
     "nt_safety_reference",
     metadata,
+    Column("standard_version", String, ForeignKey("nt_standard_set.version"), primary_key=True),
     Column("reference_id", String, primary_key=True),
-    Column("standard_version", String, ForeignKey("nt_standard_set.version"), nullable=False),
     Column("nutrient_measure", String, nullable=False),
     Column("daily_upper", String, nullable=False),
 )
@@ -110,6 +110,8 @@ class NutritionTargetingRepository:
         )
 
     def add_standard(self, standard: NutritionStandardSet, *, active: bool = False) -> None:
+        if active:
+            self._connection.execute(standard_table.update().values(active=False))
         self._connection.execute(standard_table.insert().values(version=standard.version, active=active))
         for ref in standard.references:
             self._connection.execute(
