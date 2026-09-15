@@ -15,6 +15,14 @@ class TargetFact:
 
 
 @dataclass(frozen=True)
+class MemberSafetyFact:
+    member_id: str
+    reference_id: str
+    measure: str
+    daily_upper: Decimal
+
+
+@dataclass(frozen=True)
 class HouseholdTargetFact:
     household_id: str
     derivation_date: date
@@ -22,3 +30,4 @@ class HouseholdTargetFact:
     energy_kcal_30d: Decimal
     targets: tuple[TargetFact, ...]
     member_ids: tuple[str, ...]
+    member_safety_limits: tuple[MemberSafetyFact, ...]
