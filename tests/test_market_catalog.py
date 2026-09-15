@@ -104,6 +104,16 @@ def test_unavailable_expired_and_future_observations_do_not_enter_projection():
     assert [item.offer_id for item in facts] == ["ok"]
 
 
+def test_market_instants_must_be_timezone_aware():
+    naive = datetime(2026, 9, 15, 12)
+    with pytest.raises(ValueError, match="timezone-aware"):
+        Offer("offer", "sku", "channel", Decimal("1"), "EUR", Availability.AVAILABLE, naive)
+    with pytest.raises(ValueError, match="timezone-aware"):
+        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", observed_at=naive)
+    with pytest.raises(ValueError, match="timezone-aware"):
+        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", valid_from=naive)
+
+
 def test_negative_commercial_values_and_nonpositive_edible_quantity_are_rejected():
     with pytest.raises(ValueError, match="edible package quantity"):
         ProductCard("sku", "food", "SKU", Decimal("0"))
