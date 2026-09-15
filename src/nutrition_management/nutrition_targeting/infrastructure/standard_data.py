@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from hashlib import sha256
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from nutrition_management.nutrition_targeting.domain.model import (
     AgeBoundary,
@@ -26,7 +26,7 @@ from nutrition_management.nutrition_targeting.domain.model import (
 )
 from nutrition_management.nutrition_targeting.infrastructure.repository import NutritionTargetingRepository
 
-_REQUIRED_FILES = ("references.json", "safety_limits.json", "mappings.json")
+_REQUIRED_BASE_FILES = frozenset({"references.json", "safety_limits.json", "mappings.json"})
 
 # Keys reflect the current DGE reference-value overview. A production package must
 # account for each topic without inventing a numeric reference where DGE has none.
@@ -166,8 +166,8 @@ def _applicability(value, field: str) -> ReferenceApplicability:
         raise StandardPackageError(f"invalid {field}: {exc}") from exc
 
 
-def _reference(row: dict, index: int, source_ids: set[str]) -> ReferenceDefinition:
-    field = f"references.rows[{index}]"
+def _reference(row: dict, index: int, source_ids: set[str], source_file: str) -> ReferenceDefinition:
+    field = f"{source_file}.rows[{index}]"
     if not isinstance(row, dict):
         raise StandardPackageError(f"{field} must be an object")
     source_id = _required_text(row.get("source_id"), f"{field}.source_id")
@@ -243,6 +243,31 @@ def _safety(row: dict, index: int, source_ids: set[str]) -> SafetyDefinition:
         if isinstance(exc, StandardPackageError):
             raise
         raise StandardPackageError(f"invalid {field}: {exc}") from exc
+
+
+def _validate_package_filename(name: object, field: str) -> str:
+    value = _required_text(name, field)
+    path = PurePosixPath(value)
+    if path.is_absolute() or len(path.parts) != 1 or value in {".", ".."}:
+        raise StandardPackageError(f"{field} must be a package-root filename")
+    return value
+
+
+def _reference_files(manifest: dict, files: dict) -> tuple[str, ...]:
+    raw = manifest.get("reference_files", ["references.json"])
+    if not isinstance(raw, list) or not raw:
+        raise StandardPackageError("manifest.reference_files must be a non-empty array")
+    names = tuple(_validate_package_filename(name, "manifest.reference_files") for name in raw)
+    if len(names) != len(set(names)):
+        raise StandardPackageError("manifest.reference_files must be unique")
+    if "references.json" not in names:
+        raise StandardPackageError("manifest.reference_files must include references.json")
+    for name in names:
+        if not (name == "references.json" or (name.startswith("references.") and name.endswith(".json"))):
+            raise StandardPackageError(f"invalid reference shard filename {name}")
+        if name not in files:
+            raise StandardPackageError(f"reference shard {name} is missing from manifest.files")
+    return names
 
 
 def _validate_mvp_v1_manifest(manifest: dict, standard: NutritionStandardSet) -> None:
@@ -325,27 +350,38 @@ def load_standard_package(directory: Path) -> LoadedStandardPackage:
         raise StandardPackageError("manifest sources must be objects with unique ids")
 
     files = manifest.get("files")
-    if not isinstance(files, dict) or set(files) != set(_REQUIRED_FILES):
-        raise StandardPackageError(f"manifest.files must contain exactly {list(_REQUIRED_FILES)}")
-    for name in _REQUIRED_FILES:
+    if not isinstance(files, dict) or not _REQUIRED_BASE_FILES.issubset(files):
+        raise StandardPackageError(
+            f"manifest.files must contain at least {sorted(_REQUIRED_BASE_FILES)}"
+        )
+    for raw_name, expected_digest in files.items():
+        name = _validate_package_filename(raw_name, "manifest.files key")
+        if not isinstance(expected_digest, str) or not expected_digest:
+            raise StandardPackageError(f"manifest.files.{name} requires a SHA-256 digest")
         path = directory / name
         try:
             actual = _digest_bytes(path.read_bytes())
         except OSError as exc:
             raise StandardPackageError(f"cannot read package file {name}: {exc}") from exc
-        if files[name] != actual:
+        if expected_digest != actual:
             raise StandardPackageError(f"digest mismatch for {name}")
+
+    reference_files = _reference_files(manifest, files)
 
     expected_package_digest = _required_text(manifest.get("package_digest"), "manifest.package_digest")
     actual_package_digest = compute_manifest_digest(manifest)
     if expected_package_digest != actual_package_digest:
         raise StandardPackageError("manifest package_digest does not match canonical manifest content")
 
-    references_raw = _json_file(directory / "references.json")
+    reference_rows: list[tuple[dict, str]] = []
+    for name in reference_files:
+        payload = _json_file(directory / name)
+        if not isinstance(payload, dict) or not isinstance(payload.get("rows"), list):
+            raise StandardPackageError(f"{name} requires rows array")
+        reference_rows.extend((row, name) for row in payload["rows"])
+
     safety_raw = _json_file(directory / "safety_limits.json")
     mappings_raw = _json_file(directory / "mappings.json")
-    if not isinstance(references_raw, dict) or not isinstance(references_raw.get("rows"), list):
-        raise StandardPackageError("references.json requires rows array")
     if not isinstance(safety_raw, dict) or not isinstance(safety_raw.get("rows"), list):
         raise StandardPackageError("safety_limits.json requires rows array")
     if not isinstance(mappings_raw, dict) or not isinstance(mappings_raw.get("mappings"), list):
@@ -354,7 +390,10 @@ def load_standard_package(directory: Path) -> LoadedStandardPackage:
     standard = NutritionStandardSet(
         version=version,
         content_digest=actual_package_digest,
-        references=tuple(_reference(row, index, source_ids) for index, row in enumerate(references_raw["rows"])),
+        references=tuple(
+            _reference(row, index, source_ids, source_file)
+            for index, (row, source_file) in enumerate(reference_rows)
+        ),
         safety_limits=tuple(_safety(row, index, source_ids) for index, row in enumerate(safety_raw["rows"])),
         mappings=tuple(_mapping(row, index) for index, row in enumerate(mappings_raw["mappings"])),
     )
