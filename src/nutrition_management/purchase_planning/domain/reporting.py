@@ -25,24 +25,33 @@ CORE_CATEGORIES = {
     "fish_meat_sausage_eggs",
 }
 
+# Solver mechanics may leave values infinitesimally across a mathematical boundary.
+# This tolerance is only for revalidation of solver-produced quantities and is many
+# orders of magnitude smaller than the accepted 5%, 1% and 25% business thresholds.
+_MECHANICAL_EPS = Decimal("1e-8")
+
+
+def _normalized_penalty(value: Decimal) -> Decimal:
+    return Decimal(0) if value <= _MECHANICAL_EPS else value
+
 
 def target_penalty(target: TargetDimension, amount: Decimal) -> Decimal:
     zero = Decimal(0)
     if target.kind in {TargetKind.ADEQUACY_FLOOR, TargetKind.LOWER_BOUND}:
         if target.lower is None or target.lower <= 0:
             raise ValueError("lower-bound target requires a positive lower value")
-        return max(zero, (target.lower - amount) / target.lower)
+        return _normalized_penalty(max(zero, (target.lower - amount) / target.lower))
     if target.kind == TargetKind.UPPER_BOUND:
         if target.upper is None or target.upper <= 0:
             raise ValueError("upper-bound target requires a positive upper value")
-        return max(zero, (amount - target.upper) / target.upper)
+        return _normalized_penalty(max(zero, (amount - target.upper) / target.upper))
     if target.kind == TargetKind.INTERVAL:
         if target.lower is None or target.upper is None or target.lower <= 0 or target.upper <= 0:
             raise ValueError("interval target requires positive lower/upper values")
         if amount < target.lower:
-            return (target.lower - amount) / target.lower
+            return _normalized_penalty((target.lower - amount) / target.lower)
         if amount > target.upper:
-            return (amount - target.upper) / target.upper
+            return _normalized_penalty((amount - target.upper) / target.upper)
         return zero
     if target.kind == TargetKind.POINT:
         if target.point is None or target.point <= 0:
@@ -50,9 +59,9 @@ def target_penalty(target: TargetDimension, amount: Decimal) -> Decimal:
         lower = target.point * Decimal("0.95")
         upper = target.point * Decimal("1.05")
         if amount < lower:
-            return (lower - amount) / lower
+            return _normalized_penalty((lower - amount) / lower)
         if amount > upper:
-            return (amount - upper) / upper
+            return _normalized_penalty((amount - upper) / upper)
         return zero
     raise ValueError(f"unsupported target kind {target.kind}")
 
@@ -153,7 +162,7 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
     for food_id in sorted(mass_by_food):
         mass_share = Decimal(0) if total_mass == 0 else mass_by_food[food_id] / total_mass
         energy_share = Decimal(0) if total_energy == 0 else energy_by_food[food_id] / total_energy
-        if mass_share >= Decimal("0.01") or energy_share >= Decimal("0.01"):
+        if mass_share + _MECHANICAL_EPS >= Decimal("0.01") or energy_share + _MECHANICAL_EPS >= Decimal("0.01"):
             represented_foods.append(food_id)
     represented_categories = sorted({category_by_food[food_id] for food_id in represented_foods})
     max_share = Decimal(0)
@@ -162,7 +171,11 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
 
     nutrition_ok = all(not item.indeterminate and item.penalty == 0 for item in assessments)
     core_count = len(set(represented_categories) & CORE_CATEGORIES)
-    variety_ok = core_count >= 4 and len(represented_foods) >= 8 and max_share <= Decimal("0.25")
+    variety_ok = (
+        core_count >= 4
+        and len(represented_foods) >= 8
+        and max_share <= Decimal("0.25") + _MECHANICAL_EPS
+    )
     outcome = PlanOutcome.MAPPED_COMPLETE if nutrition_ok and variety_ok else PlanOutcome.PARTIAL
 
     return PurchasePlan(
