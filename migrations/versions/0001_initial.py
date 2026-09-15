@@ -96,7 +96,7 @@ def upgrade() -> None:
         sa.Column("minimum_order", sa.String(), nullable=False),
         sa.Column("fulfilment_fee", sa.String(), nullable=False),
         sa.Column("free_delivery_threshold", sa.String()),
-        sa.Column("observed_at", sa.String()),
+        sa.Column("observed_at", sa.String(), nullable=False),
         sa.Column("valid_from", sa.String()),
         sa.Column("valid_until", sa.String()),
     )
