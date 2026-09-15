@@ -33,6 +33,7 @@ Use file-backed SQLite for the first slice.
 Required database settings/constraints:
 
 - WAL journal mode;
+- `synchronous=FULL` is set explicitly for durable commits rather than depending on environment/default settings;
 - `read_uncommitted` remains disabled;
 - foreign-key enforcement enabled for same-context relational invariants;
 - one local filesystem database file; network/distributed filesystems are unsupported for this slice;
