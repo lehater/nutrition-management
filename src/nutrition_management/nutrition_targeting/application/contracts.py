@@ -23,6 +23,16 @@ class MemberSafetyFact:
 
 
 @dataclass(frozen=True)
+class MemberTargetProvenanceFact:
+    member_id: str
+    age_years: int
+    current_weight_kg: Decimal
+    current_weight_date: date
+    pal: Decimal
+    pal_activity_adjustment_applied: bool
+
+
+@dataclass(frozen=True)
 class HouseholdTargetFact:
     household_id: str
     derivation_date: date
@@ -31,3 +41,4 @@ class HouseholdTargetFact:
     targets: tuple[TargetFact, ...]
     member_ids: tuple[str, ...]
     member_safety_limits: tuple[MemberSafetyFact, ...]
+    member_provenance: tuple[MemberTargetProvenanceFact, ...]
