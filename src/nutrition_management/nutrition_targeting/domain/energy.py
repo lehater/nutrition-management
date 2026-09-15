@@ -10,11 +10,19 @@ def adult_maintenance_energy_kcal_per_day(profile: NutritionProfile, derivation_
         raise UnsupportedSliceCapability("age path is outside this implementation slice")
     if profile.current_weight_date > derivation_date:
         raise ValueError("current_weight_date must not be later than derivation_date")
-    if not Decimal("1.2") <= profile.pal <= Decimal("2.7"):
-        raise ValueError("PAL is outside the supported numeric range")
+
+    if profile.pal_activity_adjustment_applied:
+        if not Decimal("1.5") <= profile.pal <= Decimal("2.7"):
+            raise ValueError("activity-adjusted PAL must lie within 1.5-2.7")
+    elif not Decimal("1.2") <= profile.pal <= Decimal("2.4"):
+        raise ValueError("unadjusted PAL must lie within 1.2-2.4")
 
     if profile.target_weight_kg is not None and profile.target_weight_kg != profile.current_weight_kg:
-        if profile.target_date is not None and profile.target_date > derivation_date:
+        if profile.target_date is None:
+            pass
+        elif profile.target_date <= derivation_date:
+            raise ValueError("active target_date must be later than derivation_date")
+        else:
             raise UnsupportedSliceCapability("active weight-goal adjustment is outside this implementation slice")
 
     weight = profile.current_weight_kg
