@@ -83,9 +83,15 @@ Before returning a Purchase Plan, application/domain policy revalidates material
 
 A solver/library failure is a technical execution failure and is distinct from the accepted domain outcome `no_executable_plan`.
 
-### Determinism
+### Determinism and final technical tie resolution
 
-For the same Planning Input Snapshot and optimization-policy version, the application must produce the same primary plan/output ordering subject to the accepted stable tie-breakers.
+For the same Planning Input Snapshot and optimization-policy version, the application must produce the same primary plan/output ordering subject to the accepted business ranking.
+
+ADR-007 business criteria can still leave two distinct baskets completely tied after package-surplus mass. When that happens, and only after all accepted business criteria are equal, the application applies a stable **technical** total order over the solution decision vector using immutable provider identifiers and normalized quantities.
+
+This technical ordering carries no claim that one tied product/merchant is better than another. It exists only to choose one reproducible primary recommendation among business-equivalent solutions and must never outrank an ADR-007 business dimension.
+
+The exact canonical serialization/comparison of that decision vector is an S4 detail, but it must be stable for the same snapshot.
 
 Any solver randomness must be disabled or use a fixed execution seed. Numeric tolerances used solely for solver mechanics must not change the accepted domain scoring/tolerance semantics.
 
@@ -101,6 +107,7 @@ The MVP runs plan generation synchronously inside the application process. No qu
 - no full-catalog historical snapshot or saved-plan subsystem is introduced without a product requirement;
 - theoretical suggestion enrichment remains lightweight and cannot affect executable-plan selection retroactively;
 - Purchase Planning remains the owner of optimization semantics while a third-party solver remains replaceable infrastructure;
+- business-equivalent solver optima still resolve to one reproducible primary recommendation without adding a hidden business preference;
 - no optimizer microservice, message broker or asynchronous worker is required for MVP;
 - solver/library selection is a bounded S4 choice constrained by the accepted port/problem shape.
 
@@ -121,6 +128,10 @@ Rejected for MVP because saved-plan history/exact replay is not an accepted requ
 ### Put the complete theoretical food catalog in the solver snapshot for gap suggestions
 
 Rejected because theoretical suggestions are post-plan advisory enrichment and do not affect executable basket selection. Fetching them after gaps are known is smaller and preserves the Food Knowledge boundary.
+
+### Let the solver choose arbitrarily among business-equivalent optima
+
+Rejected because the MVP produces one primary recommendation and the accepted policy is intended to be deterministic. A final technical order is harmless only after every business criterion is equal.
 
 ### Let the solver library own business scoring and result semantics
 
