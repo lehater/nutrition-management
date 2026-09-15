@@ -14,6 +14,7 @@ from .model import (
     TargetDimension,
     TargetKind,
 )
+from .safety import build_safety_diagnostics
 
 CORE_CATEGORIES = {
     "fruit_and_vegetables",
@@ -169,6 +170,7 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
         total_cost=total_cost,
         currency=currency,
         assessments=tuple(assessments),
+        safety_diagnostics=build_safety_diagnostics(snapshot, planned_by_offer),
         represented_categories=tuple(represented_categories),
         represented_base_foods=tuple(represented_foods),
         max_food_energy_share=max_share,
