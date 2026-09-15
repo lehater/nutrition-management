@@ -27,7 +27,7 @@ The MVP Food Knowledge top-level category set is:
 7. `fish_meat_sausage_eggs`;
 8. `other_or_composite`.
 
-The first seven mirror the current DGE food-circle groups at project vocabulary granularity. `other_or_composite` is a project category required to classify foods that do not honestly fit one DGE group or whose composition spans groups without one clear primary role.
+The first seven mirror the current DGE food-circle groups at project vocabulary granularity; seeds are grouped with legumes/nuts as an explicit MVP taxonomy extension. `other_or_composite` is a project category required to classify foods that do not honestly fit one DGE group or whose composition spans groups without one clear primary role.
 
 Subcategories remain extensible and may split the top-level groups into more useful nutritional/culinary distinctions.
 
@@ -39,20 +39,22 @@ Variety is an advisory Purchase Planning dimension, not a universal nutritional 
 
 `Core variety categories` are the six food groups other than `beverages` and `other_or_composite`.
 
-A selected category/Base Food counts as materially represented when it contributes at least one of:
+Material representation is evaluated from the **planned utilized quantity** assigned to the 30-day basket, not from purchased package surplus.
 
-- `1%` of total edible food mass in the plan; or
-- `1%` of total food energy in the plan.
+A selected category/Base Food counts as materially represented when its planned utilized quantity contributes at least one of:
 
-This prevents token quantities from gaming the variety score while allowing both low-energy/high-mass foods and low-mass/high-energy foods to count meaningfully.
+- `1%` of total planned edible food mass; or
+- `1%` of total planned food energy.
+
+This prevents token quantities or oversized package surplus from gaming the variety score while allowing both low-energy/high-mass foods and low-mass/high-energy foods to count meaningfully.
 
 Purchase Planning evaluates variety using three facts:
 
 - number of materially represented core top-level categories;
 - number of materially represented distinct Base Foods, with diminishing benefit from additional foods;
-- concentration of plan energy in individual Base Foods, where greater concentration is worse.
+- concentration of planned food energy in individual Base Foods, where greater concentration is worse.
 
-The exact optimization weight/trade-off for these facts belongs to Purchase Planning policy. Food Knowledge owns only category identity/classification and the material-representation semantics shared with that policy.
+The exact optimization policy for these facts belongs to Purchase Planning and is defined in ADR-007. Food Knowledge owns only category identity/classification and the material-representation semantics shared with that policy.
 
 ### DGE portion values
 
@@ -62,10 +64,10 @@ DGE adult portion/orientation values are not copied into the MVP as household co
 
 - category semantics are based on a recognizable external food-group model rather than store taxonomy;
 - the catalog remains exhaustive enough for sweets, highly processed products and mixed/composite foods through `other_or_composite`;
-- variety cannot be satisfied by adding negligible quantities of many products;
+- variety cannot be satisfied by adding negligible quantities or by buying oversized packages whose surplus is not planned for the 30-day basket;
 - the MVP does not pretend that adult DGE food-group portions apply to children, older adults or aggregate households;
-- quantitative category quotas can be added later only with an accepted applicability policy;
-- Purchase Planning still needs a final optimization/scoring decision to determine how strongly variety competes with nutrition, cost and procurement simplicity.
+- quantitative population-specific category quotas can be added later only with an accepted applicability policy;
+- Purchase Planning has deterministic shared category facts without moving optimization policy into Food Knowledge.
 
 ## Alternatives considered
 
@@ -76,6 +78,10 @@ Rejected because BLS classification primarily organizes food-data records; the p
 ### Adopt DGE adult portion recommendations as hard constraints
 
 Rejected because the source population is narrower than the product household population and the MVP does not model individual consumption allocation.
+
+### Count purchased package surplus toward variety
+
+Rejected because package rounding is a purchasing artifact. Variety should describe the food quantity planned for the 30-day basket, not unavoidable leftovers from package size.
 
 ### Allow arbitrary user-defined top-level categories
 
