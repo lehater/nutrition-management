@@ -1,63 +1,77 @@
 # Active execution
 
-Current product work: MVP target architecture is accepted; the next lifecycle step is S4 Implementation Readiness.
+Current product work: make one bounded end-to-end implementation slice executable without widening accepted MVP scope.
 
-Lifecycle stage: `S3 Architecture`.
-Stage state: `PASS`.
-Implementation authorization: `none`.
+Lifecycle stage: `S4 Implementation Readiness`.
+Stage state: `IN_PROGRESS`.
+Implementation authorization: `none` until S4 review passes.
 
 ## Accepted upstream state
 
-- S0 Problem / Evidence: `PASS`; see [`../../problem.md`](../../problem.md).
-- S1 Requirements: `PASS`; see [`../../requirements/product-requirements.md`](../../requirements/product-requirements.md).
-- S2 Strategic/Tactical Domain Design: `PASS` for the accepted MVP scope; see `docs/domain/` and ADR-002 through ADR-007.
-- accepted Bounded Contexts: `Nutrition Targeting`, `Food Knowledge`, `Market Catalog`, `Purchase Planning`.
+- S0 Problem / Evidence: `PASS`.
+- S1 Requirements: `PASS`.
+- S2 Strategic/Tactical Domain Design: `PASS` for the accepted MVP scope.
+- S3 Architecture: `PASS`; see [`../../architecture/target-architecture.md`](../../architecture/target-architecture.md), ADR-008 and ADR-009.
 
-## Accepted S3 architecture
+## Proposed first-slice stack
 
-- one deployable modular-monolith application process;
-- four context-aligned logical modules preserving accepted semantic ownership;
-- inward dependency direction `infrastructure/adapters -> application -> domain` inside each module;
-- one transactional relational database, with every persistence object owned by exactly one context and no direct cross-context table/ORM reads or writes;
-- cross-context collaboration only through provider-owned application contracts matching the accepted Context Map;
-- one ephemeral immutable Planning Input Snapshot per executable-basket optimization, assembled through one infrastructure-managed consistent-read scope;
-- Purchase Planning returns the plan/provenance required by S2 but does not introduce saved plan history or persist the complete candidate snapshot in MVP;
-- theoretical Food Knowledge gap suggestions are post-optimization enrichment and cannot change executable-plan selection/outcome;
-- optimization runs through an in-process solver adapter owned by Purchase Planning;
-- a domain plan is returned only after the full ADR-007 policy is proven optimal for the snapshot, or hard-model infeasibility is proven;
-- a stable technical order resolves remaining business-equivalent optima only after all ADR-007 business criteria;
-- synchronous MVP planning; no queue, worker, broker, microservice or distributed transaction without new evidence.
+Accepted for readiness review by [`ADR-010`](../../decisions/ADR-010-first-implementation-stack.md):
 
-Canonical architecture: [`../../architecture/target-architecture.md`](../../architecture/target-architecture.md).
+- CPython 3.14.x, initial baseline 3.14.7;
+- one `src/` Python package containing the four context modules;
+- `uv` project/dependency management with committed `uv.lock`;
+- file-backed SQLite in WAL mode for the first slice;
+- SQLAlchemy Core 2.0.52 + Alembic 1.18.5;
+- PySCIPOpt 6.2.1 / SCIP 10.x in-process solver adapter;
+- pytest 9.1.1;
+- standard-library CLI as the first outer adapter;
+- no web/API framework, ORM, worker, queue or broker in this slice.
 
-Consequential architecture decisions:
-- [`ADR-008`](../../decisions/ADR-008-mvp-modular-monolith-architecture.md) — modular monolith and context-owned relational persistence;
-- [`ADR-009`](../../decisions/ADR-009-deterministic-planning-execution.md) — immutable calculation snapshot, consistent-read coordination, in-process solver boundary and deterministic completion semantics.
+## Bounded implementation slice
 
-## S3 review result
+Canonical scope: [`first-implementation-slice.md`](first-implementation-slice.md).
 
-Architecture review against accepted requirements/domain ownership and the Harness architecture-review lenses found no remaining P0/P1 issue for the accepted MVP scope.
+The authorized candidate slice crosses all four Bounded Contexts:
 
-Resolved during review:
-- **P1** — rejected durable full Planning Input Snapshot / saved-plan architecture because plan history and exact historical replay are not accepted requirements; snapshot is now ephemeral and result provenance remains in the returned plan;
-- **P1** — eliminated arbitrary solver selection among fully tied baskets through a final non-business stable technical order;
-- **P1** — prohibited returning a merely feasible timeout incumbent as `partial`; `partial` requires completed policy optimization, while unfinished solver execution is a technical failure.
+`current adult profiles + test-only standard fixture -> Household Nutrition Target -> Food/Market snapshot -> policy-optimal solver -> Purchase Plan JSON`.
 
-Non-blocking S4 verification risks:
-- **P2** — measure actual synchronous optimization runtime on realistic MVP data; if acceptable completion cannot be achieved, reopen S3 before adding asynchronous execution;
-- **P2** — select a relational database/transaction strategy that can provide the required coherent read snapshot without leaking session objects through application/domain contracts;
-- **P2** — select/configure a solver that can prove every sequential ADR-007 objective stage and the final technical tie order with deterministic numeric behavior.
+The slice deliberately does not load/claim the full production `mvp-v1` DGE/ÖGE dataset or BLS catalog. Test fixture standards exist only to validate generic semantics and architecture.
 
-## Explicit S4 choices deferred
+## Readiness evidence defined before coding
 
-- programming language/runtime;
-- application/framework and external transport/UI adapter;
-- relational database vendor and migration/query tooling;
-- concrete optimization library;
-- package/module layout details that realize the four accepted context modules;
-- testing strategy and executable architecture-boundary checks;
-- deployment hosting/provider.
+The slice must produce:
+
+- reproducible locked environment;
+- schema migrations from an empty file DB;
+- domain/unit tests;
+- source/import-graph architecture-boundary tests;
+- SQLite WAL coherent-read concurrency integration test;
+- PySCIPOpt policy tests for package/planned quantities, market conditions, typed targets, variety, cost-close and technical tie ordering;
+- explicit `mapped_complete`, `partial`, `no_executable_plan` and technical-failure evidence;
+- deterministic repeated-plan acceptance test;
+- end-to-end CLI/use-case test through all four contexts;
+- performance characterization on acceptance-scale and larger synthetic catalogs.
+
+## S4 review focus
+
+Before `PASS`, verify:
+
+1. the stack can realize every S3 invariant without framework leakage;
+2. SQLite snapshot semantics are exercised with a real file/WAL rather than assumed from in-memory tests;
+3. solver selection supports continuous + integer + conditional model semantics without hidden big-M approximations where native constraints are available;
+4. sequential optimization can prove every ADR-007 stage before a plan is accepted;
+5. first-slice exclusions are explicit and do not silently redefine accepted MVP behavior;
+6. tests can detect cross-context persistence/import violations;
+7. implementation can stop/reopen the correct upstream stage when runtime/numerical evidence invalidates S3 assumptions.
+
+P0/P1 findings block implementation authorization.
+
+## Current known verification risks
+
+- **P2** — full technical lexicographic tie resolution may require multiple solver stages; measure it rather than replacing it with a hash/weighted approximation;
+- **P2** — synchronous policy-optimal solve time on a larger plausible catalog is unknown until executable benchmarking;
+- **P2** — SQLite is valid only for a local single-host file; a deployment requiring network/shared filesystem must select another relational database or revisit the deployment decision.
 
 ## Next
 
-Open S4 Implementation Readiness. Choose the smallest concrete stack and one bounded end-to-end vertical slice that can validate the architecture: current profile + standard data -> derived household target -> canonical food/market candidate snapshot -> solver -> one Purchase Plan result with provenance. Define acceptance tests and architecture-boundary checks before authorizing implementation.
+Complete S4 review of ADR-010 and the bounded slice. If no P0/P1 remains, mark S4 `PASS` and authorize **only** `first-implementation-slice.md`. Then implement it in a new branch/PR; any work outside that slice requires a new readiness decision.
