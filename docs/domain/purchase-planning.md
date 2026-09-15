@@ -10,7 +10,7 @@ Own the decision about which concrete 30-day household basket to recommend given
 ## Inputs
 
 Purchase Planning consumes:
-- the aggregated Household Nutrition Target from Nutrition Targeting;
+- the aggregated Household Nutrition Target from Nutrition Targeting, preserving source target semantics and provenance;
 - Base Foods, nutrient profiles and category semantics from Food Knowledge;
 - Product Cards/SKUs, effective nutrient profiles, package sizes, Merchants and Offers from Market Catalog.
 
@@ -34,11 +34,13 @@ The primary output is a recommended 30-day Purchase Plan containing:
 The optimizer evaluates the basket globally rather than selecting the cheapest Offer for each line independently.
 
 Evaluation dimensions include:
-- nutritional coverage against target ranges;
+- nutritional coverage against typed target specifications supplied by Nutrition Targeting;
 - energy fit;
 - dietary variety and category balance;
 - total acquisition cost, including unavoidable package surplus and applicable delivery costs;
 - procurement simplicity, including a preference for fewer merchants/purchase groups when alternatives are otherwise equivalent or close.
+
+The optimizer must preserve the distinction between a preferred/adequacy reference and a safety limit. A point reference is not silently treated as a hard equality, and an upper safety limit is not treated as the preferred upper edge of an ordinary target range. The exact scoring/tolerance policy for each target kind remains a Purchase Planning decision to be resolved before architecture.
 
 These dimensions are advisory trade-off criteria, not universal hard constraints.
 
@@ -46,9 +48,9 @@ The system may expose multiple reasonable alternatives when materially different
 
 ## Household aggregation decision
 
-For the MVP, optimization uses the aggregated Household Nutrition Target. The optimizer does not prove that the resulting foods can be allocated to individual members such that every member independently lands inside every target range.
+For the MVP, optimization uses the aggregated Household Nutrition Target. The optimizer does not prove that the resulting foods can be allocated to individual members such that every member independently satisfies all target and safety conditions.
 
-Individual Member Nutrition Targets remain preserved upstream for later extension and explanation.
+Individual Member Nutrition Targets remain preserved upstream for later extension and explanation. Member-level safety limits may support diagnostics, but the MVP must not claim individual safety from aggregate basket totals alone.
 
 ## Invariants
 
@@ -57,6 +59,7 @@ Individual Member Nutrition Targets remain preserved upstream for later extensio
 - a Purchase Plan can select only concrete Product Cards/Offers from Market Catalog;
 - theoretical Base Foods without a Product Card may be suggested as catalog gaps but cannot appear as executable purchase lines;
 - Offer selection is basket-global because delivery/minimum-order conditions can couple multiple lines;
+- target semantic kind supplied by Nutrition Targeting is not reinterpreted by Purchase Planning;
 - actual consumption is not required to validate a Purchase Plan.
 
 ## Explicit exclusions
@@ -65,7 +68,7 @@ The MVP does not own actual consumption, member-level food allocation, inventory
 
 ## Material unknowns before architecture
 
-- exact optimization/scoring model and tie-breaking policy;
+- exact optimization/scoring model and tie-breaking policy, including tolerance around point references and treatment of safety-limit violations;
 - concrete variety/category rules and thresholds;
 - definition of "close in value" for preferring fewer merchants;
 - exact representation of infeasible plans and partial nutritional coverage;
