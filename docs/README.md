@@ -6,6 +6,7 @@ The `docs/` tree is a versioned project knowledge base, not a dump of discussion
 
 | Area | Question answered |
 |---|---|
+| `problem.md` | What problem/outcome is accepted, what evidence and scope assumptions frame the product? |
 | `requirements/` | What observable behavior or quality must hold? |
 | `domain/` | What does the domain mean, and who owns which semantic facts/decisions? |
 | `architecture/` | How will accepted semantics be realized while preserving boundaries and constraints? |
