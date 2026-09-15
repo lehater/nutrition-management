@@ -39,7 +39,7 @@ def test_product_override_replaces_only_matching_normalized_component():
         edible_grams_per_package=Decimal("500"),
         nutrient_overrides=(NormalizedNutrientOverride("ENERCC", Decimal("120")),),
     )
-    channel = FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR")
+    channel = FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", observed_at=NOW)
     offer = Offer("offer", "sku-1", "channel", Decimal("2.50"), "EUR", Availability.AVAILABLE, NOW)
 
     fact = executable_market_projection(
@@ -104,14 +104,16 @@ def test_unavailable_expired_and_future_observations_do_not_enter_projection():
     assert [item.offer_id for item in facts] == ["ok"]
 
 
-def test_market_instants_must_be_timezone_aware():
+def test_market_instants_must_be_timezone_aware_and_channel_observation_is_required():
     naive = datetime(2026, 9, 15, 12)
     with pytest.raises(ValueError, match="timezone-aware"):
         Offer("offer", "sku", "channel", Decimal("1"), "EUR", Availability.AVAILABLE, naive)
     with pytest.raises(ValueError, match="timezone-aware"):
         FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", observed_at=naive)
     with pytest.raises(ValueError, match="timezone-aware"):
-        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", valid_from=naive)
+        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", observed_at=NOW, valid_from=naive)
+    with pytest.raises(ValueError, match="observed_at is required"):
+        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR")
 
 
 def test_negative_commercial_values_and_nonpositive_edible_quantity_are_rejected():
@@ -120,4 +122,11 @@ def test_negative_commercial_values_and_nonpositive_edible_quantity_are_rejected
     with pytest.raises(ValueError, match="offer price"):
         Offer("offer", "sku", "channel", Decimal("-0.01"), "EUR", Availability.AVAILABLE, NOW)
     with pytest.raises(ValueError, match="minimum order"):
-        FulfilmentChannel("channel", "merchant", FulfilmentMode.PICKUP, "EUR", minimum_order=Decimal("-1"))
+        FulfilmentChannel(
+            "channel",
+            "merchant",
+            FulfilmentMode.PICKUP,
+            "EUR",
+            minimum_order=Decimal("-1"),
+            observed_at=NOW,
+        )
