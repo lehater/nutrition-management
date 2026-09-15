@@ -31,6 +31,7 @@ def generate_purchase_plan(
             total_cost=Decimal(0),
             currency=None,
             assessments=(),
+            safety_diagnostics=(),
             represented_categories=(),
             represented_base_foods=(),
             max_food_energy_share=Decimal(0),
