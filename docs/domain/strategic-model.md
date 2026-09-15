@@ -18,6 +18,7 @@ Owns:
 - member nutrition profile;
 - versioned nutrition standard sets and their provenance;
 - derivation of individual 30-day energy/nutrient target specifications and applicable safety limits;
+- semantic mapping from active nutrient references to food-side Nutrient Measures;
 - aggregation of compatible nutritional demand into the household 30-day nutrition target.
 
 Does not own food composition, products, prices or purchase decisions.
@@ -28,8 +29,9 @@ Purpose: provide normalized food knowledge independently of what is currently so
 
 Owns:
 - base food identity;
-- normalized nutrient profile;
-- hierarchical food categories;
+- canonical BLS-based nutrient-component vocabulary and normalized nutrient profiles;
+- derived food-side Nutrient Measures;
+- hierarchical food categories and shared material-representation semantics for variety;
 - food/nutrition-data provenance;
 - theoretical food alternatives relevant to nutrient gaps.
 
@@ -43,28 +45,29 @@ Owns:
 - concrete product/SKU identity;
 - relationship from an SKU to its base food;
 - SKU-specific nutrient overrides;
-- package size/quantity;
-- merchant/store identity needed by purchasing;
-- offers and their prices;
-- delivery/minimum-order and other material fulfilment conditions.
+- package size and edible-quantity conversion required for quantitative nutrition calculation;
+- Merchant identity;
+- Fulfilment Channels and their order-level conditions;
+- Offers, availability, observed prices/currencies and explicit validity semantics.
 
-A concrete SKU may have multiple offers from different merchants.
+A concrete SKU may have multiple Offers across Merchants/Fulfilment Channels.
 
 ### Purchase Planning
 
-Purpose: produce a practical 30-day household purchase plan by balancing nutritional coverage, variety, acquisition cost and procurement simplicity.
+Purpose: produce a practical 30-day household purchase plan by balancing mapped nutritional coverage, variety, acquisition cost and procurement simplicity.
 
 Owns:
 - household-level optimization policy;
-- candidate basket evaluation;
-- selection of concrete SKUs and offers;
-- package quantities;
-- selected merchant grouping;
+- candidate basket executability/evaluation;
+- selection of concrete SKUs and Offers;
+- integer package quantities;
+- Purchase Groups formed from Fulfilment Channels;
 - purchase-plan total cost;
-- nutritional coverage/deviation assessment for the resulting household basket;
+- mapped nutritional coverage/deviation and uncertainty assessment;
+- variety assessment;
 - gap reporting and requests for theoretical alternatives when the purchasable catalog is insufficient.
 
-The MVP optimizer operates on the aggregated household nutrition target. Per-member allocation feasibility is explicitly deferred.
+The MVP optimizer operates on the aggregated household nutrition target. Per-member allocation feasibility and individual safety guarantees are explicitly deferred.
 
 ## Strategic classification
 
@@ -74,6 +77,6 @@ The MVP optimizer operates on the aggregated household nutrition target. Per-mem
 
 ## Explicit MVP exclusions
 
-No accepted Bounded Context is introduced yet for inventory, consumption tracking, recipes/meals, cooking, preparation, portioning, storage or medical diet management.
+No accepted Bounded Context is introduced for inventory, consumption tracking, recipes/meals, cooking, preparation, portioning, storage or medical diet management.
 
 Bounded Contexts are semantic ownership boundaries only; this model makes no decision about services, databases, packages or deployment units.
