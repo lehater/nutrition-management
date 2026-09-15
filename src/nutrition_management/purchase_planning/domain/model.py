@@ -39,6 +39,16 @@ class MemberSafetyLimit:
 
 
 @dataclass(frozen=True)
+class TargetMemberProvenance:
+    member_id: str
+    age_years: int
+    current_weight_kg: Decimal
+    current_weight_date: date
+    pal: Decimal
+    pal_activity_adjustment_applied: bool
+
+
+@dataclass(frozen=True)
 class CandidateNutrient:
     measure: str
     status: EvidenceStatus
@@ -84,6 +94,7 @@ class PlanningInputSnapshot:
     targets: tuple[TargetDimension, ...]
     candidates: tuple[PurchaseCandidate, ...]
     member_safety_limits: tuple[MemberSafetyLimit, ...] = ()
+    target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -155,3 +166,4 @@ class PurchasePlan:
     represented_base_foods: tuple[str, ...]
     max_food_energy_share: Decimal
     provenance_offer_ids: tuple[str, ...]
+    target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
