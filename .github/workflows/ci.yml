@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.14.7'
+      - name: Install uv
+        run: python -m pip install 'uv==0.12.13'
+      - name: Verify lockfile
+        run: uv lock --check
+      - name: Sync environment
+        run: uv sync --all-groups --locked
+      - name: Record runtime versions
+        run: |
+          uv run python --version
+          uv run python - <<'PY'
+          import sqlalchemy
+          import alembic
+          import pyscipopt
+          import pytest
+          print('SQLAlchemy', sqlalchemy.__version__)
+          print('Alembic', alembic.__version__)
+          print('PySCIPOpt', pyscipopt.__version__)
+          print('pytest', pytest.__version__)
+          model = pyscipopt.Model()
+          print('SCIP', model.getMajorVersion(), model.getMinorVersion(), model.getTechVersion())
+          PY
+      - name: Run tests
+        run: uv run pytest
+      - name: Characterize solver performance
+        run: uv run python tools/benchmark_solver.py --output artifacts/solver-performance.json
+      - name: Upload performance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: solver-performance
+          path: artifacts/solver-performance.json
+          if-no-files-found: error

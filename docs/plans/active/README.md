@@ -1,10 +1,10 @@
 # Active execution
 
-Current product work: implement the accepted first end-to-end executable planning slice.
+Current product work: complete and merge the accepted first end-to-end executable planning slice.
 
-Lifecycle stage: `S4 Implementation Readiness`.
-Stage state: `PASS` for the bounded first slice.
-Implementation authorization: **only** [`first-implementation-slice.md`](first-implementation-slice.md).
+Lifecycle basis: `S4 Implementation Readiness` authorization for the bounded first slice.
+Implementation state: **completion gate PASS**.
+Implementation authorization: only [`first-implementation-slice.md`](first-implementation-slice.md); no subsequent slice is authorized yet.
 
 ## Accepted upstream state
 
@@ -12,81 +12,60 @@ Implementation authorization: **only** [`first-implementation-slice.md`](first-i
 - S1 Requirements: `PASS`.
 - S2 Strategic/Tactical Domain Design: `PASS` for the accepted MVP scope.
 - S3 Architecture: `PASS`; see [`../../architecture/target-architecture.md`](../../architecture/target-architecture.md), ADR-008 and ADR-009.
+- S4 Implementation Readiness: `PASS` for the bounded first slice; see ADR-010 and ADR-011.
 
-## Accepted first-slice stack
-
-[`ADR-010`](../../decisions/ADR-010-first-implementation-stack.md) fixes the implementation baseline for this slice:
-
-- CPython 3.14.x, initial baseline 3.14.7;
-- one `src/` Python package containing the four context modules;
-- `uv` dependency/project management with committed `uv.lock`;
-- file-backed SQLite on a local filesystem with WAL, `synchronous=FULL`, foreign keys enabled and `read_uncommitted` disabled;
-- SQLAlchemy Core 2.0.52 + Alembic 1.18.5;
-- PySCIPOpt 6.2.1 / compatible SCIP 10.x in-process solver adapter;
-- pytest 9.1.1;
-- standard-library CLI as the first outer adapter;
-- no web/API framework, ORM, worker, queue or broker in this slice.
-
-## Authorized implementation scope
+## Completed first slice
 
 Canonical scope: [`first-implementation-slice.md`](first-implementation-slice.md).
 
-The slice crosses all four Bounded Contexts:
+The implemented path crosses all four Bounded Contexts:
 
 `two current adult profiles + test-only standard fixture -> Household Nutrition Target -> coherent Food/Market snapshot -> policy-optimal solver -> Purchase Plan JSON`.
 
-Important boundary: `test-slice-v1` is acceptance/test data only. The slice does not claim that the complete product `mvp-v1` DGE/ÖGE reference data or BLS catalog is implemented.
+The slice includes the locked CPython/uv environment, context-owned SQLite/Alembic persistence, coherent WAL read snapshots, the accepted adult target path, canonical Food Knowledge and executable Market Catalog projections, sequential ADR-007 optimization through PySCIPOpt/SCIP, canonical reporting, aggregate-only safety diagnostics and a standard-library CLI outer adapter.
 
-The adult path must also enforce accepted profile applicability, including date-of-birth age resolution, valid resolved PAL semantics and `current_weight_date <= derivation_date`; unsupported weight-goal/pediatric paths fail explicitly rather than falling back silently.
+Important boundary: `test-slice-v1` remains acceptance/test data only. The slice does not claim that the complete production `mvp-v1` DGE/ÖGE reference data or BLS catalog is implemented. NIDDK/Hall, pediatric/infant paths, HTTP/UI/authentication, saved plans/history, asynchronous planning and production deployment remain outside this slice.
 
-## S4 review result
+ADR-011 separates `derivation_date` from timezone-aware `market_as_of`; both are retained in planning provenance. Market observations after `market_as_of` are not executable.
 
-No remaining P0/P1 implementation-readiness issue is known for the bounded slice.
+## Completion evidence
 
-Readiness review confirms:
+The completion gate is satisfied on GitHub Actions CI run `35016004825` (run #148) for commit `c6453c218d6a2ca273ca299b9a589fc1e13cf8e4`:
 
-- SQLite WAL can realize the S3 one-run coherent read snapshot when provider reads share one explicit connection/read transaction; acceptance tests must use a real file-backed DB;
-- SQLAlchemy Core preserves explicit context-owned persistence without requiring shared ORM entities;
-- PySCIPOpt/SCIP supports the mixed integer + continuous model and native indicator/logical constraints needed to avoid arbitrary hand-written big-M values where practical;
-- the solver adapter must prove every ADR-007 sequential stage before a plan is returned;
-- a feasible timeout/unknown incumbent remains a technical failure, never `partial`;
-- the final technical order is implemented exactly after business objectives, not replaced by hash/weighted approximations;
-- implementation capability gaps remain explicit and cannot redefine accepted S1/S2 behavior.
+- locked environment and exact Python/library/SCIP version checks passed;
+- migrations from an empty file-backed SQLite database passed;
+- unit, policy, architecture-boundary, persistence/concurrency, deterministic E2E and CLI tests passed;
+- solver-policy evidence covers package/planned quantities, target kinds, unknown evidence, variety, fulfilment costs, cost-close behavior, hard infeasibility and deterministic technical tie resolution;
+- aggregate Safety Limit diagnostics remain non-guaranteeing and are tested, including known-lower-bound exceedance with unknown remaining contribution;
+- performance characterization completed and uploaded as a CI artifact;
+- every recorded sequential optimization stage in the final benchmark returned `optimal` and the final solver status was `policy_optimal`.
 
-## Required completion evidence
+Historical performance evidence is recorded in [`../../baseline/first-implementation-slice-performance.md`](../../baseline/first-implementation-slice-performance.md).
 
-Before this implementation slice may be called complete, it must provide:
+## Review result
 
-- reproducible locked environment and exact runtime/solver version evidence;
-- migrations from an empty local SQLite database;
-- unit tests for the implemented adult target/profile path and accepted planning policy;
-- import/dependency architecture-boundary tests;
-- file-backed WAL coherent-read concurrency test;
-- solver-policy fixtures for package/planned quantities, target kinds, unknown data, variety, fulfilment costs, cost-close, hard infeasibility and technical tie resolution;
-- deterministic repeated-plan acceptance test;
-- end-to-end CLI/use-case test through all four contexts;
-- performance characterization with problem size, solver stage statuses and wall-clock timing.
+Final implementation review found no remaining **P0/P1** issue for the bounded slice.
 
-## Non-blocking implementation risks
+Resolved during implementation/review included:
 
-- **P2** — exact technical lexicographic tie resolution may add many sequential solve stages as candidate count grows; measure before attempting optimization shortcuts;
-- **P2** — synchronous policy-optimal solve time for a plausible larger catalog remains unmeasured;
-- **P2** — floating-point solver tolerances must be shown not to mutate ADR-007/domain tolerance semantics; reportable facts are recalculated outside solver reporting;
-- **P2** — SQLite is a first-slice local/single-host choice; network/shared-filesystem deployment is unsupported.
+- explicit non-legacy SQLite transaction control for coherent WAL read snapshots;
+- version-safe Nutrition Standard Set persistence and single active-version behavior;
+- PAL activity-adjustment provenance and applicability checks;
+- distinct nutrition derivation date and market evaluation instant;
+- future-observation exclusion and timezone-aware Market Catalog timestamps;
+- explicit commercial-value/domain invariants;
+- lower-bound unknown-evidence semantics;
+- solver/reporter mechanical tolerance separation from business thresholds;
+- safety diagnostics that never claim member-allocation safety.
 
-If these produce evidence that the accepted architecture cannot work, stop and reopen S3. Do not add background workers, approximate objectives or semantic fallbacks inside the implementation PR.
+## Remaining non-blocking risks
 
-## Explicitly not authorized yet
+- **P2** — solver scalability: exact technical lexicographic tie resolution adds sequential stages per Offer. Final baseline: 16 Offers = 45 stages / 14.785100 s; 32 Offers = 77 stages / 50.462863 s on the recorded GitHub runner. Re-characterize before materially increasing catalog size or setting latency expectations.
+- **P2** — floating-point solver mechanics remain intentionally isolated from domain thresholds; keep canonical Decimal revalidation and regression tests when changing solver code.
+- **P2** — SQLite remains a first-slice local/single-host choice; network/shared-filesystem deployment is unsupported.
 
-- complete production `mvp-v1` standards/reference import;
-- complete BLS 4.0 catalog import;
-- NIDDK/Hall weight-goal path;
-- pediatric/infant derivation paths;
-- HTTP/UI/authentication;
-- saved plans/history;
-- asynchronous planning;
-- production hosting/deployment work.
+None of these P2 risks justifies changing accepted business semantics inside this slice.
 
 ## Next
 
-Create a fresh implementation branch from `main` after this readiness PR is squash-merged. Implement only `first-implementation-slice.md`, run/record the required evidence, review findings by P0/P1/P2/P3, and merge only when the slice completion gate passes.
+Squash-merge PR #7. The last executable/schema change is commit `c6453c218d6a2ca273ca299b9a589fc1e13cf8e4`, which passed the full completion CI; commits after it only record completion evidence and execution state. After merge, open a fresh planning increment from `main` and choose the next bounded slice explicitly; do not implicitly expand this implementation authorization.
