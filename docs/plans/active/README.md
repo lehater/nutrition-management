@@ -15,6 +15,7 @@ Implementation authorization: `none`.
 - accepted tactical baselines exist for all four contexts; see the corresponding files under `docs/domain/`.
 - ADR-002 accepts aggregated household-target optimization for the MVP while preserving member-level targets upstream.
 - ADR-003 accepts Nutrition Standard Set `mvp-v1`, sourced nutrient/safety semantics, DGE/PAL energy derivation, adult NIDDK/Hall weight-goal policy and member applicability semantics.
+- ADR-004 accepts BLS 4.0 component semantics/per-100-g edible basis as the MVP canonical food-composition vocabulary and defines target-to-food nutrient mapping rules.
 - no target architecture is accepted yet.
 
 ## Accepted MVP simplifications
@@ -25,6 +26,8 @@ Implementation authorization: `none`.
 - no independent development/growth-stage profile state;
 - pregnancy/lactation-specific targeting is outside the MVP;
 - one active Nutrition Standard Set by default; current active set is `mvp-v1`;
+- BLS 4.0 component vocabulary and `100 g edible portion` are the canonical Food Knowledge nutrient semantics/basis;
+- Product Cards must resolve package quantity to edible grams to participate in quantitative nutrition optimization;
 - optimizer consumes the aggregated Household Nutrition Target;
 - no proof of per-member food allocation feasibility or member-level safety from aggregate basket totals;
 - no automatic pediatric target-weight energy adjustment;
@@ -40,16 +43,17 @@ Implementation authorization: `none`.
 - active nutrition-standard sources/version: resolved by [`../../domain/nutrition-standard-set-mvp-v1.md`](../../domain/nutrition-standard-set-mvp-v1.md) and [`../../decisions/ADR-003-nutrition-targeting-standards-and-derivation.md`](../../decisions/ADR-003-nutrition-targeting-standards-and-derivation.md);
 - concrete energy/weight-goal/nutrient-reference derivation policy: resolved by the same artifacts;
 - physical-activity vocabulary: resolved to numeric DGE PAL semantics in `mvp-v1`;
-- development/growth/physiological-state applicability: resolved by deriving age from date of birth, removing independent growth-stage state and excluding pregnancy/lactation-specific targeting from MVP.
+- development/growth/physiological-state applicability: resolved by deriving age from date of birth, removing independent growth-stage state and excluding pregnancy/lactation-specific targeting from MVP;
+- canonical nutrient identity/unit/basis/crosswalk and rounding semantics: resolved by [`../../domain/nutrient-semantics.md`](../../domain/nutrient-semantics.md) and [`../../decisions/ADR-004-canonical-nutrient-semantics.md`](../../decisions/ADR-004-canonical-nutrient-semantics.md);
+- package-to-nutrition normalization: executable Product Cards resolve purchased quantity to edible grams.
 
 ## Blocking tactical unknowns
 
 Before opening S3 Architecture, resolve or explicitly defer:
-1. canonical nutrient identities, unit normalization/conversions and rounding rules shared semantically between Nutrition Targeting and Food Knowledge;
-2. initial controlled top-level Food Category set and concrete variety rules;
-3. Offer validity/fulfilment semantics needed for cost calculation;
-4. optimization/scoring/tie-breaking policy, including typed-target treatment, safety-limit handling, partial/infeasible-plan semantics and merchant-count preference.
+1. initial controlled top-level Food Category set and concrete variety rules;
+2. Offer validity/fulfilment semantics needed for cost calculation;
+3. optimization/scoring/tie-breaking policy, including typed-target treatment, safety-limit handling, partial/infeasible-plan semantics and merchant-count preference.
 
 ## Next
 
-Close canonical nutrient/unit semantics needed to connect Nutrition Targeting to Food Knowledge, then continue through the remaining Tactical DDD blockers. Do not start architecture or implementation while the blocking semantic unknowns above remain unresolved.
+Resolve Food Category/variety semantics, then Offer validity/fulfilment and Purchase Planning optimization policy. Do not start architecture or implementation while the blocking semantic unknowns above remain unresolved.
