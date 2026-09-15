@@ -160,7 +160,8 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
 
     return PurchasePlan(
         household_id=snapshot.household_id,
-        as_of_date=snapshot.as_of_date,
+        derivation_date=snapshot.derivation_date,
+        market_as_of=snapshot.market_as_of,
         standard_version=snapshot.standard_version,
         policy_version=snapshot.policy_version,
         outcome=outcome,
