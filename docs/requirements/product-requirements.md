@@ -11,11 +11,11 @@ The system must support:
 - a household with one or more members;
 - one current profile per member;
 - member inputs including age, sex, height, current weight, current-weight date, target weight, target date, physical activity and growth/development stage;
-- deriving target ranges for energy, macro- and micronutrients from those inputs;
+- deriving energy and macro-/micronutrient target specifications from those inputs while preserving source semantics for point references, bounds, ranges, relative formulas and separate safety limits;
 - a single MVP calculation period of 30 days;
-- preserving individual member targets while aggregating them into the household target used by the MVP optimizer.
+- preserving individual member targets while aggregating compatible nutritional demand into the household target used by the MVP optimizer.
 
-Nutrition standards must be versioned data with source/provenance. One version is active by default in the MVP.
+Nutrition standards must be versioned data with source/provenance. One version is active by default in the MVP. Safety upper limits must remain distinguishable from desired/reference intake targets and must not be interpreted as preferred target maxima.
 
 ## Food knowledge
 
@@ -40,7 +40,7 @@ Product and offer data may be entered manually or imported. Automatic acquisitio
 ## Purchase planning and optimization
 
 For the 30-day household target, the system must:
-- select products that reasonably cover energy, macro- and micronutrient target ranges;
+- select products that reasonably cover energy, macro- and micronutrient targets;
 - consider product categories and diet variety rather than satisfying needs from a single cheapest source;
 - consider nutritionally substitutable alternatives;
 - choose concrete SKUs and offers globally across the whole basket rather than optimizing each line independently;
