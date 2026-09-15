@@ -10,7 +10,8 @@ The system is advisory: it calculates and compares feasible purchase plans and t
 The system must support:
 - a household with one or more members;
 - one current profile per member;
-- member inputs including age, sex, height, current weight, current-weight date, target weight, target date, physical activity and growth/development stage;
+- member source inputs including date of birth, sex, height, current weight, current-weight date, target weight, target date and physical activity;
+- deriving chronological age/applicable age band from date of birth at target-derivation time rather than requiring a separately entered development/growth stage;
 - deriving energy and macro-/micronutrient target specifications from those inputs while preserving source semantics for point references, bounds, ranges, relative formulas and separate safety limits;
 - a single MVP calculation period of 30 days;
 - preserving individual member targets while aggregating compatible nutritional demand into the household target used by the MVP optimizer.
@@ -56,6 +57,7 @@ The optimizer balances nutritional coverage, energy fit, variety, total acquisit
 ## MVP scope boundaries
 
 The MVP does not require:
+- pregnancy- or lactation-specific nutrition targeting;
 - medical or therapeutic diet handling;
 - allergies or intolerances;
 - actual consumption tracking or calorie-tracker workflows;
