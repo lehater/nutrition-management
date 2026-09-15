@@ -12,11 +12,26 @@ These dimensions have different units and semantics. A single weighted sum would
 
 Nutrition Targeting also publishes typed references rather than homogeneous `[min,max]` ranges, and ADR-002 prevents aggregate household optimization from claiming member-level food allocation or safety.
 
+Whole-package purchasing creates another distinction: the quantity bought may exceed the quantity the plan intends to use during the 30-day period. Counting unavoidable package surplus as nutritional coverage would let packaging artifacts satisfy nutrition/variety targets even though the surplus is not part of the planned 30-day food use.
+
 ## Decision
 
 ### One primary recommendation
 
 The MVP produces one primary recommended Purchase Plan for a calculation run. It may expose diagnostics and gap-closing Base Food suggestions, but a Pareto-style shortlist is deferred until there is demonstrated product value.
+
+### Purchased versus planned-utilized quantity
+
+Each selected SKU line has two different quantities:
+
+- `purchased edible quantity` — integer package count multiplied by edible quantity per package;
+- `planned utilized quantity` — the amount assigned by the plan to the 30-day household basket, with `0 <= planned utilized quantity <= purchased edible quantity`.
+
+`package surplus = purchased edible quantity - planned utilized quantity`.
+
+Nutritional coverage, energy fit and variety are calculated from **planned utilized quantity**. Purchase cost is calculated from **purchased packages**. Package surplus therefore increases cost but cannot create artificial nutrient coverage or variety credit.
+
+Planned utilized quantity is a planning variable, not actual-consumption tracking. The MVP does not assert that the household will consume exactly that amount, and surplus does not become inventory state.
 
 ### Executability constraints
 
@@ -24,6 +39,7 @@ A candidate basket is executable only when:
 
 - package counts are non-negative integers;
 - every selected Product Card has an executable edible-quantity conversion;
+- planned utilized quantity for each line is non-negative and does not exceed purchased edible quantity;
 - every selected Offer is `available` and satisfies explicit Offer validity bounds;
 - every selected Fulfilment Channel satisfies explicit channel validity bounds;
 - selected Offers/order charges use one compatible currency;
@@ -34,7 +50,7 @@ These are market/purchase feasibility constraints, not nutrition-scoring dimensi
 
 ### Deterministic nutrient evidence
 
-Coverage arithmetic uses accepted target-to-food Nutrient Measure mappings only.
+Coverage arithmetic uses accepted target-to-food Nutrient Measure mappings and planned utilized quantities only.
 
 Known numeric values and known zero values provide deterministic evidence. Trace/unknown composition is never silently treated as zero.
 
@@ -96,7 +112,7 @@ The final household energy target is evaluated as a point-guideline dimension wi
 
 Member-level Safety Limits are not hard constraints and do not contribute to a claim of plan safety in the MVP because the system does not model per-member allocation or actual consumption.
 
-Where a compatible aggregate comparison signal can be derived, it is reported as a warning/diagnostic only. It does not convert an EFSA UL into a household preferred maximum and does not make the plan `safe` or `unsafe` by itself.
+Where a compatible aggregate comparison signal can be derived from planned utilized quantities, it is reported as a warning/diagnostic only. It does not convert an EFSA UL into a household preferred maximum and does not make the plan `safe` or `unsafe` by itself.
 
 ### Nutritional ranking
 
@@ -114,13 +130,13 @@ This makes adequacy failures dominate cost without inventing cross-unit nutritio
 
 ### Variety target
 
-Variety uses the Food Knowledge material-representation semantics from ADR-005.
+Variety uses the Food Knowledge material-representation semantics from ADR-005 and planned utilized quantities rather than purchased package surplus.
 
 The MVP variety target is satisfied when all three conditions hold:
 
 - at least `4` of the `6` core top-level Food Categories are materially represented;
 - at least `8` distinct Base Foods are materially represented;
-- no single Base Food contributes more than `25%` of total plan food energy.
+- no single Base Food contributes more than `25%` of total planned food energy.
 
 These thresholds are explicit MVP planning heuristics, not DGE population recommendations or medical claims.
 
@@ -130,7 +146,7 @@ When no candidate can satisfy all three, prefer in order:
 
 1. greater number of materially represented core categories, capped at `4`;
 2. greater number of materially represented Base Foods, capped at `8`;
-3. lower maximum single-Base-Food energy share until `25%` is reached.
+3. lower maximum single-Base-Food planned energy share until `25%` is reached.
 
 ### Cost and procurement simplicity
 
@@ -138,7 +154,7 @@ After nutritional quality and variety are optimized, Purchase Planning minimizes
 
 `total cost = line package costs + applicable Purchase Group fulfilment/delivery fees`.
 
-Unavoidable package surplus affects purchased quantity/cost and nutrient totals because the basket consists of whole packages, but it does not create inventory state.
+Unavoidable package surplus affects cost but does not contribute to nutritional coverage or variety and does not create inventory state.
 
 Let `Cmin` be the minimum total cost among candidates tied on the preceding nutrition/variety policy. A candidate is `cost-close` when:
 
@@ -149,7 +165,7 @@ Among cost-close candidates, prefer lexicographically:
 1. fewer Purchase Groups;
 2. fewer distinct Merchants;
 3. lower total acquisition cost;
-4. lower total edible package surplus mass as the final deterministic business tie-breaker.
+4. lower total package surplus mass as the final deterministic business tie-breaker.
 
 Thus the MVP may pay up to 5% above the absolute cheapest nutrition/variety-equivalent basket to materially simplify procurement.
 
@@ -185,6 +201,7 @@ Suggestions are theoretical Food Knowledge output. Without an executable Product
 ## Consequences
 
 - optimizer priorities are explainable without a single arbitrary cross-unit weighted score;
+- package rounding affects cost without fabricating planned nutrient coverage;
 - adequately covered nutrients are not rewarded for unlimited oversupply;
 - recommended/estimated intake points behave as adequacy floors rather than hard equalities;
 - point-guideline tolerance is explicitly downstream Purchase Planning policy;
@@ -196,6 +213,10 @@ Suggestions are theoretical Food Knowledge output. Without an executable Product
 - a single primary plan keeps the MVP output simple while retaining enough diagnostics to explain partial results.
 
 ## Alternatives considered
+
+### Count all purchased package quantity as 30-day nutritional coverage
+
+Rejected because unavoidable package surplus exists specifically because purchasing is discrete. Counting that surplus as planned nutrition would let package size distort nutritional and variety assessment.
 
 ### One weighted objective over nutrition, variety, euros and merchant count
 
