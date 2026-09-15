@@ -37,7 +37,9 @@ The profile describes source facts and goals. It does not contain authoritative 
 
 For `mvp-v1`, sex is the male/female applicability input required by sex-specific DGE/ÖGE rows and energy formulas. This field exists for nutrition-standard applicability; it is not a model of gender identity.
 
-Physical activity is resolved to the numeric PAL semantics defined by the active Nutrition Standard Set.
+`Current weight` is an observed planning baseline whose observation date must not be later than the target-derivation date. `mvp-v1` does not extrapolate a different current weight from the age of that observation; the observation date remains provenance.
+
+For members aged one year or older, physical activity is a resolved numeric PAL input governed by the active Nutrition Standard Set. `mvp-v1` supports an unadjusted PAL of `1.2–2.4`; the documented strenuous-activity adjustment may raise the final PAL by `0.3`, to at most `2.7`. It never silently chooses a midpoint from a descriptive PAL range. PAL is not required for members under one year because infant energy uses source guiding values independently of PAL.
 
 The MVP has no independent `development/growth stage` profile input. Ordinary infant/child/adolescent/adult applicability and the pediatric growth-energy factor are derived from date of birth and the active standard set, avoiding a second source of truth that could contradict chronological age.
 
@@ -129,7 +131,8 @@ Member safety limits do not become a household-level guarantee of individual saf
 
 - resolve the active Nutrition Standard Set;
 - derive chronological age and applicable source age band from date of birth at the derivation date;
-- resolve a member's numeric PAL from the accepted activity semantics;
+- validate current-weight observation applicability without inventing a new current weight;
+- validate/use the resolved numeric PAL under the active standard-set rules when PAL is required;
 - derive maintenance energy from age/sex/height/current weight/PAL under the active set;
 - apply the accepted adult weight-goal policy when applicable;
 - resolve source-native nutrient references against member/profile/energy bases;
@@ -145,6 +148,9 @@ Member safety limits do not become a household-level guarantee of individual saf
 - exactly one Nutrition Standard Set is active by default in the MVP;
 - date of birth is the authoritative member age source; entered age is not independent authoritative state;
 - age and age band are derived at target-derivation time and retained as provenance;
+- current-weight date is not later than derivation date, and observed current weight is not silently extrapolated;
+- PAL is not required for age `< 1` under `mvp-v1`;
+- for age `>= 1`, a resolved numeric PAL is required and must satisfy the active standard-set rules; invalid PAL values are not clamped or defaulted;
 - the MVP has no independent development/growth-stage state;
 - pregnancy/lactation-specific applicability is outside the MVP;
 - a derived target identifies the immutable standard-set version used;
@@ -164,4 +170,4 @@ The current model does not own pregnancy/lactation-specific targeting, medical r
 
 ## Material unknowns before architecture
 
-None currently owned by Nutrition Targeting. Remaining S2 blockers belong to Food Knowledge category/variety semantics, Market Catalog offer semantics and Purchase Planning optimization policy.
+None for the accepted MVP scope.
