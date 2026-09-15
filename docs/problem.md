@@ -18,8 +18,8 @@ Each member has one current nutrition profile. Medical diets, allergies and ther
 ## Desired outcome
 
 For the 30-day period, the system should make it possible to:
-- derive each household member's target energy, macro- and micronutrient ranges from personal parameters and active nutrition standards;
-- aggregate those individual targets into a household nutritional target for purchase optimization;
+- derive each household member's target energy and macro-/micronutrient specifications from personal parameters and active nutrition standards, preserving the source meaning of reference values, ranges and safety limits;
+- aggregate compatible individual nutritional demand into a household target for purchase optimization;
 - select a nutritionally reasonable and sufficiently varied set of foods;
 - map that set to concrete purchasable goods and merchant offers;
 - calculate package quantities, stores, prices, delivery-related costs and the total required budget;
@@ -28,7 +28,7 @@ For the 30-day period, the system should make it possible to:
 
 ## MVP simplifications
 
-- optimization uses the aggregated household nutritional target; it does not prove that the purchased food can be allocated among members so that every member individually lands inside every target range;
+- optimization uses the aggregated household nutritional target; it does not prove that the purchased food can be allocated among members so that every member individually satisfies all of their target and safety conditions;
 - actual consumption is not tracked;
 - existing household inventory and carry-over leftovers are not considered;
 - meals, recipes, cooking, portioning and nutrient changes caused by preparation are not modeled;
