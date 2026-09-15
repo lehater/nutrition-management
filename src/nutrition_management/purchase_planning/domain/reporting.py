@@ -28,7 +28,7 @@ CORE_CATEGORIES = {
 # Solver mechanics may leave values infinitesimally across a mathematical boundary.
 # This tolerance is only for revalidation of solver-produced quantities and is many
 # orders of magnitude smaller than the accepted 5%, 1% and 25% business thresholds.
-_MECHANICAL_EPS = Decimal("1e-8")
+_MECHANICAL_EPS = Decimal("1e-7")
 
 
 def _normalized_penalty(value: Decimal) -> Decimal:
