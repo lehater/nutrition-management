@@ -68,7 +68,8 @@ class PurchaseCandidate:
 @dataclass(frozen=True)
 class PlanningInputSnapshot:
     household_id: str
-    as_of_date: date
+    derivation_date: date
+    market_as_of: datetime
     standard_version: str
     policy_version: str
     energy_target_kcal: Decimal
@@ -120,7 +121,8 @@ class PlanOutcome(StrEnum):
 @dataclass(frozen=True)
 class PurchasePlan:
     household_id: str
-    as_of_date: date
+    derivation_date: date
+    market_as_of: datetime
     standard_version: str
     policy_version: str
     outcome: PlanOutcome
