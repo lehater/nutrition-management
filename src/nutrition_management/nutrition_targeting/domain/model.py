@@ -38,8 +38,17 @@ class NutritionProfile:
     current_weight_kg: Decimal
     current_weight_date: date
     pal: Decimal
+    pal_activity_adjustment_applied: bool = False
     target_weight_kg: Decimal | None = None
     target_date: date | None = None
+
+    def __post_init__(self) -> None:
+        if self.height_m <= 0:
+            raise ValueError("height must be positive")
+        if self.current_weight_kg <= 0:
+            raise ValueError("current weight must be positive")
+        if self.target_weight_kg is not None and self.target_weight_kg <= 0:
+            raise ValueError("target weight must be positive")
 
 
 @dataclass(frozen=True)
@@ -92,6 +101,10 @@ class MemberNutritionTarget:
     derivation_date: date
     standard_version: str
     age_years: int
+    current_weight_kg: Decimal
+    current_weight_date: date
+    pal: Decimal
+    pal_activity_adjustment_applied: bool
     energy_kcal_30d: Decimal
     references: tuple[ResolvedReference, ...]
     safety_limits: tuple[MemberSafetyLimit, ...]
