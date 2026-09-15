@@ -25,7 +25,7 @@ The system must support:
 - a canonical nutrient vocabulary/basis that permits deterministic comparison with active nutrition targets;
 - preserving unknown/trace nutrient data separately from known zero values;
 - hierarchical food categories with stable top-level categories and extensible subcategories;
-- stable variety semantics that prevent negligible token quantities from creating artificial category/food diversity;
+- stable variety semantics that prevent negligible token quantities or package surplus from creating artificial category/food diversity;
 - nutrition-data provenance including at least a source name and optional URL/version/date, retaining nutrient-level provenance where available;
 - using the theoretical catalog to suggest foods that could close mapped nutrient gaps when the purchasable catalog is insufficient.
 
@@ -49,10 +49,12 @@ Product, channel and offer data may be entered manually or imported. Automatic a
 For the 30-day household target, the system must:
 - select executable products/offers that reasonably cover mapped energy, macro- and micronutrient targets;
 - preserve unsupported target mappings and unknown nutrient evidence instead of reporting them as satisfied;
+- distinguish purchased edible quantity from the quantity planned for use during the 30-day period;
+- calculate nutritional coverage and variety from planned utilized quantity rather than unavoidable package surplus;
 - consider product categories and diet variety rather than satisfying needs from a single cheapest source;
 - consider nutritionally substitutable alternatives;
 - choose concrete SKUs and offers globally across the whole basket rather than optimizing each line independently;
-- calculate purchasable integer package counts and include unavoidable package surplus in plan cost/nutrient totals;
+- calculate purchasable integer package counts and include unavoidable package surplus in plan cost without turning it into planned nutrition or inventory;
 - group lines by fulfilment channel so delivery-related costs and minimum-order conditions are applied once at the appropriate order-group level;
 - calculate total acquisition cost in one compatible currency without implicit FX conversion;
 - prefer fewer purchase groups/merchants when nutritionally/variety-equivalent alternatives are close in acquisition cost;
