@@ -106,13 +106,13 @@ REE in MJ/day:
 |---|---|---|
 | `0–<3` | `0.118 × W + 3.59 × H - 1.55` | `0.127 × W + 2.94 × H - 1.20` |
 | `3–<10` | `0.0632 × W + 1.31 × H + 1.28` | `0.0666 × W + 0.878 × H + 1.46` |
-| `10–<19` | `0.0651 × W + 1.11 × H + 1.25` | `0.0393 × W + 1.04 × H + 1.93` |
+| `10–18` | `0.0651 × W + 1.11 × H + 1.25` | `0.0393 × W + 1.04 × H + 1.93` |
 
 The member-level maintenance estimate includes growth energy according to the DGE derivation:
 
 `maintenance_energy = REE × PAL × 1.01`.
 
-The `0–<3` formula remains part of the source equation set, but the MVP uses the DGE infant guiding value for members under 1 year; therefore this equation is applied only from age 1 within this product.
+The `0–<3` formula remains part of the source equation set, but the MVP uses the DGE infant guiding value for members under 1 year; therefore this equation is applied only from age 1 within this product. The source `10–18` formula is used for the product's `10 <= age < 19` adolescent band.
 
 ### Adults: age >= 19 years
 
@@ -185,9 +185,13 @@ For a source interval, both bounds are scaled by 30. A source point remains a po
 
 ## Safety-limit derivation
 
-Where an EFSA limit is applicable and the tracked nutrient identity/form matches the limit's scope:
+An EFSA UL is a chronic **daily** intake limit. It therefore remains a daily Safety Limit in Member Nutrition Target provenance rather than being redefined as a 30-day safety budget.
 
-`member_period_safety_limit = applicable_daily_limit × 30`.
+Where a limit is applicable and the tracked nutrient identity/form matches the limit's scope, Purchase Planning may derive a 30-day comparison equivalent:
+
+`period_equivalent = applicable_daily_limit × 30`.
+
+This equivalent exists only to compare a 30-day purchased quantity with the daily reference basis. It is not an assertion that consumption on every day stays below the UL and is not a member-level safety guarantee.
 
 The source limit kind and applicability remain attached to the result.
 
