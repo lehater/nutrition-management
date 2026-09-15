@@ -12,7 +12,7 @@ from nutrition_management.nutrition_targeting.application.imports import import_
 from nutrition_management.nutrition_targeting.domain.model import NutritionProfile, Sex
 from nutrition_management.nutrition_targeting.infrastructure.repository import NutritionTargetingRepository
 
-from fixture_loader import HOUSEHOLD_ID, MARKET_AS_OF, load_acceptance_fixture, test_standard
+from fixture_loader import HOUSEHOLD_ID, MARKET_AS_OF, load_acceptance_fixture, test_standard as standard_fixture
 
 
 def test_file_database_uses_required_sqlite_pragmas(engine):
@@ -43,7 +43,7 @@ def test_decimal_nutrient_value_round_trips_without_binary_float(engine):
 
 
 def test_standard_versions_can_reuse_reference_ids_and_only_one_is_active(engine):
-    first = test_standard()
+    first = standard_fixture()
     second = replace(first, version="test-slice-v2")
 
     with engine.begin() as connection:
@@ -82,7 +82,6 @@ def test_one_read_transaction_keeps_coherent_snapshot_across_later_writer_commit
     reader = engine.connect()
     transaction = reader.begin()
     try:
-        # First read establishes SQLite's WAL snapshot.
         NutritionTargetingRepository(reader).profiles_for_household(HOUSEHOLD_ID)
 
         with engine.begin() as writer:
