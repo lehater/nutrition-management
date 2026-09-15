@@ -2,11 +2,24 @@
 
 This directory owns living Strategic and Tactical DDD for Nutrition Management.
 
-Current state: **domain discovery has not yet produced accepted Bounded Contexts**.
+Current state:
+- Strategic DDD baseline: `accepted` for the MVP;
+- Tactical DDD baseline: partially accepted and still being refined;
+- target architecture: not accepted.
 
-Start with:
-- `strategic-model.md` — accepted/candidate semantic ownership and context boundaries;
-- `context-map.md` — material relationships between accepted Bounded Contexts;
-- `glossary.md` — ubiquitous-language terms whose meaning has been accepted or is explicitly marked as candidate/unknown.
+## Strategic model
 
-Do not infer Nutrition Management domain structure from future database tables, APIs, screens or deployment units.
+- [`strategic-model.md`](strategic-model.md) — accepted Bounded Contexts and semantic ownership;
+- [`context-map.md`](context-map.md) — material semantic relationships between contexts;
+- [`glossary.md`](glossary.md) — accepted ubiquitous-language terms.
+
+## Tactical owners
+
+- [`nutrition-targeting.md`](nutrition-targeting.md) — household/member profiles, standards and derived nutritional targets;
+- [`food-knowledge.md`](food-knowledge.md) — Base Foods, nutrient profiles, categories and nutritional-data provenance;
+- [`market-catalog.md`](market-catalog.md) — Product Cards/SKUs, nutrient overrides, Merchants and Offers;
+- [`purchase-planning.md`](purchase-planning.md) — basket optimization semantics and Purchase Plan output.
+
+The MVP household-aggregation simplification and its rationale are recorded in [`../decisions/ADR-002-mvp-household-aggregate-optimization.md`](../decisions/ADR-002-mvp-household-aggregate-optimization.md).
+
+Do not infer domain structure from database tables, APIs, screens, packages or deployment units.
