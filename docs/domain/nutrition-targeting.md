@@ -57,7 +57,9 @@ The MVP uses exactly one active version by default. The current active version i
 
 A standard-set version is immutable once used as derivation provenance. A changed upstream source, erratum or product formula produces a new standard-set version rather than silently changing the meaning of an existing derived target.
 
-The controlled nutrient set is defined by the active standard set together with nutrient identities that Food Knowledge can represent; it is not hard-coded independently in Purchase Planning.
+Canonical nutrient identity, unit, food-basis and target-to-food mapping semantics are defined in [`nutrient-semantics.md`](nutrient-semantics.md) and accepted by [`ADR-004`](../decisions/ADR-004-canonical-nutrient-semantics.md).
+
+The optimizer-controlled nutrient set is the intersection of active standard references and Food Knowledge canonical components/derived Nutrient Measures with accepted semantic mappings. It is not hard-coded independently in Purchase Planning.
 
 ### Nutrient Reference
 
@@ -79,6 +81,8 @@ A point reference remains a point. Nutrition Targeting does not manufacture an a
 A sourced upper-safety semantic, such as an EFSA Tolerable Upper Intake Level (UL) or safe level, when applicable to the exact nutrient form represented by the product.
 
 A Safety Limit is not the upper edge of a preferred target range. It is retained separately from Nutrient Reference semantics.
+
+A Safety Limit becomes quantitatively enforceable only when its substance/form scope has an accepted mapping to Food Knowledge data at compatible semantic specificity. Otherwise it remains diagnostic/provenance information rather than a false hard constraint.
 
 ## Derived state
 
@@ -129,6 +133,7 @@ Member safety limits do not become a household-level guarantee of individual saf
 - derive maintenance energy from age/sex/height/current weight/PAL under the active set;
 - apply the accepted adult weight-goal policy when applicable;
 - resolve source-native nutrient references against member/profile/energy bases;
+- map target references to canonical Food Knowledge components/derived Nutrient Measures using the accepted crosswalk;
 - attach applicable safety limits without conflating them with preferred targets;
 - derive a 30-day Member Nutrition Target;
 - aggregate compatible member adequacy/reference demand into the Household Nutrition Target;
@@ -144,6 +149,7 @@ Member safety limits do not become a household-level guarantee of individual saf
 - pregnancy/lactation-specific applicability is outside the MVP;
 - a derived target identifies the immutable standard-set version used;
 - source reference kind is preserved through derivation;
+- target-to-food comparability requires an accepted semantic nutrient mapping;
 - a safety limit is never reinterpreted as a preferred target maximum;
 - source point references are not silently expanded into arbitrary ranges;
 - relative references are resolved using the basis required by their source, not a universal current-weight assumption;
@@ -158,4 +164,4 @@ The current model does not own pregnancy/lactation-specific targeting, medical r
 
 ## Material unknowns before architecture
 
-- canonical nutrient identities, measurement units/conversions and rounding policy required to match Nutrition Targeting references to Food Knowledge quantities.
+None currently owned by Nutrition Targeting. Remaining S2 blockers belong to Food Knowledge category/variety semantics, Market Catalog offer semantics and Purchase Planning optimization policy.
