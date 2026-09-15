@@ -9,9 +9,12 @@ Status: `accepted` for the current MVP domain baseline.
 | Household | accepted | Calculation scope containing one or more Household Members. | Nutrition Targeting |
 | Household Member | accepted | Person whose current profile contributes nutritional demand to the household target. | Nutrition Targeting |
 | Nutrition Profile | accepted | Current member source parameters and weight goal used to derive nutritional needs. | Nutrition Targeting |
-| Nutrition Standard Set | accepted | Versioned, sourced rules/reference values used to derive target nutrient ranges; one version is active in MVP. | Nutrition Targeting |
-| Member Nutrition Target | accepted | Rebuildable 30-day nutrient target ranges derived from one member profile and the active standards. | Nutrition Targeting |
-| Household Nutrition Target | accepted | Aggregated 30-day target ranges consumed by the MVP purchase optimizer. | Nutrition Targeting |
+| Nutrition Standard Set | accepted | Immutable-at-use, versioned composition of sourced nutrient references, safety limits and target-derivation policies; one version is active by default in MVP. | Nutrition Targeting |
+| Nutrient Reference | accepted | Sourced adequacy/reference value preserving its semantic kind, applicability and native basis; it may resolve to a point, bound or interval. | Nutrition Targeting |
+| Safety Limit | accepted | Sourced upper-safety semantic such as an EFSA UL or safe level; separate from the preferred/adequacy target. | Nutrition Targeting |
+| Physical Activity Level (PAL) | accepted | Numeric multiplier representing physical activity for energy derivation under the active Nutrition Standard Set. | Nutrition Targeting |
+| Member Nutrition Target | accepted | Rebuildable 30-day energy/nutrient target specification, with separate applicable safety limits and provenance, derived from one member profile and the active standards. | Nutrition Targeting |
+| Household Nutrition Target | accepted | Aggregated compatible 30-day nutritional demand consumed by the MVP purchase optimizer; it does not guarantee member-level safety or allocation feasibility. | Nutrition Targeting |
 | Base Food | accepted | Normalized theoretical food with nutrient profile and category semantics, independent of a concrete commercial SKU. | Food Knowledge |
 | Food Category | accepted | Hierarchical classification used for variety rules; top-level categories are controlled and subcategories extensible. | Food Knowledge |
 | Nutrition Data Source | accepted | Provenance metadata for nutritional data, including source name and optional URL/version/date. | Food Knowledge |
