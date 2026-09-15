@@ -70,6 +70,10 @@ MVP_V1_DGE_TOPICS = frozenset(
     }
 )
 
+_MVP_V1_DERIVED_POLICY_TOPICS = frozenset({"energy"})
+_MVP_V1_NON_ACTIVE_TOPICS = frozenset({"alcohol"})
+_MVP_V1_REFERENCE_ROW_TOPICS = MVP_V1_DGE_TOPICS - _MVP_V1_DERIVED_POLICY_TOPICS - _MVP_V1_NON_ACTIVE_TOPICS
+
 
 @dataclass(frozen=True)
 class LoadedStandardPackage:
@@ -241,7 +245,7 @@ def _safety(row: dict, index: int, source_ids: set[str]) -> SafetyDefinition:
         raise StandardPackageError(f"invalid {field}: {exc}") from exc
 
 
-def _validate_mvp_v1_manifest(manifest: dict) -> None:
+def _validate_mvp_v1_manifest(manifest: dict, standard: NutritionStandardSet) -> None:
     accounting = manifest.get("topic_accounting")
     if not isinstance(accounting, dict):
         raise StandardPackageError("mvp-v1 manifest requires topic_accounting")
@@ -250,9 +254,56 @@ def _validate_mvp_v1_manifest(manifest: dict) -> None:
         missing = sorted(MVP_V1_DGE_TOPICS - keys)
         extra = sorted(keys - MVP_V1_DGE_TOPICS)
         raise StandardPackageError(f"mvp-v1 topic_accounting mismatch; missing={missing}, extra={extra}")
-    alcohol = accounting["alcohol"]
-    if not isinstance(alcohol, dict) or alcohol.get("status") != "non_active":
-        raise StandardPackageError("mvp-v1 alcohol topic must be explicitly non_active")
+
+    active_families = {
+        item.resolved_family_id
+        for item in standard.references
+        if item.scope == ReferenceScope.ACTIVE
+    }
+    accounted_families: set[str] = set()
+
+    for topic in sorted(MVP_V1_DGE_TOPICS):
+        entry = accounting[topic]
+        if not isinstance(entry, dict):
+            raise StandardPackageError(f"mvp-v1 topic_accounting.{topic} must be an object")
+        status = entry.get("status")
+
+        if topic in _MVP_V1_DERIVED_POLICY_TOPICS:
+            if status != "derived_policy":
+                raise StandardPackageError(f"mvp-v1 topic {topic} must use derived_policy accounting")
+            _required_text(entry.get("policy_id"), f"topic_accounting.{topic}.policy_id")
+            if entry.get("families") not in (None, []):
+                raise StandardPackageError(f"derived-policy topic {topic} must not declare reference families")
+            continue
+
+        if topic in _MVP_V1_NON_ACTIVE_TOPICS:
+            if status != "non_active":
+                raise StandardPackageError(f"mvp-v1 topic {topic} must be explicitly non_active")
+            _required_text(entry.get("reason"), f"topic_accounting.{topic}.reason")
+            if entry.get("families") not in (None, []):
+                raise StandardPackageError(f"non-active topic {topic} must not declare reference families")
+            continue
+
+        if topic not in _MVP_V1_REFERENCE_ROW_TOPICS or status != "reference_rows":
+            raise StandardPackageError(f"mvp-v1 topic {topic} must be backed by reference_rows")
+        families = entry.get("families")
+        if not isinstance(families, list) or not families:
+            raise StandardPackageError(f"mvp-v1 topic {topic} requires non-empty families")
+        if any(not isinstance(family_id, str) or not family_id for family_id in families):
+            raise StandardPackageError(f"mvp-v1 topic {topic} contains invalid family id")
+        if len(families) != len(set(families)):
+            raise StandardPackageError(f"mvp-v1 topic {topic} repeats a family id")
+        overlap = accounted_families.intersection(families)
+        if overlap:
+            raise StandardPackageError(f"mvp-v1 reference families may belong to only one topic; repeated={sorted(overlap)}")
+        accounted_families.update(families)
+
+    if accounted_families != active_families:
+        missing = sorted(active_families - accounted_families)
+        extra = sorted(accounted_families - active_families)
+        raise StandardPackageError(
+            f"mvp-v1 topic accounting must cover active reference families exactly; missing={missing}, extra={extra}"
+        )
 
 
 def load_standard_package(directory: Path) -> LoadedStandardPackage:
@@ -290,9 +341,6 @@ def load_standard_package(directory: Path) -> LoadedStandardPackage:
     if expected_package_digest != actual_package_digest:
         raise StandardPackageError("manifest package_digest does not match canonical manifest content")
 
-    if version == "mvp-v1":
-        _validate_mvp_v1_manifest(manifest)
-
     references_raw = _json_file(directory / "references.json")
     safety_raw = _json_file(directory / "safety_limits.json")
     mappings_raw = _json_file(directory / "mappings.json")
@@ -310,8 +358,10 @@ def load_standard_package(directory: Path) -> LoadedStandardPackage:
         safety_limits=tuple(_safety(row, index, source_ids) for index, row in enumerate(safety_raw["rows"])),
         mappings=tuple(_mapping(row, index) for index, row in enumerate(mappings_raw["mappings"])),
     )
-    if version == "mvp-v1" and not standard.mappings:
-        raise StandardPackageError("mvp-v1 requires a complete mapping decision registry")
+    if version == "mvp-v1":
+        if not standard.mappings:
+            raise StandardPackageError("mvp-v1 requires a complete mapping decision registry")
+        _validate_mvp_v1_manifest(manifest, standard)
 
     return LoadedStandardPackage(
         standard=standard,
