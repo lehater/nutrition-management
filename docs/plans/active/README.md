@@ -1,9 +1,9 @@
 # Active execution
 
-Current product work: complete the MVP tactical domain model and close material unknowns before architecture.
+Current product work: MVP domain semantics are converged; the next lifecycle step is S3 Architecture.
 
-Lifecycle stage: `S2 Domain Semantics / Tactical DDD`.
-Stage state: `IN_PROGRESS`.
+Lifecycle stage: `S2 Domain Design`.
+Stage state: `PASS`.
 Implementation authorization: `none`.
 
 ## Accepted upstream state
@@ -11,49 +11,50 @@ Implementation authorization: `none`.
 - S0 Problem / Evidence: `PASS`; see [`../../problem.md`](../../problem.md).
 - S1 Requirements: `PASS`; see [`../../requirements/product-requirements.md`](../../requirements/product-requirements.md).
 - S2 Strategic DDD: `PASS` for the MVP scope; see [`../../domain/strategic-model.md`](../../domain/strategic-model.md) and [`../../domain/context-map.md`](../../domain/context-map.md).
+- S2 Tactical DDD: `PASS` for the accepted MVP scope; see the tactical owners under `docs/domain/` and ADR-002 through ADR-007.
 - accepted Bounded Contexts: `Nutrition Targeting`, `Food Knowledge`, `Market Catalog`, `Purchase Planning`.
-- accepted tactical baselines exist for all four contexts; see the corresponding files under `docs/domain/`.
-- ADR-002 accepts aggregated household-target optimization for the MVP while preserving member-level targets upstream.
-- ADR-003 accepts Nutrition Standard Set `mvp-v1`, sourced nutrient/safety semantics, DGE/PAL energy derivation, adult NIDDK/Hall weight-goal policy and member applicability semantics.
-- ADR-004 accepts BLS 4.0 component semantics/per-100-g edible basis as the MVP canonical food-composition vocabulary and defines target-to-food nutrient mapping rules.
 - no target architecture is accepted yet.
+
+## Accepted S2 decisions relevant to architecture
+
+- ADR-002: Purchase Planning optimizes aggregated household demand while member targets remain upstream evidence; no member-allocation guarantee.
+- ADR-003: active Nutrition Standard Set is `mvp-v1`; DGE/ÖGE reference semantics, DGE/Henry/PAL energy derivation and adult NIDDK/Hall weight-goal policy are fixed/versioned.
+- ADR-004: BLS 4.0 component semantics and `100 g edible portion` are the canonical Food Knowledge nutrition vocabulary/basis; target-to-food comparison requires explicit mappings.
+- ADR-005: controlled DGE-aligned top-level Food Categories plus `other_or_composite`; variety uses planned-quantity material representation rather than adult portion quotas.
+- ADR-006: commercial model is Merchant -> Fulfilment Channel -> Offer; order-level conditions belong to the channel and temporal observation/validity is explicit.
+- ADR-007: Purchase Planning uses a lexicographic nutrition-first policy, planned utilized quantity distinct from purchased package quantity, bounded variety heuristics, a 5% cost-close rule and one primary MVP recommendation.
 
 ## Accepted MVP simplifications
 
-- one 30-day calculation period for needs, basket and cost;
+- one 30-day Calculation Period;
 - one current Nutrition Profile per Household Member;
 - date of birth is the authoritative age source; age/age band are derived at target-derivation time;
 - no independent development/growth-stage profile state;
 - pregnancy/lactation-specific targeting is outside the MVP;
-- one active Nutrition Standard Set by default; current active set is `mvp-v1`;
-- BLS 4.0 component vocabulary and `100 g edible portion` are the canonical Food Knowledge nutrient semantics/basis;
-- Product Cards must resolve package quantity to edible grams to participate in quantitative nutrition optimization;
-- optimizer consumes the aggregated Household Nutrition Target;
-- no proof of per-member food allocation feasibility or member-level safety from aggregate basket totals;
+- one active Nutrition Standard Set by default: `mvp-v1`;
 - no automatic pediatric target-weight energy adjustment;
-- no household inventory or carry-over stock;
-- no actual-consumption tracking;
+- BLS 4.0 component vocabulary and per-100-g edible basis for Food Knowledge;
+- executable Product Cards resolve package quantity to edible grams;
+- optimizer consumes the aggregated Household Nutrition Target;
+- planned utilized quantity drives nutrition/variety; package surplus drives cost but does not become nutrition or inventory;
+- no proof of per-member food allocation feasibility or member-level safety from aggregate basket totals;
+- one primary Purchase Plan, not a Pareto shortlist;
+- no household inventory/carry-over or actual-consumption tracking;
 - no recipes/meals, cooking/preparation, portioning or storage planning;
 - no medical diets, allergies or intolerances;
-- no transport/travel cost between merchants;
-- Product Cards and Offers may be entered manually or imported; automatic external synchronization is not required.
+- no travel cost, FX conversion, loyalty/personalized pricing or complex promotion engine;
+- market/product data may be manual/imported; automatic external synchronization is not required.
 
-## Recently resolved
+## S2 gate
 
-- active nutrition-standard sources/version: resolved by [`../../domain/nutrition-standard-set-mvp-v1.md`](../../domain/nutrition-standard-set-mvp-v1.md) and [`../../decisions/ADR-003-nutrition-targeting-standards-and-derivation.md`](../../decisions/ADR-003-nutrition-targeting-standards-and-derivation.md);
-- concrete energy/weight-goal/nutrient-reference derivation policy: resolved by the same artifacts;
-- physical-activity vocabulary: resolved to numeric DGE PAL semantics in `mvp-v1`;
-- development/growth/physiological-state applicability: resolved by deriving age from date of birth, removing independent growth-stage state and excluding pregnancy/lactation-specific targeting from MVP;
-- canonical nutrient identity/unit/basis/crosswalk and rounding semantics: resolved by [`../../domain/nutrient-semantics.md`](../../domain/nutrient-semantics.md) and [`../../decisions/ADR-004-canonical-nutrient-semantics.md`](../../decisions/ADR-004-canonical-nutrient-semantics.md);
-- package-to-nutrition normalization: executable Product Cards resolve purchased quantity to edible grams.
+No unresolved P0/P1 Tactical DDD contradiction remains for the accepted MVP scope.
 
-## Blocking tactical unknowns
-
-Before opening S3 Architecture, resolve or explicitly defer:
-1. initial controlled top-level Food Category set and concrete variety rules;
-2. Offer validity/fulfilment semantics needed for cost calculation;
-3. optimization/scoring/tie-breaking policy, including typed-target treatment, safety-limit handling, partial/infeasible-plan semantics and merchant-count preference.
+Known limitations are explicit rather than blocking:
+- `mapped_complete` covers only active Nutrition References with accepted food-side mappings and is not a complete-nutrition/safety guarantee;
+- member Safety Limits remain diagnostic because member allocation/consumption is outside MVP;
+- DGE food-group portion guidance is not generalized from healthy adults to aggregate households;
+- price observations without source expiry remain estimates with observation provenance rather than live-price guarantees.
 
 ## Next
 
-Resolve Food Category/variety semantics, then Offer validity/fulfilment and Purchase Planning optimization policy. Do not start architecture or implementation while the blocking semantic unknowns above remain unresolved.
+Open S3 Architecture. Derive the smallest realization structure that preserves the accepted context ownership, rebuildable/versioned standards, canonical nutrient mappings, basket-global commercial coupling and deterministic optimization policy. Do not start implementation until S3 passes and S4 authorizes a bounded implementation slice.
