@@ -24,6 +24,11 @@ from .model import (
 )
 
 _DAYS = Decimal(30)
+_MASS_TO_G = {
+    "g": Decimal(1),
+    "mg": Decimal("0.001"),
+    "µg": Decimal("0.000001"),
+}
 
 
 def _age_value(profile: NutritionProfile, derivation_date: date, boundary: AgeBoundary) -> int:
@@ -70,20 +75,15 @@ def _select_family(
         )
 
     compatible = []
-    missing_dimensions: set[str] = set()
     for item in candidates:
         rejected = False
-        row_missing: set[str] = set()
         for requirement in item.applicability.requirements:
             actual = facts.get(requirement.dimension)
-            if actual is None:
-                row_missing.add(requirement.dimension)
-            elif actual != requirement.value:
+            if actual is not None and actual != requirement.value:
                 rejected = True
                 break
         if not rejected:
             compatible.append(item)
-            missing_dimensions.update(row_missing)
 
     if not compatible:
         return None, ReferenceGap(
@@ -148,10 +148,29 @@ def _daily_value(
     if definition.basis == ReferenceBasis.PERCENT_ENERGY:
         if definition.energy_kcal_per_g is None or definition.energy_kcal_per_g <= 0:
             raise ValueError(f"{definition.reference_id}: missing energy factor")
-        return energy * raw / definition.energy_kcal_per_g, None
+        fraction = raw / Decimal(100) if definition.source_unit == "percent_energy" else raw
+        return energy * fraction / definition.energy_kcal_per_g, None
     if definition.basis == ReferenceBasis.PER_1000_KCAL:
         return raw * energy / Decimal(1000), None
     raise ValueError(f"unsupported reference basis: {definition.basis}")
+
+
+def _result_unit(definition: ReferenceDefinition) -> str | None:
+    if definition.basis == ReferenceBasis.PERCENT_ENERGY:
+        return "g"
+    return definition.source_unit
+
+
+def _convert_unit(value: Decimal | None, source_unit: str | None, target_unit: str | None) -> Decimal | None:
+    if value is None or source_unit is None or target_unit is None or source_unit == target_unit:
+        return value
+    if source_unit in _MASS_TO_G and target_unit in _MASS_TO_G:
+        return value * _MASS_TO_G[source_unit] / _MASS_TO_G[target_unit]
+    if source_unit == "kJ" and target_unit == "kcal":
+        return value / Decimal("4.184")
+    if source_unit == "kcal" and target_unit == "kJ":
+        return value * Decimal("4.184")
+    raise ValueError(f"unsupported exact unit conversion: {source_unit} -> {target_unit}")
 
 
 def _selected_safety_limits(
@@ -246,6 +265,12 @@ def derive_member_target(
                 )
             )
             continue
+
+        target_unit = None if mapping is None else mapping.canonical_unit
+        source_result_unit = _result_unit(definition)
+        lower = _convert_unit(lower, source_result_unit, target_unit)
+        upper = _convert_unit(upper, source_result_unit, target_unit)
+        point = _convert_unit(point, source_result_unit, target_unit)
 
         refs.append(
             ResolvedReference(
