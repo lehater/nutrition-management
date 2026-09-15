@@ -1,9 +1,9 @@
 # Active execution
 
-Current product work: MVP domain semantics are converged; the next lifecycle step is S3 Architecture.
+Current product work: define and review the smallest MVP target architecture that preserves accepted S1/S2 semantics.
 
-Lifecycle stage: `S2 Domain Design`.
-Stage state: `PASS`.
+Lifecycle stage: `S3 Architecture`.
+Stage state: `IN_PROGRESS`.
 Implementation authorization: `none`.
 
 ## Accepted upstream state
@@ -13,48 +13,52 @@ Implementation authorization: `none`.
 - S2 Strategic DDD: `PASS` for the MVP scope; see [`../../domain/strategic-model.md`](../../domain/strategic-model.md) and [`../../domain/context-map.md`](../../domain/context-map.md).
 - S2 Tactical DDD: `PASS` for the accepted MVP scope; see the tactical owners under `docs/domain/` and ADR-002 through ADR-007.
 - accepted Bounded Contexts: `Nutrition Targeting`, `Food Knowledge`, `Market Catalog`, `Purchase Planning`.
-- no target architecture is accepted yet.
 
-## Accepted S2 decisions relevant to architecture
+## S3 proposal under review
 
-- ADR-002: Purchase Planning optimizes aggregated household demand while member targets remain upstream evidence; no member-allocation guarantee.
-- ADR-003: active Nutrition Standard Set is `mvp-v1`; DGE/ÖGE reference semantics, DGE/Henry/PAL energy derivation and adult NIDDK/Hall weight-goal policy are fixed/versioned.
-- ADR-004: BLS 4.0 component semantics and `100 g edible portion` are the canonical Food Knowledge nutrition vocabulary/basis; target-to-food comparison requires explicit mappings.
-- ADR-005: controlled DGE-aligned top-level Food Categories plus `other_or_composite`; variety uses planned-quantity material representation rather than adult portion quotas.
-- ADR-006: commercial model is Merchant -> Fulfilment Channel -> Offer; order-level conditions belong to the channel and temporal observation/validity is explicit.
-- ADR-007: Purchase Planning uses a lexicographic nutrition-first policy, planned utilized quantity distinct from purchased package quantity, bounded variety heuristics, a 5% cost-close rule and one primary MVP recommendation.
+- one deployable modular-monolith application process;
+- four context-aligned logical modules preserving the accepted Bounded Context ownership;
+- inward dependency direction `infrastructure/adapters -> application -> domain` inside each module;
+- one transactional relational database, with every persistence object owned by exactly one context and no direct cross-context table reads/writes;
+- cross-context collaboration only through provider-owned application contracts matching the accepted Context Map;
+- one immutable Planning Input Snapshot per planning run, assembled through a consistent-read boundary before optimization;
+- Purchase Planning persists plan output together with sufficient immutable calculation evidence/provenance;
+- optimization runs through an in-process solver adapter owned by Purchase Planning; concrete solver library is deferred to S4;
+- synchronous MVP planning; no queue, worker, broker, microservice or distributed transaction without new evidence.
 
-## Accepted MVP simplifications
+See [`../../architecture/target-architecture.md`](../../architecture/target-architecture.md), [`../../decisions/ADR-008-mvp-modular-monolith-architecture.md`](../../decisions/ADR-008-mvp-modular-monolith-architecture.md) and [`../../decisions/ADR-009-deterministic-planning-execution.md`](../../decisions/ADR-009-deterministic-planning-execution.md).
 
-- one 30-day Calculation Period;
-- one current Nutrition Profile per Household Member;
-- date of birth is the authoritative age source; age/age band are derived at target-derivation time;
-- no independent development/growth-stage profile state;
-- pregnancy/lactation-specific targeting is outside the MVP;
-- one active Nutrition Standard Set by default: `mvp-v1`;
-- no automatic pediatric target-weight energy adjustment;
-- BLS 4.0 component vocabulary and per-100-g edible basis for Food Knowledge;
-- executable Product Cards resolve package quantity to edible grams;
-- optimizer consumes the aggregated Household Nutrition Target;
-- planned utilized quantity drives nutrition/variety; package surplus drives cost but does not become nutrition or inventory;
-- no proof of per-member food allocation feasibility or member-level safety from aggregate basket totals;
-- one primary Purchase Plan, not a Pareto shortlist;
-- no household inventory/carry-over or actual-consumption tracking;
-- no recipes/meals, cooking/preparation, portioning or storage planning;
-- no medical diets, allergies or intolerances;
-- no travel cost, FX conversion, loyalty/personalized pricing or complex promotion engine;
-- market/product data may be manual/imported; automatic external synchronization is not required.
+## Architecture constraints inherited from S2
 
-## S2 gate
+- provider-owned facts remain authoritative in their contexts;
+- active Nutrition Standard Sets and nutrient mappings are versioned/provenanced;
+- unknown/trace nutrient evidence cannot become false zero through infrastructure;
+- executable market data preserves observation/validity/currency/order conditions;
+- Purchase Planning is basket-global and deterministic under ADR-007;
+- planned utilized quantity is distinct from purchased package quantity and package surplus;
+- member-level safety/allocation guarantees remain outside MVP.
 
-No unresolved P0/P1 Tactical DDD contradiction remains for the accepted MVP scope.
+## S3 review gate
 
-Known limitations are explicit rather than blocking:
-- `mapped_complete` covers only active Nutrition References with accepted food-side mappings and is not a complete-nutrition/safety guarantee;
-- member Safety Limits remain diagnostic because member allocation/consumption is outside MVP;
-- DGE food-group portion guidance is not generalized from healthy adults to aggregate households;
-- price observations without source expiry remain estimates with observation provenance rather than live-price guarantees.
+Before `PASS`, review the proposal against:
+
+1. semantic ownership and dependency direction;
+2. persistence/data-ownership bypass risks;
+3. consistency and temporal/version behavior during a planning run;
+4. optimizer boundary and deterministic policy preservation;
+5. unnecessary infrastructure/distribution/abstraction;
+6. ability to select concrete implementation technology in S4 without reopening accepted architecture.
+
+P0/P1 architecture findings keep S3 open. If a finding actually requires missing product behavior or domain semantics, reopen S1/S2 rather than solving it through architecture.
+
+## Explicit S4 choices deferred
+
+- programming language/runtime;
+- framework and transport/UI technology;
+- relational database vendor and migration/query tooling;
+- concrete optimization library;
+- deployment hosting/provider.
 
 ## Next
 
-Open S3 Architecture. Derive the smallest realization structure that preserves the accepted context ownership, rebuildable/versioned standards, canonical nutrient mappings, basket-global commercial coupling and deterministic optimization policy. Do not start implementation until S3 passes and S4 authorizes a bounded implementation slice.
+Run the architecture review. Resolve any P0/P1 findings in the smallest owning artifact. Mark S3 `PASS` only after the modular-monolith/persistence/snapshot/solver structure is coherent; then open S4 Implementation Readiness for one bounded end-to-end implementation slice.
