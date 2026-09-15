@@ -12,6 +12,8 @@ The relevant source material does not expose one homogeneous `[minimum, maximum]
 
 The member profile additionally contains a target weight and target date. A fixed energy-per-kilogram weight-change rule would ignore the dynamic adaptation of energy expenditure over time and would be unsuitable as the canonical product rule.
 
+DGE/ÖGE applicability is age-sensitive, including sub-year infant bands, and age changes without an explicit profile edit. Keeping both entered age and a separate development/growth stage would therefore create two mutable facts for one underlying applicability dimension and permit contradictions.
+
 ## Decision
 
 ### Active Nutrition Standard Set
@@ -26,6 +28,18 @@ It composes four sourced policies:
 4. **NIDDK/Hall adult body-weight model** — the dynamic model underlying the NIDDK Body Weight Planner, used only for adult weight-goal energy adjustment.
 
 A standard-set version freezes the concrete source versions and product derivation policy. A later upstream publication does not silently mutate `mvp-v1`; adopting changed values or rules requires a new Nutrition Standard Set version and explicit activation.
+
+### Member applicability semantics
+
+The MVP Nutrition Profile stores `date of birth`, not an independently authoritative entered age. Chronological age and the applicable source age band are derived at the target-derivation date. Exact calendar boundaries are used for age-band selection, including sub-year infant bands.
+
+For KISS, the age/age-band selected at derivation time applies to the whole fixed 30-day Calculation Period; the MVP does not split one target when a birthday or source age-band boundary occurs inside that period.
+
+The MVP has no independent `development/growth stage` input. Ordinary infant/child/adolescent/adult applicability and the pediatric growth-energy factor are consequences of chronological age plus `mvp-v1` policy.
+
+Sex remains a profile input because DGE/ÖGE reference rows and energy equations may distinguish male and female applicability. In this context it is a nutrition-standard applicability fact, not a model of gender identity.
+
+Pregnancy and lactation are separate special physiological situations in the source standards. They are outside the MVP requirements and are therefore not modeled as member state or selected by `mvp-v1`. Supporting them later requires an explicit physiological-state extension rather than overloading age or growth-stage semantics.
 
 ### Nutrient-reference semantics
 
@@ -65,8 +79,6 @@ The MVP does not replace this model with a static kcal-per-kilogram rule.
 
 For members under 19, target weight/date do not automatically alter the energy target in the MVP. Pediatric weight-goal semantics require a separate accepted policy before such an adjustment can be made.
 
-Pregnancy and lactation adjustments are not activated merely because the DGE/ÖGE source contains such reference values. They require an explicit member physiological-state concept before they can participate in derivation.
-
 ### Thirty-day derivation
 
 Nutrition Targeting first derives the applicable daily energy/nutrient target specification, then derives the 30-day Member Nutrition Target for the fixed MVP Calculation Period.
@@ -79,14 +91,24 @@ Member safety limits remain separate from adequacy/reference targets. Consistent
 
 - `Nutrition Standard Set` becomes a composite, versioned domain fact rather than a single undifferentiated table of ranges.
 - Member Nutrition Targets preserve reference kind and safety-limit provenance.
-- S1 terminology must allow point references, relative formulas and separate safety limits instead of requiring every nutrient to have one `[min,max]` target range.
+- S1 terminology allows point references, relative formulas and separate safety limits instead of requiring every nutrient to have one `[min,max]` target range.
+- Date of birth is the stable age source; chronological age/age band become rebuildable derivation facts.
+- A separate development/growth-stage field is removed from the MVP profile, eliminating contradictory age/stage state.
+- Pregnancy/lactation-specific targeting is explicitly outside the MVP rather than remaining an unresolved applicability state.
 - Physical activity is normalized to numeric PAL semantics sourced from DGE.
 - Pediatric weight-goal adjustment remains explicitly unsupported rather than being silently calculated with an adult formula.
-- Pregnancy/lactation applicability remains blocked until the member physiological-state vocabulary is accepted.
 - Canonical nutrient identities/units and rounding remain separate Tactical DDD blockers; a safety limit is enforceable only when its nutrient form and measurement basis match the Food Knowledge quantity being evaluated.
 - A future change of source edition, erratum, formula or weight model creates a new Nutrition Standard Set version rather than rewriting `mvp-v1`.
 
 ## Alternatives considered
+
+### Keep entered age plus development/growth stage
+
+Rejected because both fields would describe overlapping age/development applicability and could contradict each other. Date of birth is stable evidence from which age and source age bands can be rebuilt.
+
+### Model pregnancy/lactation now
+
+Rejected for MVP because no accepted requirement needs these special physiological states. Adding lifecycle/state semantics solely because the external source contains rows for them would broaden product scope without demonstrated value.
 
 ### Use DGE/ÖGE values only
 
