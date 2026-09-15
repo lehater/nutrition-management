@@ -14,7 +14,7 @@ def build_safety_diagnostics(snapshot: PlanningInputSnapshot, planned_by_offer: 
 
     diagnostics = []
     for measure, limits in sorted(limits_by_measure.items()):
-        planned_amount = Decimal(0)
+        known_planned_amount = Decimal(0)
         indeterminate = False
         for offer_id, grams in planned_by_offer.items():
             if grams <= 0:
@@ -23,14 +23,17 @@ def build_safety_diagnostics(snapshot: PlanningInputSnapshot, planned_by_offer: 
             if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
                 indeterminate = True
             elif evidence.amount_per_100g is not None:
-                planned_amount += evidence.amount_per_100g * grams / Decimal(100)
+                known_planned_amount += evidence.amount_per_100g * grams / Decimal(100)
         period_equivalent = sum((item.daily_upper * _DAYS for item in limits), Decimal(0))
         diagnostics.append(
             SafetyDiagnostic(
                 measure=measure,
-                planned_amount_30d=planned_amount,
+                planned_amount_30d=known_planned_amount,
                 aggregate_period_equivalent_limit=period_equivalent,
-                exceeds_period_equivalent=(not indeterminate and planned_amount > period_equivalent),
+                # Unknown contributions are non-negative. They prevent proving the
+                # exact total or proving non-exceedance, but cannot invalidate an
+                # exceedance already proved by the known lower-bound contribution.
+                exceeds_period_equivalent=known_planned_amount > period_equivalent,
                 indeterminate=indeterminate,
                 allocation_guarantee=False,
             )
