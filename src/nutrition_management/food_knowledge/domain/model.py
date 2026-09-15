@@ -12,6 +12,20 @@ class NutrientStatus(StrEnum):
     MISSING = "missing"
 
 
+TOP_LEVEL_CATEGORIES = frozenset(
+    {
+        "beverages",
+        "fruit_and_vegetables",
+        "legumes_nuts_seeds",
+        "grains_cereal_products_potatoes",
+        "oils_and_fats",
+        "milk_and_dairy",
+        "fish_meat_sausage_eggs",
+        "other_or_composite",
+    }
+)
+
+
 @dataclass(frozen=True)
 class NutrientEvidence:
     measure: str
@@ -21,6 +35,8 @@ class NutrientEvidence:
     def __post_init__(self) -> None:
         if self.status in {NutrientStatus.KNOWN, NutrientStatus.ZERO} and self.amount_per_100g is None:
             raise ValueError("known/zero nutrient evidence requires a numeric amount")
+        if self.amount_per_100g is not None and self.amount_per_100g < 0:
+            raise ValueError("nutrient amount must be non-negative")
         if self.status == NutrientStatus.ZERO and self.amount_per_100g != Decimal(0):
             raise ValueError("zero nutrient evidence must contain numeric zero")
         if self.status in {NutrientStatus.TRACE, NutrientStatus.MISSING} and self.amount_per_100g is not None:
@@ -39,6 +55,13 @@ class BaseFood:
     nutrients: tuple[NutrientEvidence, ...]
     source_name: str
     source_version: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.category not in TOP_LEVEL_CATEGORIES:
+            raise ValueError(f"unsupported top-level food category: {self.category}")
+        measures = [item.measure for item in self.nutrients]
+        if len(measures) != len(set(measures)):
+            raise ValueError("base food nutrient measures must be unique")
 
     def nutrient(self, measure: str) -> NutrientEvidence:
         for item in self.nutrients:
