@@ -31,6 +31,14 @@ class TargetDimension:
 
 
 @dataclass(frozen=True)
+class MemberSafetyLimit:
+    member_id: str
+    reference_id: str
+    measure: str
+    daily_upper: Decimal
+
+
+@dataclass(frozen=True)
 class CandidateNutrient:
     measure: str
     status: EvidenceStatus
@@ -74,6 +82,7 @@ class PlanningInputSnapshot:
     policy_version: str
     energy_target_kcal: Decimal
     targets: tuple[TargetDimension, ...]
+    member_safety_limits: tuple[MemberSafetyLimit, ...]
     candidates: tuple[PurchaseCandidate, ...]
 
 
@@ -96,6 +105,16 @@ class NutrientAssessment:
     indeterminate: bool
     amount: Decimal
     penalty: Decimal
+
+
+@dataclass(frozen=True)
+class SafetyDiagnostic:
+    measure: str
+    planned_amount_30d: Decimal
+    aggregate_period_equivalent_limit: Decimal
+    exceeds_period_equivalent: bool
+    indeterminate: bool
+    allocation_guarantee: bool = False
 
 
 @dataclass(frozen=True)
@@ -130,6 +149,7 @@ class PurchasePlan:
     total_cost: Decimal
     currency: str | None
     assessments: tuple[NutrientAssessment, ...]
+    safety_diagnostics: tuple[SafetyDiagnostic, ...]
     represented_categories: tuple[str, ...]
     represented_base_foods: tuple[str, ...]
     max_food_energy_share: Decimal
