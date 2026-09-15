@@ -9,6 +9,9 @@ dependencies = [
   "PySCIPOpt==6.2.1",
 ]
 
+[project.scripts]
+nutrition-plan = "nutrition_management.adapters.cli.main:main"
+
 [dependency-groups]
 dev = [
   "pytest==9.1.1",
