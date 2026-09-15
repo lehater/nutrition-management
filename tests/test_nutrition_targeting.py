@@ -82,6 +82,38 @@ def test_future_weight_observation_is_rejected():
         adult_maintenance_energy_kcal_per_day(bad, date(2026, 9, 15))
 
 
+def test_pal_above_unadjusted_range_requires_activity_adjustment_provenance():
+    base = profile()
+    unproven = NutritionProfile(**{**base.__dict__, "pal": Decimal("2.5")})
+    with pytest.raises(ValueError, match="unadjusted PAL"):
+        adult_maintenance_energy_kcal_per_day(unproven, date(2026, 9, 15))
+
+    adjusted = NutritionProfile(
+        **{
+            **base.__dict__,
+            "pal": Decimal("2.5"),
+            "pal_activity_adjustment_applied": True,
+        }
+    )
+    assert adult_maintenance_energy_kcal_per_day(adjusted, date(2026, 9, 15)) > 0
+    target = derive_member_target(adjusted, standard(), date(2026, 9, 15))
+    assert target.pal == Decimal("2.5")
+    assert target.pal_activity_adjustment_applied is True
+
+
+def test_adjustment_flag_requires_adjusted_pal_range():
+    base = profile()
+    invalid = NutritionProfile(
+        **{
+            **base.__dict__,
+            "pal": Decimal("1.4"),
+            "pal_activity_adjustment_applied": True,
+        }
+    )
+    with pytest.raises(ValueError, match="activity-adjusted PAL"):
+        adult_maintenance_energy_kcal_per_day(invalid, date(2026, 9, 15))
+
+
 def test_active_weight_goal_fails_explicitly_in_slice():
     base = profile()
     active = NutritionProfile(
@@ -95,6 +127,27 @@ def test_active_weight_goal_fails_explicitly_in_slice():
         adult_maintenance_energy_kcal_per_day(active, date(2026, 9, 15))
 
 
+def test_active_weight_goal_with_nonfuture_target_date_is_invalid():
+    base = profile()
+    invalid = NutritionProfile(
+        **{
+            **base.__dict__,
+            "target_weight_kg": Decimal("65"),
+            "target_date": date(2026, 9, 15),
+        }
+    )
+    with pytest.raises(ValueError, match="target_date"):
+        adult_maintenance_energy_kcal_per_day(invalid, date(2026, 9, 15))
+
+
+def test_profile_rejects_nonpositive_body_measurements():
+    base = profile()
+    with pytest.raises(ValueError, match="current weight"):
+        NutritionProfile(**{**base.__dict__, "current_weight_kg": Decimal("0")})
+    with pytest.raises(ValueError, match="height"):
+        NutritionProfile(**{**base.__dict__, "height_m": Decimal("0")})
+
+
 def test_reference_resolution_preserves_kind_and_scales_to_30_days():
     target = derive_member_target(profile(), standard(), date(2026, 9, 15))
     protein = next(item for item in target.references if item.nutrient_measure == "PROT625")
@@ -102,6 +155,8 @@ def test_reference_resolution_preserves_kind_and_scales_to_30_days():
     assert protein.kind == ReferenceKind.ADEQUACY_FLOOR
     assert protein.lower_30d == Decimal("1680")
     assert fiber.lower_30d == Decimal("900")
+    assert target.current_weight_kg == Decimal("70")
+    assert target.current_weight_date == date(2026, 9, 14)
 
 
 def test_household_aggregation_sums_compatible_member_targets():
