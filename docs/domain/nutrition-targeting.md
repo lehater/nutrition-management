@@ -22,19 +22,26 @@ The MVP keeps one current profile per member; profile history and multiple saved
 ### Nutrition Profile
 
 Current source inputs:
-- age;
+- date of birth;
 - sex;
 - height;
 - current weight;
 - current-weight date;
 - target weight;
 - target date;
-- physical activity level;
-- development/growth stage.
+- physical activity level.
 
 The profile describes source facts and goals. It does not contain authoritative nutrient targets.
 
-For derivation, physical activity is resolved to the numeric PAL semantics defined by the active Nutrition Standard Set. Development/growth-stage vocabulary remains a separate unresolved semantic concern; age already determines the ordinary infant/child/adolescent/adult applicability used by `mvp-v1`.
+`Date of birth`, rather than a mutable entered age, is the authoritative age source. Chronological age and the applicable source age band are derived at target-derivation time. This is required because the active reference data includes sub-year infant age bands and because age changes without a profile edit.
+
+For `mvp-v1`, sex is the male/female applicability input required by sex-specific DGE/ÖGE rows and energy formulas. This field exists for nutrition-standard applicability; it is not a model of gender identity.
+
+Physical activity is resolved to the numeric PAL semantics defined by the active Nutrition Standard Set.
+
+The MVP has no independent `development/growth stage` profile input. Ordinary infant/child/adolescent/adult applicability and the pediatric growth-energy factor are derived from date of birth and the active standard set, avoiding a second source of truth that could contradict chronological age.
+
+Pregnancy and lactation are not modeled as member physiological states in the MVP. Corresponding source rows may exist in the standard source but are outside active MVP applicability.
 
 ### Nutrition Standard Set
 
@@ -81,6 +88,8 @@ A rebuildable 30-day target specification derived from one member's Nutrition Pr
 
 It contains, as applicable:
 
+- derivation date;
+- chronological age and selected source age band at derivation time;
 - final energy target;
 - resolved macro- and micronutrient references, preserving whether each result is a point, lower/upper bound or interval;
 - separate safety limits where semantically applicable;
@@ -100,6 +109,8 @@ Percent-of-energy nutrient references are resolved against the final energy targ
 
 #### Thirty-day derivation
 
+The MVP selects chronological age and the applicable age band at the derivation date, then uses that applicability for the whole 30-day Calculation Period. Crossing an age-band boundary during that period does not split one target into multiple subperiods in the MVP.
+
 Daily source references are resolved on their native basis and then scaled to the fixed 30-day Calculation Period. Source intervals preserve both bounds; source point values remain points.
 
 ### Household Nutrition Target
@@ -113,6 +124,7 @@ Member safety limits do not become a household-level guarantee of individual saf
 ## Domain operations
 
 - resolve the active Nutrition Standard Set;
+- derive chronological age and applicable source age band from date of birth at the derivation date;
 - resolve a member's numeric PAL from the accepted activity semantics;
 - derive maintenance energy from age/sex/height/current weight/PAL under the active set;
 - apply the accepted adult weight-goal policy when applicable;
@@ -126,6 +138,10 @@ Member safety limits do not become a household-level guarantee of individual saf
 
 - the MVP Calculation Period is 30 days;
 - exactly one Nutrition Standard Set is active by default in the MVP;
+- date of birth is the authoritative member age source; entered age is not independent authoritative state;
+- age and age band are derived at target-derivation time and retained as provenance;
+- the MVP has no independent development/growth-stage state;
+- pregnancy/lactation-specific applicability is outside the MVP;
 - a derived target identifies the immutable standard-set version used;
 - source reference kind is preserved through derivation;
 - a safety limit is never reinterpreted as a preferred target maximum;
@@ -138,11 +154,8 @@ Member safety limits do not become a household-level guarantee of individual saf
 
 ## Explicit exclusions
 
-The current model does not own medical restrictions, allergies, intolerances, therapeutic diets, actual food consumption or food allocation to individual members.
-
-Pregnancy/lactation reference rows may exist in the sourced standard set, but they are not selected until an explicit physiological-state concept and applicability rules are accepted.
+The current model does not own pregnancy/lactation-specific targeting, medical restrictions, allergies, intolerances, therapeutic diets, actual food consumption or food allocation to individual members.
 
 ## Material unknowns before architecture
 
-- exact vocabulary and lifecycle semantics for development/growth/physiological state, including whether pregnancy/lactation belongs in the MVP profile at all;
 - canonical nutrient identities, measurement units/conversions and rounding policy required to match Nutrition Targeting references to Food Knowledge quantities.
