@@ -1,0 +1,20 @@
+[project]
+name = "nutrition-management"
+version = "0.1.0"
+description = "Nutrition Management MVP implementation"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+  "SQLAlchemy==2.0.52",
+  "alembic==1.18.5",
+  "PySCIPOpt==6.2.1",
+]
+
+[dependency-groups]
+dev = [
+  "pytest==9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-q"
