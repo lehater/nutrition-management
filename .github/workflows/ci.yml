@@ -37,3 +37,11 @@ jobs:
           PY
       - name: Run tests
         run: uv run pytest
+      - name: Characterize solver performance
+        run: uv run python tools/benchmark_solver.py --output artifacts/solver-performance.json
+      - name: Upload performance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: solver-performance
+          path: artifacts/solver-performance.json
+          if-no-files-found: error
