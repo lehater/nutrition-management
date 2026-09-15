@@ -150,9 +150,10 @@ The Generate Purchase Plan application flow is:
 5. end the database read scope;
 6. transform the snapshot into the solver problem while preserving ADR-007 semantics;
 7. invoke the in-process Optimization Solver adapter;
-8. revalidate material executable invariants and calculate reportable nutrition/variety/cost facts from the returned quantities;
-9. when positive mapped gaps remain, query Food Knowledge for theoretical suggestions and retain suggestion-source provenance;
-10. return one primary Purchase Plan, or the accepted `partial` / `no_executable_plan` domain outcome.
+8. accept a domain result only after the solver establishes policy optimality or hard-model infeasibility;
+9. revalidate material executable invariants and calculate reportable nutrition/variety/cost facts from returned decision quantities;
+10. when positive mapped gaps remain, query Food Knowledge for theoretical suggestions and retain suggestion-source provenance;
+11. return one primary Purchase Plan, or the accepted `partial` / `no_executable_plan` domain outcome.
 
 A technical solver/import/database failure is not represented as `partial` or `no_executable_plan`; technical failure remains a separate application error.
 
@@ -194,13 +195,16 @@ Architecture requirements for the S4 solver choice:
 - callable in-process;
 - supports integer and continuous decisions plus conditional/binary constraints required by the accepted planning model;
 - can preserve ADR-007 lexicographic/sequential objective order without hidden weighted compromises;
-- exposes feasible/optimal, hard-model-infeasible and technical-error/unknown states distinctly;
+- can prove completion of every accepted sequential objective stage for a returned primary plan;
+- exposes `policy-optimal`, `hard-model-infeasible`, and technical `unknown/error/cancelled/timeout` outcomes distinctly;
 - supports deterministic execution or a fixed execution seed;
 - does not become the source of reportable business calculations.
 
 Purchase Planning owns model construction and output interpretation. Domain/report calculations are performed from the returned decision quantities using project policy.
 
-A solver-proven infeasible result for the correctly constructed hard executability model maps to `no_executable_plan`. Solver `error`, `unknown`, timeout-without-accepted-solution or adapter failure remains a technical application failure and must not be presented as a domain outcome.
+A solver-proven `hard-model-infeasible` result for the correctly constructed hard executability model maps to `no_executable_plan`.
+
+A feasible incumbent whose policy optimality has not been established is not a valid primary MVP recommendation. `unknown`, timeout, cancellation, numeric failure or adapter failure remains a technical application failure even when the solver exposes an incumbent. Such a state must never be relabeled as `partial`; `partial` is a completed domain-quality outcome under ADR-007.
 
 After every ADR-007 business ranking dimension is equal, the application/solver model applies one final stable **technical** ordering over immutable provider identifiers and normalized decision quantities. This ordering exists only to select reproducibly among business-equivalent optima; it must never outrank or approximate a business criterion.
 
@@ -238,7 +242,7 @@ Application errors distinguish at least:
 - `no_executable_plan` as an accepted Purchase Planning outcome;
 - persistence/import/solver technical failures.
 
-Infrastructure failures must not be converted into domain outcomes that imply a valid optimization result.
+Infrastructure failures and unfinished optimization must not be converted into domain outcomes that imply a completed valid optimization result.
 
 ## Explicit non-decisions for S4
 
@@ -266,6 +270,7 @@ S4 may choose these only within the architecture constraints above.
 - full planning snapshots and plan history are not introduced as durable product state without an upstream requirement;
 - solver configuration cannot change ADR-007 business ordering through hidden weights/tolerances;
 - arbitrary solver choice among business-equivalent optima is eliminated by a final stable technical order;
+- no domain Purchase Plan is returned until the complete accepted optimization policy is established as optimal for that snapshot, or hard infeasibility is established;
 - technical execution failures remain distinct from accepted domain outcomes.
 
 ## S3 review questions
