@@ -5,27 +5,32 @@ Lifecycle layer: `S0 Problem / Evidence`.
 
 ## Problem
 
-Nutrition Management addresses the difficulty of organizing everyday nutrition as a repeatable, informed process rather than a sequence of ad-hoc food purchases and meal decisions.
+A household with several members can have materially different nutritional needs because of age, sex, body size, physical activity, growth stage and weight goals. The practical problem is to determine what food should be purchased for a calculation period so that the household's combined nutritional needs are reasonably covered without unnecessary spending or ad-hoc purchases.
 
-A person needs to understand what food to buy and prepare so that the planned diet over time reasonably covers nutritional needs while also considering cost, variety and operational effort. Existing stock and already planned food affect what should be purchased next.
+The user also needs to understand the budget required to achieve that nutritional coverage and where concrete purchasable goods should be bought at the best overall acquisition cost.
 
 ## Initial target situation
 
-The initial target is an adult without special therapeutic dietary constraints or an explicit weight-loss/weight-gain goal. The primary goal is ordinary nutritionally adequate eating according to applicable energy, macro- and micronutrient needs.
+The MVP targets a household with one or more members and a single calculation horizon of 30 days.
+
+Each member has one current nutrition profile. Medical diets, allergies and therapeutic restrictions are outside the MVP.
 
 ## Desired outcome
 
-The system should make it possible to:
-- understand what should be eaten over a planning period;
-- understand what should be purchased next given nutritional needs and available stock;
-- estimate the cost and budget of a diet that reasonably covers those needs;
-- compare practical alternatives by nutrition, price, variety and effort;
-- plan purchasing, preparation, portioning and storage as one coherent process.
+For the 30-day period, the system should make it possible to:
+- derive each household member's target energy, macro- and micronutrient ranges from personal parameters and active nutrition standards;
+- aggregate those individual targets into a household nutritional target for purchase optimization;
+- select a nutritionally reasonable and sufficiently varied set of foods;
+- map that set to concrete purchasable goods and merchant offers;
+- calculate package quantities, stores, prices, delivery-related costs and the total required budget;
+- compare trade-offs between nutritional coverage, variety, total cost and procurement convenience;
+- identify nutrient gaps that cannot be reasonably closed with the currently available purchasable catalog and suggest theoretical foods that could close them.
 
-Planning and evaluation horizons may differ: for example, purchases may be planned for a week while nutritional adequacy is assessed over a longer reporting period appropriate to the metric.
+## MVP simplifications
 
-## Scope assumptions
-
-For the initial product scope, planned consumption is treated as consumed by default. Detailed food logging, calorie tracking and verification of actual adherence are not required.
-
-Standardized portions, reusable meal modules and batch cooking are candidate solution mechanisms, not accepted problem facts.
+- optimization uses the aggregated household nutritional target; it does not prove that the purchased food can be allocated among members so that every member individually lands inside every target range;
+- actual consumption is not tracked;
+- existing household inventory and carry-over leftovers are not considered;
+- meals, recipes, cooking, portioning and nutrient changes caused by preparation are not modeled;
+- product, nutrition and price data may be entered manually or imported; automatic external data acquisition is not required;
+- transport/travel cost between stores is not calculated.
