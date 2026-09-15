@@ -194,11 +194,15 @@ Architecture requirements for the S4 solver choice:
 - callable in-process;
 - supports integer and continuous decisions plus conditional/binary constraints required by the accepted planning model;
 - can preserve ADR-007 lexicographic/sequential objective order without hidden weighted compromises;
-- exposes infeasible/optimal/technical-error states distinctly;
+- exposes feasible/optimal, hard-model-infeasible and technical-error/unknown states distinctly;
 - supports deterministic execution or a fixed execution seed;
 - does not become the source of reportable business calculations.
 
 Purchase Planning owns model construction and output interpretation. Domain/report calculations are performed from the returned decision quantities using project policy.
+
+A solver-proven infeasible result for the correctly constructed hard executability model maps to `no_executable_plan`. Solver `error`, `unknown`, timeout-without-accepted-solution or adapter failure remains a technical application failure and must not be presented as a domain outcome.
+
+After every ADR-007 business ranking dimension is equal, the application/solver model applies one final stable **technical** ordering over immutable provider identifiers and normalized decision quantities. This ordering exists only to select reproducibly among business-equivalent optima; it must never outrank or approximate a business criterion.
 
 ## Data import architecture
 
@@ -261,6 +265,7 @@ S4 may choose these only within the architecture constraints above.
 - database transaction/session objects do not cross domain or context application-contract boundaries;
 - full planning snapshots and plan history are not introduced as durable product state without an upstream requirement;
 - solver configuration cannot change ADR-007 business ordering through hidden weights/tolerances;
+- arbitrary solver choice among business-equivalent optima is eliminated by a final stable technical order;
 - technical execution failures remain distinct from accepted domain outcomes.
 
 ## S3 review questions
