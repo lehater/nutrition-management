@@ -18,6 +18,7 @@ Do not preload the entire documentation tree.
 
 ## Source-of-truth map
 
+- `docs/problem.md` — accepted problem/outcome, relevant evidence and scope assumptions.
 - `docs/requirements/` — accepted externally meaningful behavior and quality constraints.
 - `docs/domain/` — living domain semantics, identity, lifecycle, invariants and semantic ownership.
 - `docs/architecture/` — accepted target structure and runtime/consistency constraints.

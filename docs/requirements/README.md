@@ -2,7 +2,7 @@
 
 This directory owns accepted externally meaningful Nutrition Management behavior, constraints and quality expectations.
 
-Current state: no product requirements have been accepted yet.
+Current state: initial S1 product requirements are accepted in [`product-requirements.md`](product-requirements.md).
 
 Project rules:
 - preserve the observable need separately from a proposed realization;
