@@ -12,7 +12,7 @@ The MVP optimization policy is accepted by [`ADR-007`](../decisions/ADR-007-mvp-
 ## Inputs
 
 Purchase Planning consumes:
-- the aggregated Household Nutrition Target from Nutrition Targeting, preserving source target semantics and provenance;
+- the aggregated Household Nutrition Target from Nutrition Targeting, preserving resolved target semantics, unresolved source-applicability coverage and provenance;
 - Base Foods, canonical nutrient profiles, Nutrient Measures and category/variety semantics from Food Knowledge;
 - executable Product Cards/SKUs, effective nutrient profiles, edible package quantities, Merchants, Fulfilment Channels and Offers from Market Catalog.
 
@@ -30,14 +30,15 @@ The MVP produces one primary recommended Purchase Plan containing:
 - line costs, group-level fulfilment/delivery costs and total acquisition cost;
 - price/condition observation provenance;
 - mapped nutritional coverage/deviation assessment based on planned utilized quantity;
-- unsupported target mappings and indeterminate nutrient evidence;
+- unsupported coverage from unresolved source applicability and target-to-food mappings;
+- indeterminate nutrient evidence;
 - member-level safety-limit diagnostics where a compatible comparison signal exists, without claiming individual safety;
 - variety/category assessment based on planned utilized quantity;
 - outcome: `mapped_complete`, `partial`, or `no_executable_plan`;
 - material mapped nutrient gaps;
 - theoretical Base Food suggestions for mapped positive adequacy gaps when the purchasable catalog cannot close them.
 
-`mapped_complete` means complete only against active target references that have accepted food-side mappings. It is not a claim of complete nutrition, member-level adequacy, safety or actual consumption adequacy.
+`mapped_complete` means complete only against active target references that were quantitatively resolved upstream and have accepted food-side mappings. It is not a claim of complete nutrition, member-level adequacy, safety or actual consumption adequacy. Upstream `unsupported_applicability` / `source_inapplicable` coverage remains visible even when the mapped subset is complete.
 
 ## Purchased versus planned-utilized quantity
 
@@ -71,7 +72,7 @@ A non-executable catalog item may still exist upstream but cannot appear as an e
 
 ## Target evaluation
 
-Purchase Planning evaluates only accepted target-to-food Nutrient Measure mappings.
+Purchase Planning evaluates only quantitatively resolved upstream targets with accepted target-to-food Nutrient Measure mappings.
 
 Known numeric and known-zero food values provide exact arithmetic evidence. Trace/unknown values remain uncertainty.
 
@@ -87,7 +88,12 @@ Purchase Planning never rewrites the upstream Nutrition Reference. Its tolerance
 
 For lower-bound evidence, known contributions can prove a minimum even when some selected foods have unknown values for that nutrient; the unknown contribution is still flagged. For upper-bound, interval and point assessments, selected-food unknown contribution makes the assessment `indeterminate` because compliance cannot be proven.
 
-Unmapped active Nutrition References are reported as `unsupported coverage` and are never silently treated as satisfied or zero.
+Unsupported coverage has two distinct upstream/downstream causes and preserves that reason:
+
+- Nutrition Targeting could not produce a valid numeric target because an active reference family is `unsupported_applicability` or `source_inapplicable` under ADR-012;
+- a resolved active Nutrition Reference has no accepted food-side semantic mapping under ADR-004.
+
+Neither kind becomes a false zero gap or a satisfied target. Purchase Planning does not invent a numeric target for an upstream applicability gap.
 
 ## Safety semantics
 
@@ -101,11 +107,13 @@ Executable candidates are ranked lexicographically by:
 
 1. fewer indeterminate mapped target assessments;
 2. lower maximum normalized directed-target violation;
-3. lower mean normalized directed-target violation;
+3. lower mean normalized directed violation;
 4. lower maximum point-guideline/energy penalty;
-5. lower mean point-guideline/energy penalty.
+5. lower mean point/energy penalty.
 
 Adequately satisfied dimensions receive no extra benefit from unlimited oversupply.
+
+Unsupported coverage is reported but is not numerically ranked because no valid quantitative target exists for that dimension.
 
 This keeps nutritional adequacy ahead of price while avoiding a weighted sum that mixes euros with nutrient percentages.
 
@@ -142,13 +150,13 @@ The MVP therefore allows up to a 5% premium over the cheapest nutrition/variety-
 
 ## Outcome semantics
 
-- `mapped_complete` — every mapped active target is determinate and has zero nutrition/energy penalty, and the variety target is met;
-- `partial` — an executable basket exists but at least one mapped target is violated/indeterminate or variety cannot be met;
+- `mapped_complete` — every quantitatively resolved and mapped active target is determinate and has zero nutrition/energy penalty, and the variety target is met;
+- `partial` — an executable basket exists but at least one quantitatively resolved mapped target is violated/indeterminate or variety cannot be met;
 - `no_executable_plan` — no non-empty basket can be built from executable Offers under current market constraints.
 
 A `partial` plan is still returned as the best available result and must expose its gaps/uncertainty.
 
-Unsupported active target mappings are always shown separately, including for a `mapped_complete` result.
+Unsupported coverage is always shown separately, including for a `mapped_complete` result. Therefore `mapped_complete` is never promoted to “complete nutrition” when one or more active reference families are unresolved or unmapped.
 
 ## Gap-closing theoretical suggestions
 
@@ -162,6 +170,8 @@ For an energy gap, rank by `ENERCC` per `100 g` instead of the trivial per-100-k
 
 A Base Food without an executable Product Card/Offer remains only a theoretical suggestion.
 
+No theoretical food suggestion is generated for `unsupported_applicability` because there is no valid numeric target to close.
+
 ## Invariants
 
 - actual integer package counts determine purchased quantity and line cost;
@@ -172,7 +182,8 @@ A Base Food without an executable Product Card/Offer remains only a theoretical 
 - a Purchase Plan selects only executable Product Cards/Offers;
 - theoretical Base Foods without executable Offers cannot appear as purchase lines;
 - target semantic kind supplied by Nutrition Targeting is not reinterpreted;
-- unsupported and indeterminate nutrient dimensions remain visible;
+- upstream source-applicability gaps are never converted into quantitative targets by Purchase Planning;
+- unsupported and indeterminate nutrient dimensions remain visible and distinct;
 - member safety is never inferred from aggregate basket totals;
 - actual consumption is not required to calculate a Purchase Plan and is not claimed by it.
 
