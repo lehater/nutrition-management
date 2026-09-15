@@ -194,4 +194,5 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
         represented_base_foods=tuple(represented_foods),
         max_food_energy_share=max_share,
         provenance_offer_ids=tuple(sorted(planned_by_offer)),
+        target_member_provenance=snapshot.target_member_provenance,
     )
