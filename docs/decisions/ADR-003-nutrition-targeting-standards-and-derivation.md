@@ -97,7 +97,7 @@ Member safety limits remain separate from adequacy/reference targets. Consistent
 - Pregnancy/lactation-specific targeting is explicitly outside the MVP rather than remaining an unresolved applicability state.
 - Physical activity is normalized to numeric PAL semantics sourced from DGE.
 - Pediatric weight-goal adjustment remains explicitly unsupported rather than being silently calculated with an adult formula.
-- Canonical nutrient identities/units and rounding remain separate Tactical DDD blockers; a safety limit is enforceable only when its nutrient form and measurement basis match the Food Knowledge quantity being evaluated.
+- Canonical nutrient identity, unit, food-basis and rounding semantics are resolved separately by ADR-004; Nutrition Targeting relies on that accepted crosswalk when a target must be compared with Food Knowledge.
 - A future change of source edition, erratum, formula or weight model creates a new Nutrition Standard Set version rather than rewriting `mvp-v1`.
 
 ## Alternatives considered
