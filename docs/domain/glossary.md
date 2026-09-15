@@ -8,7 +8,7 @@ Status: `accepted` for the current MVP domain baseline.
 | Calculation Period | accepted | Period over which MVP needs, planning and cost are calculated; fixed to 30 days in MVP. | Whole product |
 | Household | accepted | Calculation scope containing one or more Household Members. | Nutrition Targeting |
 | Household Member | accepted | Person whose current profile contributes nutritional demand to the household target. | Nutrition Targeting |
-| Nutrition Profile | accepted | Current member source parameters and weight goal used to derive nutritional needs. | Nutrition Targeting |
+| Nutrition Profile | accepted | Current member source facts and weight goal used to derive nutritional needs; date of birth is the authoritative age source and chronological age is derived at target-derivation time. | Nutrition Targeting |
 | Nutrition Standard Set | accepted | Immutable-at-use, versioned composition of sourced nutrient references, safety limits and target-derivation policies; one version is active by default in MVP. | Nutrition Targeting |
 | Nutrient Reference | accepted | Sourced adequacy/reference value preserving its semantic kind, applicability and native basis; it may resolve to a point, bound or interval. | Nutrition Targeting |
 | Safety Limit | accepted | Sourced upper-safety semantic such as an EFSA UL or safe level; separate from the preferred/adequacy target. | Nutrition Targeting |
