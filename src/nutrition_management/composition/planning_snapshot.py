@@ -10,6 +10,7 @@ from nutrition_management.nutrition_targeting.infrastructure.repository import N
 from nutrition_management.purchase_planning.domain.model import (
     CandidateNutrient,
     EvidenceStatus,
+    MemberSafetyLimit,
     PlanningInputSnapshot,
     PurchaseCandidate,
     TargetDimension,
@@ -60,6 +61,15 @@ class PlanningSnapshotSource:
                             point=item.point_30d,
                         )
                         for item in target.targets
+                    ),
+                    member_safety_limits=tuple(
+                        MemberSafetyLimit(
+                            member_id=item.member_id,
+                            reference_id=item.reference_id,
+                            measure=item.measure,
+                            daily_upper=item.daily_upper,
+                        )
+                        for item in target.member_safety_limits
                     ),
                     candidates=tuple(
                         PurchaseCandidate(
