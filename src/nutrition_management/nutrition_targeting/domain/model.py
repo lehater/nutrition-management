@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from calendar import monthrange
+from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 from enum import StrEnum
@@ -27,6 +28,81 @@ class ReferenceBasis(StrEnum):
     ABSOLUTE_DAILY = "absolute_daily"
     PER_KG_DAILY = "per_kg_daily"
     PERCENT_ENERGY = "percent_energy"
+    PER_1000_KCAL = "per_1000_kcal"
+
+
+class SourceSemanticKind(StrEnum):
+    RECOMMENDED_INTAKE = "recommended_intake"
+    ESTIMATED_VALUE = "estimated_value"
+    GUIDELINE = "guideline"
+
+
+class ReferenceScope(StrEnum):
+    ACTIVE = "active"
+    OUTSIDE_MVP_SCOPE = "outside_mvp_scope"
+    NON_ACTIVE = "non_active"
+
+
+class AgeUnit(StrEnum):
+    MONTHS = "months"
+    YEARS = "years"
+
+
+class ApplicableWeightRule(StrEnum):
+    CURRENT_WEIGHT = "current_weight"
+    DGE_ADULT_PROTEIN = "dge_adult_protein"
+
+
+class MappingStatus(StrEnum):
+    MAPPED = "mapped"
+    UNSUPPORTED = "unsupported"
+
+
+class ReferenceGapState(StrEnum):
+    UNSUPPORTED_APPLICABILITY = "unsupported_applicability"
+    SOURCE_INAPPLICABLE = "source_inapplicable"
+    UNSUPPORTED_MAPPING = "unsupported_mapping"
+
+
+class SafetySemanticKind(StrEnum):
+    UL = "ul"
+    SAFE_LEVEL = "safe_level"
+
+
+@dataclass(frozen=True)
+class AgeBoundary:
+    value: int
+    unit: AgeUnit
+
+    def __post_init__(self) -> None:
+        if self.value < 0:
+            raise ValueError("age boundary must be non-negative")
+
+
+@dataclass(frozen=True)
+class ApplicabilityRequirement:
+    dimension: str
+    value: str
+
+    def __post_init__(self) -> None:
+        if not self.dimension or not self.value:
+            raise ValueError("applicability requirement dimension and value are required")
+
+
+@dataclass(frozen=True)
+class ReferenceApplicability:
+    min_age: AgeBoundary | None = None
+    max_age: AgeBoundary | None = None
+    sex: Sex | None = None
+    requirements: tuple[ApplicabilityRequirement, ...] = ()
+
+    def __post_init__(self) -> None:
+        dimensions = [item.dimension for item in self.requirements]
+        if len(dimensions) != len(set(dimensions)):
+            raise ValueError("applicability requirement dimensions must be unique")
+        if self.min_age is not None and self.max_age is not None and self.min_age.unit == self.max_age.unit:
+            if self.min_age.value >= self.max_age.value:
+                raise ValueError("age applicability lower bound must be below upper bound")
 
 
 @dataclass(frozen=True)
@@ -53,6 +129,7 @@ class NutritionProfile:
 
 @dataclass(frozen=True)
 class ReferenceDefinition:
+    # `reference_id` is the source-row identity retained for first-slice compatibility.
     reference_id: str
     nutrient_measure: str
     kind: ReferenceKind
@@ -61,10 +138,26 @@ class ReferenceDefinition:
     upper: Decimal | None = None
     point: Decimal | None = None
     energy_kcal_per_g: Decimal | None = None
+    family_id: str | None = None
+    source_semantic_kind: SourceSemanticKind | None = None
+    source_unit: str | None = None
+    scope: ReferenceScope = ReferenceScope.ACTIVE
+    applicability: ReferenceApplicability = field(default_factory=ReferenceApplicability)
+    applicable_weight_rule: ApplicableWeightRule | None = None
+    source_id: str | None = None
+    source_locator: str | None = None
+
+    @property
+    def resolved_family_id(self) -> str:
+        return self.reference_id if self.family_id is None else self.family_id
 
     def __post_init__(self) -> None:
         if not self.reference_id or not self.nutrient_measure:
             raise ValueError("reference identity and nutrient measure are required")
+        if self.family_id == "":
+            raise ValueError("family identity must not be empty")
+        if self.source_unit == "":
+            raise ValueError("source unit must not be empty")
         for value in (self.lower, self.upper, self.point):
             if value is not None and value < 0:
                 raise ValueError("reference values must be non-negative")
@@ -95,18 +188,61 @@ class ReferenceDefinition:
         elif self.energy_kcal_per_g is not None:
             raise ValueError("energy factor is only valid for percent-energy references")
 
+        if self.basis == ReferenceBasis.PER_KG_DAILY and self.applicable_weight_rule is None:
+            object.__setattr__(self, "applicable_weight_rule", ApplicableWeightRule.CURRENT_WEIGHT)
+        elif self.basis != ReferenceBasis.PER_KG_DAILY and self.applicable_weight_rule is not None:
+            raise ValueError("applicable weight rule is only valid for per-kg references")
+
+
+@dataclass(frozen=True)
+class TargetMapping:
+    family_id: str
+    status: MappingStatus
+    nutrient_measure: str | None = None
+    canonical_unit: str | None = None
+    formula_id: str | None = None
+    reason: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.family_id:
+            raise ValueError("mapping family identity is required")
+        if self.status == MappingStatus.MAPPED:
+            if not self.nutrient_measure or not self.canonical_unit:
+                raise ValueError("mapped reference requires canonical measure and unit")
+            if self.reason is not None:
+                raise ValueError("mapped reference must not carry unsupported reason")
+        else:
+            if not self.reason:
+                raise ValueError("unsupported mapping requires a reason")
+            if self.nutrient_measure is not None or self.canonical_unit is not None or self.formula_id is not None:
+                raise ValueError("unsupported mapping must not carry canonical mapping fields")
+
 
 @dataclass(frozen=True)
 class SafetyDefinition:
     reference_id: str
     nutrient_measure: str
     daily_upper: Decimal
+    family_id: str | None = None
+    semantic_kind: SafetySemanticKind = SafetySemanticKind.UL
+    source_unit: str | None = None
+    scope: ReferenceScope = ReferenceScope.ACTIVE
+    applicability: ReferenceApplicability = field(default_factory=ReferenceApplicability)
+    substance_scope: str | None = None
+    source_id: str | None = None
+    source_locator: str | None = None
+
+    @property
+    def resolved_family_id(self) -> str:
+        return self.reference_id if self.family_id is None else self.family_id
 
     def __post_init__(self) -> None:
         if not self.reference_id or not self.nutrient_measure:
             raise ValueError("safety reference identity and nutrient measure are required")
         if self.daily_upper <= 0:
             raise ValueError("safety daily upper must be positive")
+        if self.family_id == "" or self.source_unit == "" or self.substance_scope == "":
+            raise ValueError("safety semantic metadata must not be empty")
 
 
 @dataclass(frozen=True)
@@ -114,16 +250,42 @@ class NutritionStandardSet:
     version: str
     references: tuple[ReferenceDefinition, ...]
     safety_limits: tuple[SafetyDefinition, ...] = ()
+    mappings: tuple[TargetMapping, ...] = ()
+    content_digest: str | None = None
 
     def __post_init__(self) -> None:
         if not self.version:
             raise ValueError("standard version is required")
         reference_ids = [item.reference_id for item in self.references]
         safety_ids = [item.reference_id for item in self.safety_limits]
+        mapping_ids = [item.family_id for item in self.mappings]
         if len(reference_ids) != len(set(reference_ids)):
             raise ValueError("reference ids must be unique within a standard version")
         if len(safety_ids) != len(set(safety_ids)):
             raise ValueError("safety reference ids must be unique within a standard version")
+        if len(mapping_ids) != len(set(mapping_ids)):
+            raise ValueError("mapping family ids must be unique within a standard version")
+        if self.content_digest is not None and not self.content_digest:
+            raise ValueError("content digest must not be empty")
+        if self.mappings:
+            active_families = {item.resolved_family_id for item in self.references if item.scope == ReferenceScope.ACTIVE}
+            if set(mapping_ids) != active_families:
+                missing = sorted(active_families - set(mapping_ids))
+                extra = sorted(set(mapping_ids) - active_families)
+                raise ValueError(f"mapping registry must cover active families exactly; missing={missing}, extra={extra}")
+
+    def mapping_for_family(self, family_id: str) -> TargetMapping | None:
+        return next((item for item in self.mappings if item.family_id == family_id), None)
+
+
+@dataclass(frozen=True)
+class ReferenceGap:
+    member_id: str
+    family_id: str
+    state: ReferenceGapState
+    missing_dimensions: tuple[str, ...] = ()
+    candidate_reference_ids: tuple[str, ...] = ()
+    reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -134,6 +296,7 @@ class ResolvedReference:
     lower_30d: Decimal | None = None
     upper_30d: Decimal | None = None
     point_30d: Decimal | None = None
+    family_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -157,6 +320,7 @@ class MemberNutritionTarget:
     energy_kcal_30d: Decimal
     references: tuple[ResolvedReference, ...]
     safety_limits: tuple[MemberSafetyLimit, ...]
+    reference_gaps: tuple[ReferenceGap, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -167,6 +331,7 @@ class HouseholdNutritionTarget:
     energy_kcal_30d: Decimal
     references: tuple[ResolvedReference, ...]
     member_targets: tuple[MemberNutritionTarget, ...]
+    reference_gaps: tuple[ReferenceGap, ...] = ()
 
 
 def chronological_age_years(date_of_birth: date, on_date: date) -> int:
@@ -176,3 +341,13 @@ def chronological_age_years(date_of_birth: date, on_date: date) -> int:
     if (on_date.month, on_date.day) < (date_of_birth.month, date_of_birth.day):
         years -= 1
     return years
+
+
+def completed_calendar_months(date_of_birth: date, on_date: date) -> int:
+    if date_of_birth > on_date:
+        raise ValueError("date_of_birth must not be later than derivation date")
+    months = (on_date.year - date_of_birth.year) * 12 + on_date.month - date_of_birth.month
+    anniversary_day = min(date_of_birth.day, monthrange(on_date.year, on_date.month)[1])
+    if on_date.day < anniversary_day:
+        months -= 1
+    return months
