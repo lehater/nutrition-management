@@ -5,8 +5,6 @@ from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
 
-from nutrition_management.food_knowledge.domain.model import NutrientEvidence
-
 
 class Availability(StrEnum):
     AVAILABLE = "available"
@@ -20,12 +18,18 @@ class FulfilmentMode(StrEnum):
 
 
 @dataclass(frozen=True)
+class NormalizedNutrientOverride:
+    measure: str
+    amount_per_100g: Decimal
+
+
+@dataclass(frozen=True)
 class ProductCard:
     sku_id: str
     base_food_id: str
     name: str
     edible_grams_per_package: Decimal
-    nutrient_overrides: tuple[NutrientEvidence, ...] = ()
+    nutrient_overrides: tuple[NormalizedNutrientOverride, ...] = ()
 
 
 @dataclass(frozen=True)
