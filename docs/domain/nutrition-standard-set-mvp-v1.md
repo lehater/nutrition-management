@@ -17,13 +17,17 @@ A change to any source edition, corrected value, applicability rule or derivatio
 - Source: Deutsche Gesellschaft für Ernährung (DGE) / Österreichische Gesellschaft für Ernährung (ÖGE), `Referenzwerte für die Nährstoffzufuhr`.
 - Edition: 3rd edition, 1st issue, 2025.
 - Corrections: published erratum, status May 2026.
-- Reference page: <https://www.dge.de/wissenschaft/referenzwerte/>
+- Reference page: <https://www.dge.de/wissenschaft/referenzwerte/>.
+- Applicability anchors used by `mvp-v1` include:
+  - zinc: <https://www.dge.de/wissenschaft/referenzwerte/zink/> and <https://www.dge.de/gesunde-ernaehrung/faq/ausgewaehlte-fragen-und-antworten-zu-zink/>;
+  - iron: <https://www.dge.de/wissenschaft/referenzwerte/eisen/>;
+  - protein: <https://www.dge.de/wissenschaft/referenzwerte/protein/> and <https://www.dge.de/gesunde-ernaehrung/faq/ausgewaehlte-fragen-und-antworten-zu-protein-und-unentbehrlichen-aminosaeuren/>.
 
 This source owns the MVP adequacy/reference side: age/sex applicability, recommended intakes, estimated values, guideline values and source-native relative bases.
 
 ### Energy/PAL derivation — DGE
 
-- Current FAQ: <https://www.dge.de/gesunde-ernaehrung/faq/energiezufuhr/>
+- Current FAQ: <https://www.dge.de/gesunde-ernaehrung/faq/energiezufuhr/>.
 - Derivation publication: German Nutrition Society, `New Reference Values for Energy Intake`, Ann Nutr Metab. 2015;66:219–223, DOI `10.1159/000430959`.
 - Child/adolescent REE equations: Henry CJ, `Basal metabolic rate studies in humans: measurement and development of new equations`, Public Health Nutr. 2005;8:1133–1152, as used by the DGE derivation.
 
@@ -31,13 +35,13 @@ This source owns the MVP adequacy/reference side: age/sex applicability, recomme
 
 - Source: European Food Safety Authority, `Overview on Tolerable Upper Intake Levels as derived by the Scientific Committee on Food (SCF) and the EFSA Panel on Dietetic Products, Nutrition and Allergies (NDA)`.
 - Version: 11, August 2025.
-- Published document: <https://www.efsa.europa.eu/sites/default/files/2024-05/ul-summary-report.pdf>
+- Published document: <https://www.efsa.europa.eu/sites/default/files/2024-05/ul-summary-report.pdf>.
 
 EFSA ULs and safe levels are safety semantics. They are not preferred target maxima.
 
 ### Adult weight-goal adjustment — NIDDK/Hall
 
-- Source: NIDDK, `Research Behind the Body Weight Planner`: <https://www.niddk.nih.gov/research-funding/at-niddk/labs-branches/laboratory-biological-modeling/integrative-physiology-section/research/body-weight-planner>
+- Source: NIDDK, `Research Behind the Body Weight Planner`: <https://www.niddk.nih.gov/research-funding/at-niddk/labs-branches/laboratory-biological-modeling/integrative-physiology-section/research/body-weight-planner>.
 - Underlying model: Hall KD et al., `Quantification of the effect of energy imbalance on bodyweight`, Lancet. 2011;378(9793):826–837, plus the dynamic-model equations referenced by NIDDK.
 
 The model is used only for weight-goal energy adjustment for members aged 19 years or older. The product restriction is intentionally stricter than the NIDDK tool's adult boundary so that the DGE adolescent energy policy remains coherent through the under-19 age band.
@@ -54,19 +58,51 @@ A nutrient reference retains its source meaning. The active set recognizes at le
 
 A point reference remains a point reference. A safety limit is not combined with a recommended value to manufacture one preferred interval.
 
-## Applicability dimensions
+## Reference families and applicability
 
-For active MVP derivation, source applicability may depend on:
+A source nutrient concept is represented as a **reference family** containing one or more sourced variant rows. A row retains its source value, semantic kind, native basis/unit, applicability predicates and row provenance. Stable row identity is distinct from stable family identity.
 
-- chronological age or age band derived from date of birth at the derivation date;
+Source applicability may depend on:
+
+- exact chronological age or source age band derived from date of birth at the derivation date;
 - sex where the source distinguishes male/female values;
-- body weight or a source-defined reference-weight rule;
+- source-defined body-weight/reference-weight rules;
 - final energy target;
-- physical activity expressed as PAL.
+- physical activity expressed as PAL;
+- phytate-intake class where DGE makes adult zinc values conditional on it;
+- menstruation or menopausal state where DGE makes female iron values conditional on it;
+- special source states such as pregnancy/lactation that are retained as source provenance but outside active MVP targeting.
 
-DGE/ÖGE also contains special reference rows for pregnancy and lactation. `mvp-v1` retains their source provenance but does not select them because pregnancy/lactation-specific targeting is outside the MVP profile and requirements.
+A reference family resolves quantitatively only when the accepted MVP profile/policy can determine every applicability factor needed to choose exactly one active source row.
 
-There is no independent development/growth-stage input in `mvp-v1`. Ordinary age-group applicability and the pediatric growth-energy factor are selected from chronological age.
+Resolution states are:
+
+- `resolved` — exactly one active variant is selectable;
+- `unsupported_applicability` — a potentially applicable family needs a source factor not owned by the MVP profile;
+- `source_inapplicable` — known member facts place the member outside the general source reference's applicability;
+- `outside_mvp_scope` — a source variant is intentionally outside accepted MVP targeting, such as pregnancy/lactation.
+
+If all required applicability facts are known and more than one active row matches a family, `mvp-v1` is invalid/internally ambiguous and derivation fails rather than choosing arbitrarily.
+
+`unsupported_applicability` retains the family identity, missing dimension(s), candidate row identities and source/standard-set provenance. It is never treated as zero or silently omitted.
+
+`mvp-v1` does not invent a medium-phytate default and does not infer menstruation or menopause from age.
+
+DGE/ÖGE pregnancy/lactation rows remain stored source provenance but are `outside_mvp_scope` because pregnancy/lactation-specific targeting is outside the MVP profile and requirements.
+
+There is no independent development/growth-stage input in `mvp-v1`. Ordinary infant/child/adolescent/adult applicability and the pediatric growth-energy factor are selected from chronological age.
+
+### Zinc applicability
+
+DGE adult zinc recommendations vary with low, medium and high phytate intake. The current MVP Nutrition Profile does not own phytate-intake class. Therefore adult zinc target selection is `unsupported_applicability` rather than a guessed medium-phytate target.
+
+For source age groups whose zinc reference does not require phytate class, selection proceeds from the applicability facts already owned by the MVP.
+
+### Iron applicability
+
+DGE female iron rows and notes distinguish cases including menstruating versus non-menstruating and pre-/postmenopausal applicability. When those states are required to select a unique row, the current MVP profile cannot resolve the family and the result is `unsupported_applicability`.
+
+Chronological age is not used as a proxy for menstruation or menopause. Source rows whose applicability is fully determined by accepted MVP facts remain selectable normally.
 
 ### Age-resolution rule
 
@@ -180,7 +216,21 @@ Resolve each applicable DGE/ÖGE reference in its source-native basis, then norm
 
 `daily_target = source_amount_per_kg_per_day × applicable_weight_kg`.
 
-`applicable_weight_kg` is selected according to the source's own weight-basis rule; current body weight is not assumed universally. If the source applicability rule does not support the member state, derivation must expose that fact rather than inventing a weight basis.
+`applicable_weight_kg` is selected according to the source's own weight-basis rule; current body weight is not assumed universally. If the source applicability rule does not support the member state, derivation exposes that fact rather than inventing a weight basis.
+
+#### Adult DGE protein applicable weight
+
+For adult DGE protein references expressed per kg body weight, compute BMI from current observed weight and height at derivation time:
+
+`BMI = current_weight_kg / height_m²`.
+
+Then:
+
+- `18.5 <= BMI < 25.0`: `applicable_weight_kg = current_weight_kg`;
+- `25.0 <= BMI < 30.0`: `applicable_weight_kg = 22 × height_m²`, using the DGE adult reference-weight basis;
+- `BMI < 18.5` or `BMI >= 30.0`: the general DGE protein reference is `source_inapplicable` for automatic MVP derivation.
+
+No specialty-society or therapeutic protein rule is substituted in the last case because medical/therapeutic targeting is outside the MVP. Reference weight is a derivation basis only; it does not overwrite current weight and is not a target-weight goal.
 
 ### Percent-of-energy reference
 
@@ -222,6 +272,8 @@ If Food Knowledge cannot represent the EFSA limit's substance/form at equal or f
 
 Adequacy/reference demand aggregates additively by nutrient when the member target quantities have compatible semantics and units.
 
+Unresolved active reference-family applicability remains member-level provenance and is carried into Household Nutrition Target as unsupported coverage; it is never converted to a numeric household demand.
+
 Member safety limits remain member-level evidence. The MVP may expose aggregate safety information for diagnostics, but a sum of member ULs is not a proof of individual safety because ADR-002 explicitly does not prove food allocation among members.
 
 ## Provenance required in a derived target
@@ -234,6 +286,10 @@ A rebuildable Member Nutrition Target identifies at least:
 - resolved chronological age and source age band;
 - resolved final PAL and strenuous-activity adjustment provenance when applicable;
 - selected energy formula/policy;
-- selected nutrient-reference identities and source semantic kinds;
+- selected nutrient-reference family and row identities and source semantic kinds;
+- unresolved active reference-family applicability gaps, including missing applicability dimensions and candidate row identities;
+- source-owned applicable-weight rule and actual applied weight where a relative reference requires one;
 - selected safety-limit identities when applicable;
 - whether a weight goal was applied, ignored as non-active, unsupported, or inapplicable under the active policy.
+
+Applicability behavior is governed by [`ADR-012`](../decisions/ADR-012-source-applicability-and-protein-weight-basis.md).
