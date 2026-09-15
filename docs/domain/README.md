@@ -9,4 +9,4 @@ Start with:
 - `context-map.md` — material relationships between accepted Bounded Contexts;
 - `glossary.md` — ubiquitous-language terms whose meaning has been accepted or is explicitly marked as candidate/unknown.
 
-Do not infer domain structure from future database tables, APIs, screens or deployment units.
+Do not infer Nutrition Management domain structure from future database tables, APIs, screens or deployment units.
