@@ -15,6 +15,11 @@ from nutrition_management.food_knowledge.application.source_data import (
     SourceNutrientEvidence,
 )
 from nutrition_management.food_knowledge.domain.model import TOP_LEVEL_CATEGORIES
+from nutrition_management.food_knowledge.infrastructure.bls_v4_semantics import (
+    BlsV4SemanticError,
+    validate_dataset_evidence,
+    validate_errata_contract,
+)
 from nutrition_management.food_knowledge.infrastructure.repository import FoodKnowledgeRepository
 
 PACKAGE_FORMAT = "bls-4.0-normalized-v1"
@@ -263,6 +268,11 @@ def load_bls_v4_package(
         if expected_digest != actual_digest:
             raise BlsV4PackageError(f"digest mismatch for {name}")
 
+    try:
+        validate_errata_contract(directory, manifest)
+    except BlsV4SemanticError as exc:
+        raise BlsV4PackageError(f"invalid BLS errata contract: {exc}") from exc
+
     package_digest = _required_text(manifest.get("package_digest"), "manifest.package_digest")
     if package_digest != compute_manifest_digest(manifest):
         raise BlsV4PackageError("manifest package_digest does not match canonical manifest content")
@@ -328,7 +338,8 @@ def load_bls_v4_package(
             components=components,
             foods=tuple(foods),
         )
-    except ValueError as exc:
+        validate_dataset_evidence(dataset)
+    except (ValueError, BlsV4SemanticError) as exc:
         raise BlsV4PackageError(f"invalid normalized BLS dataset: {exc}") from exc
 
     return LoadedBlsV4Package(
