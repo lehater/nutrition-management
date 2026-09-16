@@ -1,6 +1,8 @@
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
+import pytest
+
 from nutrition_management.purchase_planning.domain.model import (
     CandidateNutrient,
     EvidenceStatus,
@@ -62,10 +64,20 @@ def test_safety_limit_is_only_aggregate_period_equivalent_diagnostic():
     assert diagnostic.allocation_guarantee is False
 
 
-def test_unknown_safety_contribution_never_becomes_false_safe_claim():
-    snapshot = _snapshot(_candidate("unknown", EvidenceStatus.MISSING, None))
+@pytest.mark.parametrize(
+    "status",
+    [
+        EvidenceStatus.TRACE,
+        EvidenceStatus.BELOW_QUANTIFICATION_LIMIT,
+        EvidenceStatus.BELOW_DETECTION_LIMIT,
+        EvidenceStatus.MISSING,
+    ],
+)
+def test_non_quantitative_safety_contribution_never_becomes_false_safe_claim(status):
+    snapshot = _snapshot(_candidate("unknown", status, None))
     diagnostic = build_safety_diagnostics(snapshot, {"unknown": Decimal("100")})[0]
 
+    assert diagnostic.planned_amount_30d == 0
     assert diagnostic.indeterminate is True
     assert diagnostic.exceeds_period_equivalent is False
     assert diagnostic.allocation_guarantee is False
@@ -74,7 +86,7 @@ def test_unknown_safety_contribution_never_becomes_false_safe_claim():
 def test_known_contribution_can_prove_exceedance_even_when_total_is_indeterminate():
     snapshot = _snapshot(
         _candidate("known", EvidenceStatus.KNOWN, Decimal("10")),
-        _candidate("unknown", EvidenceStatus.MISSING, None),
+        _candidate("unknown", EvidenceStatus.BELOW_DETECTION_LIMIT, None),
     )
     diagnostic = build_safety_diagnostics(
         snapshot,
