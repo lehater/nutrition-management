@@ -45,13 +45,13 @@ class SourceNutrientEvidence:
             raise ValueError("explicit nutrient evidence requires value_origin")
         if self.status == NutrientEvidenceStatus.MISSING:
             raise ValueError("missing nutrient evidence is represented by absence, not an explicit row")
-        if self.status in {NutrientEvidenceStatus.KNOWN, NutrientEvidenceStatus.ZERO}:
+        if self.status.is_quantitatively_known:
             if not isinstance(self.amount_per_100g, Decimal):
                 raise ValueError("known/zero nutrient evidence requires a Decimal amount")
             if not self.amount_per_100g.is_finite() or self.amount_per_100g < 0:
                 raise ValueError("nutrient amount must be finite and non-negative")
         elif self.amount_per_100g is not None:
-            raise ValueError("trace nutrient evidence must not fabricate a numeric amount")
+            raise ValueError("non-quantitative nutrient evidence must not fabricate a numeric amount")
         if self.status == NutrientEvidenceStatus.ZERO and self.amount_per_100g != Decimal(0):
             raise ValueError("zero nutrient evidence must contain numeric zero")
 
