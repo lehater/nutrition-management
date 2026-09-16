@@ -184,6 +184,7 @@ def _food(row, source_file: str, index: int, category_by_code: dict[str, str]) -
         raise BlsV4PackageError(f"{field}.nutrients must be an array")
     try:
         return SourceFood(
+            base_food_id=f"{SOURCE_ID}:{source_code}",
             source_code=source_code,
             name_de=_required_text(row.get("name_de"), f"{field}.name_de"),
             name_en=_optional_text(row.get("name_en"), f"{field}.name_en"),
