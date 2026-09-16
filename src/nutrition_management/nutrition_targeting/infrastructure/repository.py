@@ -20,6 +20,7 @@ from nutrition_management.nutrition_targeting.domain.model import (
     ReferenceKind,
     ReferenceScope,
     SafetyDefinition,
+    SafetyMapping,
     SafetySemanticKind,
     Sex,
     SourceSemanticKind,
@@ -104,6 +105,17 @@ safety_table = Table(
     Column("substance_scope", String),
     Column("source_id", String),
     Column("source_locator", String),
+)
+
+safety_mapping_table = Table(
+    "nt_safety_mapping",
+    metadata,
+    Column("standard_version", String, ForeignKey("nt_standard_set.version"), primary_key=True),
+    Column("family_id", String, primary_key=True),
+    Column("status", String, nullable=False),
+    Column("nutrient_measure", String),
+    Column("canonical_unit", String),
+    Column("reason", String),
 )
 
 
@@ -191,31 +203,19 @@ class NutritionTargetingRepository:
         )
 
     def standard_digest(self, version: str) -> str | None:
-        row = self._connection.execute(
-            select(standard_table.c.content_digest).where(standard_table.c.version == version)
-        ).first()
+        row = self._connection.execute(select(standard_table.c.content_digest).where(standard_table.c.version == version)).first()
         return None if row is None else row[0]
 
     def standard_exists(self, version: str) -> bool:
-        return self._connection.execute(
-            select(standard_table.c.version).where(standard_table.c.version == version)
-        ).first() is not None
+        return self._connection.execute(select(standard_table.c.version).where(standard_table.c.version == version)).first() is not None
 
     def activate_standard(self, version: str) -> None:
         if not self.standard_exists(version):
             raise ValueError(f"unknown standard version: {version}")
         self._connection.execute(standard_table.update().values(active=False))
-        self._connection.execute(
-            standard_table.update().where(standard_table.c.version == version).values(active=True)
-        )
+        self._connection.execute(standard_table.update().where(standard_table.c.version == version).values(active=True))
 
-    def add_standard(
-        self,
-        standard: NutritionStandardSet,
-        *,
-        active: bool = False,
-        source_manifest: str | None = None,
-    ) -> None:
+    def add_standard(self, standard: NutritionStandardSet, *, active: bool = False, source_manifest: str | None = None) -> None:
         if active:
             self._connection.execute(standard_table.update().values(active=False))
         self._connection.execute(
@@ -279,13 +279,21 @@ class NutritionTargetingRepository:
                     source_locator=item.source_locator,
                 )
             )
+        for item in standard.safety_mappings:
+            self._connection.execute(
+                safety_mapping_table.insert().values(
+                    standard_version=standard.version,
+                    family_id=item.family_id,
+                    status=item.status.value,
+                    nutrient_measure=item.nutrient_measure,
+                    canonical_unit=item.canonical_unit,
+                    reason=item.reason,
+                )
+            )
 
     def active_standard(self) -> NutritionStandardSet:
         row = self._connection.execute(
-            select(
-                standard_table.c.version,
-                standard_table.c.content_digest,
-            ).where(standard_table.c.active.is_(True))
+            select(standard_table.c.version, standard_table.c.content_digest).where(standard_table.c.active.is_(True))
         ).one()
         version, digest = row
         refs = self._connection.execute(
@@ -296,6 +304,9 @@ class NutritionTargetingRepository:
         ).mappings()
         safety = self._connection.execute(
             select(safety_table).where(safety_table.c.standard_version == version).order_by(safety_table.c.reference_id)
+        ).mappings()
+        safety_mappings = self._connection.execute(
+            select(safety_mapping_table).where(safety_mapping_table.c.standard_version == version).order_by(safety_mapping_table.c.family_id)
         ).mappings()
         return NutritionStandardSet(
             version=version,
@@ -349,5 +360,15 @@ class NutritionTargetingRepository:
                     source_locator=item["source_locator"],
                 )
                 for item in safety
+            ),
+            safety_mappings=tuple(
+                SafetyMapping(
+                    family_id=item["family_id"],
+                    status=MappingStatus(item["status"]),
+                    nutrient_measure=item["nutrient_measure"],
+                    canonical_unit=item["canonical_unit"],
+                    reason=item["reason"],
+                )
+                for item in safety_mappings
             ),
         )
