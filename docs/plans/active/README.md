@@ -1,8 +1,8 @@
 # Active execution
 
-Current product work: complete the authorized sourced `mvp-v1` Nutrition Standard Set data/model/import slice and merge PR #9.
+Current product state: the authorized sourced `mvp-v1` Nutrition Standard Set data/model/import slice is complete.
 
-Lifecycle state: **Implementation completion PASS — awaiting squash merge of PR #9** under accepted S2/S3/S4 gates.
+Lifecycle state: **Implementation completion PASS** under accepted S2/S3/S4 gates.
 Implementation authorization: **only** [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
 
 ## Accepted upstream state
@@ -57,4 +57,4 @@ No BLS food-row import, NIDDK/Hall execution, pediatric/infant energy execution,
 
 ## Next
 
-Keep PR #9 limited to this authorized slice, obtain a green CI run for the final documentation-only head, mark the PR ready, squash-merge it into `main`, then record the resulting `main` SHA as the base of the next authorized slice.
+Use the `main` commit produced by squash-merging PR #9 as the base of the next separately authorized slice. Do not expand this completed slice implicitly; select and authorize the next scope through the accepted lifecycle.
