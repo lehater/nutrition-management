@@ -25,9 +25,6 @@ CORE_CATEGORIES = {
     "fish_meat_sausage_eggs",
 }
 
-# Solver mechanics may leave values infinitesimally across a mathematical boundary.
-# This tolerance is only for revalidation of solver-produced quantities and is many
-# orders of magnitude smaller than the accepted 5%, 1% and 25% business thresholds.
 _MECHANICAL_EPS = Decimal("1e-7")
 
 
@@ -171,11 +168,7 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
 
     nutrition_ok = all(not item.indeterminate and item.penalty == 0 for item in assessments)
     core_count = len(set(represented_categories) & CORE_CATEGORIES)
-    variety_ok = (
-        core_count >= 4
-        and len(represented_foods) >= 8
-        and max_share <= Decimal("0.25") + _MECHANICAL_EPS
-    )
+    variety_ok = core_count >= 4 and len(represented_foods) >= 8 and max_share <= Decimal("0.25") + _MECHANICAL_EPS
     outcome = PlanOutcome.MAPPED_COMPLETE if nutrition_ok and variety_ok else PlanOutcome.PARTIAL
 
     return PurchasePlan(
@@ -195,4 +188,6 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
         max_food_energy_share=max_share,
         provenance_offer_ids=tuple(sorted(planned_by_offer)),
         target_member_provenance=snapshot.target_member_provenance,
+        target_coverage_gaps=snapshot.target_coverage_gaps,
+        safety_coverage_gaps=snapshot.safety_coverage_gaps,
     )

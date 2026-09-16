@@ -36,9 +36,12 @@ def aggregate_household_target(household_id: str, member_targets: tuple[MemberNu
                 lower_30d=total("lower_30d"),
                 upper_30d=total("upper_30d"),
                 point_30d=total("point_30d"),
+                family_id="household:" + "+".join(item.family_id or item.reference_id for item in items),
             )
         )
 
+    gaps = tuple(gap for member in member_targets for gap in member.reference_gaps)
+    safety_gaps = tuple(gap for member in member_targets for gap in member.safety_gaps)
     return HouseholdNutritionTarget(
         household_id=household_id,
         derivation_date=next(iter(dates)),
@@ -46,4 +49,6 @@ def aggregate_household_target(household_id: str, member_targets: tuple[MemberNu
         energy_kcal_30d=sum((item.energy_kcal_30d for item in member_targets), Decimal(0)),
         references=tuple(refs),
         member_targets=member_targets,
+        reference_gaps=gaps,
+        safety_gaps=safety_gaps,
     )

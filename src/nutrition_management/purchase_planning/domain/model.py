@@ -31,11 +31,29 @@ class TargetDimension:
 
 
 @dataclass(frozen=True)
+class TargetCoverageGap:
+    member_id: str
+    family_id: str
+    state: str
+    missing_dimensions: tuple[str, ...] = ()
+    candidate_reference_ids: tuple[str, ...] = ()
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
 class MemberSafetyLimit:
     member_id: str
     reference_id: str
     measure: str
     daily_upper: Decimal
+
+
+@dataclass(frozen=True)
+class SafetyCoverageGap:
+    member_id: str
+    family_id: str
+    state: str
+    reason: str | None = None
 
 
 @dataclass(frozen=True)
@@ -95,6 +113,8 @@ class PlanningInputSnapshot:
     candidates: tuple[PurchaseCandidate, ...]
     member_safety_limits: tuple[MemberSafetyLimit, ...] = ()
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
+    target_coverage_gaps: tuple[TargetCoverageGap, ...] = ()
+    safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -167,3 +187,5 @@ class PurchasePlan:
     max_food_energy_share: Decimal
     provenance_offer_ids: tuple[str, ...]
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
+    target_coverage_gaps: tuple[TargetCoverageGap, ...] = ()
+    safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
