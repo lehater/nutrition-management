@@ -73,6 +73,8 @@ reference_table = Table(
     Column("applicable_weight_rule", String),
     Column("source_id", String),
     Column("source_locator", String),
+    Column("lower_inclusive", Boolean, nullable=False, default=True),
+    Column("upper_inclusive", Boolean, nullable=False, default=True),
 )
 
 mapping_table = Table(
@@ -244,6 +246,8 @@ class NutritionTargetingRepository:
                     applicable_weight_rule=None if ref.applicable_weight_rule is None else ref.applicable_weight_rule.value,
                     source_id=ref.source_id,
                     source_locator=ref.source_locator,
+                    lower_inclusive=ref.lower_inclusive,
+                    upper_inclusive=ref.upper_inclusive,
                 )
             )
         for item in standard.mappings:
@@ -314,6 +318,8 @@ class NutritionTargetingRepository:
                     applicable_weight_rule=None if item["applicable_weight_rule"] is None else ApplicableWeightRule(item["applicable_weight_rule"]),
                     source_id=item["source_id"],
                     source_locator=item["source_locator"],
+                    lower_inclusive=bool(item["lower_inclusive"]),
+                    upper_inclusive=bool(item["upper_inclusive"]),
                 )
                 for item in refs
             ),
