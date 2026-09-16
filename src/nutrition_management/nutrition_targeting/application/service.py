@@ -5,6 +5,7 @@ from nutrition_management.nutrition_targeting.application.contracts import (
     MemberSafetyFact,
     MemberTargetProvenanceFact,
     SafetyCoverageFact,
+    TargetCoverageFact,
     TargetFact,
 )
 from nutrition_management.nutrition_targeting.domain.aggregation import aggregate_household_target
@@ -54,6 +55,17 @@ def derive_household_target_fact(repository, household_id: str, derivation_date)
                 pal_activity_adjustment_applied=member.pal_activity_adjustment_applied,
             )
             for member in members
+        ),
+        target_coverage_gaps=tuple(
+            TargetCoverageFact(
+                member_id=gap.member_id,
+                family_id=gap.family_id,
+                state=gap.state.value,
+                missing_dimensions=gap.missing_dimensions,
+                candidate_reference_ids=gap.candidate_reference_ids,
+                reason=gap.reason,
+            )
+            for gap in household.reference_gaps
         ),
         safety_coverage_gaps=tuple(
             SafetyCoverageFact(
