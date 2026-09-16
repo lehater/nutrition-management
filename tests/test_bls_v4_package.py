@@ -24,6 +24,7 @@ def _bytes(value) -> bytes:
 
 
 def _write_fixture_package(directory):
+    directory.mkdir(parents=True, exist_ok=True)
     components = {
         "components": [
             {
@@ -131,7 +132,6 @@ def _write_fixture_package(directory):
 
 def test_bls_normalized_package_preserves_known_zero_trace_missing_and_categories(tmp_path):
     package_dir = _write_fixture_package(tmp_path / "bls-4.0")
-    package_dir.mkdir(exist_ok=True) if not package_dir.exists() else None
 
     package = load_bls_v4_package(
         package_dir,
@@ -156,9 +156,7 @@ def test_bls_normalized_package_preserves_known_zero_trace_missing_and_categorie
 
 
 def test_bls_normalized_package_rejects_tampering_and_category_gaps(tmp_path):
-    package_dir = tmp_path / "bls-4.0"
-    package_dir.mkdir()
-    _write_fixture_package(package_dir)
+    package_dir = _write_fixture_package(tmp_path / "bls-4.0")
     (package_dir / "foods.0001.json").write_text('{"foods":[]}\n', encoding="utf-8")
 
     with pytest.raises(BlsV4PackageError, match="digest mismatch"):
@@ -179,9 +177,7 @@ def test_bls_normalized_package_rejects_tampering_and_category_gaps(tmp_path):
 
 
 def test_bls_import_is_idempotent_and_persists_value_provenance(engine, tmp_path):
-    package_dir = tmp_path / "bls-4.0"
-    package_dir.mkdir()
-    _write_fixture_package(package_dir)
+    package_dir = _write_fixture_package(tmp_path / "bls-4.0")
     package = load_bls_v4_package(
         package_dir,
         expected_food_count=2,
