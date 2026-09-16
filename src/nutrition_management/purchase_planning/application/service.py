@@ -37,5 +37,7 @@ def generate_purchase_plan(
             max_food_energy_share=Decimal(0),
             provenance_offer_ids=(),
             target_member_provenance=snapshot.target_member_provenance,
+            target_coverage_gaps=snapshot.target_coverage_gaps,
+            safety_coverage_gaps=snapshot.safety_coverage_gaps,
         )
     return build_purchase_plan(snapshot, decision)
