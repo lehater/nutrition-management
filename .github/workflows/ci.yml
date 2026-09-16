@@ -41,6 +41,10 @@ jobs:
           PY
       - name: Run tests
         run: uv run pytest
+      - name: Generate mvp-v1 manifest evidence
+        run: |
+          uv run python tools/build_mvp_v1_manifest.py --write artifacts/mvp-v1-manifest.json
+          cat artifacts/mvp-v1-manifest.json
       - name: Characterize solver performance
         run: uv run python tools/benchmark_solver.py --output artifacts/solver-performance.json
       - name: Upload performance evidence
