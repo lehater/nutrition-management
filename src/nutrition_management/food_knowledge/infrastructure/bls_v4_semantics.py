@@ -91,8 +91,15 @@ def normalize_bls_value(
     if text == "<LOD":
         return NutrientEvidenceStatus.BELOW_DETECTION_LIMIT, None
 
+    numeric_text = text
+    if "," in numeric_text:
+        if "." in numeric_text:
+            raise BlsV4SemanticError(
+                f"BLS numeric value must not mix decimal separators: {text}"
+            )
+        numeric_text = numeric_text.replace(",", ".")
     try:
-        amount = Decimal(text)
+        amount = Decimal(numeric_text)
     except InvalidOperation as exc:
         raise BlsV4SemanticError(f"unsupported BLS value marker: {text}") from exc
     if not amount.is_finite() or amount < 0:
