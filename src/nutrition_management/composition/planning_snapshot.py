@@ -14,6 +14,7 @@ from nutrition_management.purchase_planning.domain.model import (
     PlanningInputSnapshot,
     PurchaseCandidate,
     SafetyCoverageGap,
+    TargetCoverageGap,
     TargetDimension,
     TargetKind,
     TargetMemberProvenance,
@@ -83,6 +84,17 @@ class PlanningSnapshotSource:
                             pal_activity_adjustment_applied=item.pal_activity_adjustment_applied,
                         )
                         for item in target.member_provenance
+                    ),
+                    target_coverage_gaps=tuple(
+                        TargetCoverageGap(
+                            member_id=item.member_id,
+                            family_id=item.family_id,
+                            state=item.state,
+                            missing_dimensions=item.missing_dimensions,
+                            candidate_reference_ids=item.candidate_reference_ids,
+                            reason=item.reason,
+                        )
+                        for item in target.target_coverage_gaps
                     ),
                     safety_coverage_gaps=tuple(
                         SafetyCoverageGap(
