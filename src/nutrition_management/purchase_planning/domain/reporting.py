@@ -4,7 +4,6 @@ from collections import defaultdict
 from decimal import Decimal
 
 from .model import (
-    EvidenceStatus,
     NutrientAssessment,
     PlanLine,
     PlanOutcome,
@@ -123,7 +122,7 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
             if grams <= 0:
                 continue
             evidence = candidates[offer_id].nutrient(target.measure)
-            if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
+            if not evidence.status.is_quantitatively_known:
                 unknown_evidence = True
             elif evidence.amount_per_100g is not None:
                 amount += evidence.amount_per_100g * grams / Decimal(100)
