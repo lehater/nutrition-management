@@ -62,6 +62,7 @@ class ReferenceGapState(StrEnum):
     UNSUPPORTED_APPLICABILITY = "unsupported_applicability"
     SOURCE_INAPPLICABLE = "source_inapplicable"
     UNSUPPORTED_MAPPING = "unsupported_mapping"
+    UNSUPPORTED_TARGET_SHAPE = "unsupported_target_shape"
 
 
 class SafetySemanticKind(StrEnum):
@@ -146,6 +147,8 @@ class ReferenceDefinition:
     applicable_weight_rule: ApplicableWeightRule | None = None
     source_id: str | None = None
     source_locator: str | None = None
+    lower_inclusive: bool = True
+    upper_inclusive: bool = True
 
     @property
     def resolved_family_id(self) -> str:
@@ -158,9 +161,15 @@ class ReferenceDefinition:
             raise ValueError("family identity must not be empty")
         if self.source_unit == "":
             raise ValueError("source unit must not be empty")
+        if not isinstance(self.lower_inclusive, bool) or not isinstance(self.upper_inclusive, bool):
+            raise ValueError("bound inclusivity flags must be boolean")
         for value in (self.lower, self.upper, self.point):
             if value is not None and value < 0:
                 raise ValueError("reference values must be non-negative")
+        if self.lower is None and not self.lower_inclusive:
+            raise ValueError("open lower-bound flag requires a lower value")
+        if self.upper is None and not self.upper_inclusive:
+            raise ValueError("open upper-bound flag requires an upper value")
 
         if self.kind in {ReferenceKind.ADEQUACY_FLOOR, ReferenceKind.LOWER_BOUND}:
             if self.lower is None or self.lower <= 0 or self.upper is not None or self.point is not None:
