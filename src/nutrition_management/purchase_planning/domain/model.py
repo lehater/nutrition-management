@@ -18,7 +18,13 @@ class EvidenceStatus(StrEnum):
     KNOWN = "known"
     ZERO = "zero"
     TRACE = "trace"
+    BELOW_QUANTIFICATION_LIMIT = "below_quantification_limit"
+    BELOW_DETECTION_LIMIT = "below_detection_limit"
     MISSING = "missing"
+
+    @property
+    def is_quantitatively_known(self) -> bool:
+        return self in {EvidenceStatus.KNOWN, EvidenceStatus.ZERO}
 
 
 @dataclass(frozen=True)
@@ -71,6 +77,16 @@ class CandidateNutrient:
     measure: str
     status: EvidenceStatus
     amount_per_100g: Decimal | None
+
+    def __post_init__(self) -> None:
+        if self.status.is_quantitatively_known and self.amount_per_100g is None:
+            raise ValueError("known/zero candidate evidence requires a numeric amount")
+        if self.amount_per_100g is not None and self.amount_per_100g < 0:
+            raise ValueError("candidate nutrient amount must be non-negative")
+        if self.status == EvidenceStatus.ZERO and self.amount_per_100g != Decimal(0):
+            raise ValueError("zero candidate evidence must contain numeric zero")
+        if not self.status.is_quantitatively_known and self.amount_per_100g is not None:
+            raise ValueError("non-quantitative candidate evidence must not contain a numeric amount")
 
 
 @dataclass(frozen=True)
