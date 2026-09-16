@@ -188,5 +188,6 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
         max_food_energy_share=max_share,
         provenance_offer_ids=tuple(sorted(planned_by_offer)),
         target_member_provenance=snapshot.target_member_provenance,
+        target_coverage_gaps=snapshot.target_coverage_gaps,
         safety_coverage_gaps=snapshot.safety_coverage_gaps,
     )
