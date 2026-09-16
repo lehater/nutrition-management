@@ -53,6 +53,40 @@ TOPIC_FAMILIES = {
     "molybdenum": ["dge.molybdenum"],
 }
 
+DGE_SOURCE_URLS = {
+    "dge-biotin": "https://www.dge.de/wissenschaft/referenzwerte/biotin/",
+    "dge-calcium": "https://www.dge.de/wissenschaft/referenzwerte/calcium/",
+    "dge-carbohydrates": "https://www.dge.de/wissenschaft/referenzwerte/kohlenhydrate/",
+    "dge-chloride": "https://www.dge.de/wissenschaft/referenzwerte/chlorid/",
+    "dge-fat-essential": "https://www.dge.de/wissenschaft/referenzwerte/fett-essenzielle-fettsaeuren/",
+    "dge-fibre": "https://www.dge.de/wissenschaft/referenzwerte/ballaststoffe/",
+    "dge-fluoride": "https://www.dge.de/wissenschaft/referenzwerte/fluorid/",
+    "dge-folate": "https://www.dge.de/wissenschaft/referenzwerte/folat/",
+    "dge-iodine": "https://www.dge.de/wissenschaft/referenzwerte/jod/",
+    "dge-iron": "https://www.dge.de/wissenschaft/referenzwerte/eisen/",
+    "dge-magnesium": "https://www.dge.de/wissenschaft/referenzwerte/magnesium/",
+    "dge-niacin": "https://www.dge.de/wissenschaft/referenzwerte/niacin/",
+    "dge-pantothenic-acid": "https://www.dge.de/wissenschaft/referenzwerte/pantothensaeure/",
+    "dge-phosphorus": "https://www.dge.de/wissenschaft/referenzwerte/phosphor/",
+    "dge-potassium": "https://www.dge.de/wissenschaft/referenzwerte/kalium/",
+    "dge-protein": "https://www.dge.de/wissenschaft/referenzwerte/protein/",
+    "dge-reference-tool-fat": "https://www.dge.de/wissenschaft/referenzwerte-tool/",
+    "dge-riboflavin": "https://www.dge.de/wissenschaft/referenzwerte/riboflavin/",
+    "dge-selenium": "https://www.dge.de/wissenschaft/referenzwerte/selen/",
+    "dge-sodium": "https://www.dge.de/wissenschaft/referenzwerte/natrium/",
+    "dge-thiamin": "https://www.dge.de/wissenschaft/referenzwerte/thiamin/",
+    "dge-trace-elements": "https://www.dge.de/wissenschaft/referenzwerte/kupfer-mangan-chrom-molybdaen/",
+    "dge-vitamin-a": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-a/",
+    "dge-vitamin-b12": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-b12/",
+    "dge-vitamin-b6": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-b6/",
+    "dge-vitamin-c": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-c/",
+    "dge-vitamin-d": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-d/",
+    "dge-vitamin-e": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-e/",
+    "dge-vitamin-k": "https://www.dge.de/wissenschaft/referenzwerte/vitamin-k/",
+    "dge-water": "https://www.dge.de/wissenschaft/referenzwerte/wasser/",
+    "dge-zinc": "https://www.dge.de/wissenschaft/referenzwerte/zink/",
+}
+
 
 def canonical_json(value) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
@@ -73,12 +107,12 @@ def load_rows(paths: list[Path]) -> list[dict]:
 
 
 def source_entry(source_id: str) -> dict:
-    if source_id.startswith("dge-"):
+    if source_id in DGE_SOURCE_URLS:
         return {
             "id": source_id,
             "name": f"DGE/OEGE reference values: {source_id.removeprefix('dge-')}",
             "version": "3rd edition, 1st issue 2025; May 2026 erratum",
-            "url": "https://www.dge.de/wissenschaft/referenzwerte/",
+            "url": DGE_SOURCE_URLS[source_id],
         }
     if source_id == "efsa-ul-overview-v11":
         return {
