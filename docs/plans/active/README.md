@@ -31,15 +31,13 @@ Only `known` and `zero` are quantitatively known. Purchase Planning must treat t
 
 The BLS normalizer also accepts only the thirteen documented BLS 4.0 data-origin categories and fails closed on unexpected source semantics.
 
-MRI additionally published a February 2026 BLS 4.0 erratum for food `M111100`. The production normalized package must apply it through an explicit versioned correction registry while retaining the original workbook digests:
+MRI maintains an official BLS 4.0 errata document. The current authoritative state is **August 2026** and is broader than the earlier February milk-only correction. The production normalized package therefore uses a typed correction registry plus explicit errata-coverage accounting, not a hard-coded list of selected replacement cells. Every correction family in the pinned current errata must be applied directly, propagated/recomputed deterministically, or marked non-applicable with evidence; unsupported or unaccounted corrections fail package generation.
 
-- `RETOL = 2.4 µg/100 g`;
-- `VITA = 3.1 µg/100 g`;
-- `VITAA = 2.7 µg/100 g`.
+The original BLS workbook digests remain immutable. The exact errata artifact is independently pinned by official identity/state and SHA-256 digest and participates, through the correction registry/coverage files, in the normalized package digest.
 
 ## Authorized implementation outcome
 
-`official pinned BLS 4.0 XLSX inputs + authoritative correction registry -> deterministic normalized Food Knowledge package -> transactional/idempotent production import -> BLS-backed Base Food facts available through existing planning boundary`.
+`official pinned BLS 4.0 XLSX inputs + pinned current official errata + authoritative typed correction registry -> deterministic normalized Food Knowledge package -> transactional/idempotent production import -> BLS-backed Base Food facts available through existing planning boundary`.
 
 The implementation preserves:
 
@@ -49,15 +47,17 @@ The implementation preserves:
 - per-value origin/reference/raw-value provenance;
 - deterministic `bls:4.0:<BLS_CODE>` Base Food identity;
 - explicit project-owned category mapping with exact-one classification coverage;
-- immutable raw source digests plus explicit authoritative correction provenance.
+- immutable raw source digests plus explicit authoritative correction provenance and full errata coverage accounting.
 
 ## Remaining completion dependencies
 
 Completion still requires:
 
 - exact official BLS 4.0 XLSX bytes and SHA-256 digests;
+- exact current official errata bytes and SHA-256 digest;
 - deterministic normalized package rebuild evidence;
 - exactly 7,140 distinct BLS food codes and 138 component definitions unless the pinned official source identity is explicitly revised;
+- complete current-errata coverage with no silent unsupported correction type;
 - exact-one ADR-005 category classification for every imported food;
 - representative production BLS foods round-tripping through `FoodKnowledgeRepository` and Planning Snapshot;
 - full regression/CI success without runtime network access.
@@ -82,4 +82,4 @@ Open P1: `0` at the amended readiness level; implementation PR #11 must implemen
 
 ## Next
 
-Squash-merge this semantic-correction decision PR after CI/review. Then resume draft PR #11 by implementing the six-state evidence contract, closed BLS origin vocabulary and correction-registry validation before any XLSX-specific normalizer or production corpus work.
+Squash-merge this semantic-correction decision PR after CI/review. Then resume draft PR #11 by implementing the six-state evidence contract, closed BLS origin vocabulary, typed correction-registry validation and errata coverage accounting before any XLSX-specific normalizer or production corpus work.
