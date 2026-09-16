@@ -19,6 +19,8 @@ from .model import (
     ReferenceScope,
     ResolvedReference,
     SafetyDefinition,
+    SafetyGap,
+    SafetyGapState,
     completed_calendar_months,
     chronological_age_years,
 )
@@ -173,38 +175,78 @@ def _convert_unit(value: Decimal | None, source_unit: str | None, target_unit: s
     raise ValueError(f"unsupported exact unit conversion: {source_unit} -> {target_unit}")
 
 
+def _safety_gap_from_reference_gap(gap: ReferenceGap) -> SafetyGap:
+    state = SafetyGapState(gap.state.value)
+    return SafetyGap(
+        member_id=gap.member_id,
+        family_id=gap.family_id,
+        state=state,
+        missing_dimensions=gap.missing_dimensions,
+        candidate_reference_ids=gap.candidate_reference_ids,
+        reason=gap.reason,
+    )
+
+
 def _selected_safety_limits(
     profile: NutritionProfile,
     standard: NutritionStandardSet,
     derivation_date: date,
     applicability_facts: dict[str, str] | None,
-) -> tuple[MemberSafetyLimit, ...]:
+) -> tuple[tuple[MemberSafetyLimit, ...], tuple[SafetyGap, ...]]:
     grouped: dict[str, list[SafetyDefinition]] = defaultdict(list)
     for item in standard.safety_limits:
         if item.scope == ReferenceScope.ACTIVE:
             grouped[item.resolved_family_id].append(item)
 
     selected: list[MemberSafetyLimit] = []
+    gaps: list[SafetyGap] = []
     for family_id, rows in sorted(grouped.items()):
-        definition, gap = _select_family(
+        definition, selection_gap = _select_family(
             family_id=family_id,
             definitions=tuple(rows),
             profile=profile,
             derivation_date=derivation_date,
             applicability_facts=applicability_facts,
         )
-        # Safety applicability uncertainty stays source provenance and never becomes a hard claim.
-        if definition is None or gap is not None:
+        if selection_gap is not None:
+            gaps.append(_safety_gap_from_reference_gap(selection_gap))
             continue
+        assert definition is not None
+
+        # Backward compatibility for the test-only first slice. Production mvp-v1
+        # supplies a complete safety mapping registry and never falls through here.
+        mapping = standard.safety_mapping_for_family(family_id)
+        if mapping is None and not standard.safety_mappings:
+            measure = definition.nutrient_measure
+            daily_upper = definition.daily_upper
+        else:
+            if mapping is None:
+                raise ValueError(f"missing safety mapping decision for active family {family_id}")
+            if mapping.status == MappingStatus.UNSUPPORTED:
+                gaps.append(
+                    SafetyGap(
+                        member_id=profile.member_id,
+                        family_id=family_id,
+                        state=SafetyGapState.UNSUPPORTED_MAPPING,
+                        candidate_reference_ids=(definition.reference_id,),
+                        reason=mapping.reason,
+                    )
+                )
+                continue
+            measure = mapping.nutrient_measure
+            assert measure is not None
+            daily_upper = _convert_unit(definition.daily_upper, definition.source_unit, mapping.canonical_unit)
+            assert daily_upper is not None
+
         selected.append(
             MemberSafetyLimit(
                 member_id=profile.member_id,
                 reference_id=definition.reference_id,
-                nutrient_measure=definition.nutrient_measure,
-                daily_upper=definition.daily_upper,
+                nutrient_measure=measure,
+                daily_upper=daily_upper,
             )
         )
-    return tuple(selected)
+    return tuple(selected), tuple(gaps)
 
 
 def derive_member_target(
@@ -295,7 +337,7 @@ def derive_member_target(
             )
         )
 
-    safety = _selected_safety_limits(profile, standard, derivation_date, applicability_facts)
+    safety, safety_gaps = _selected_safety_limits(profile, standard, derivation_date, applicability_facts)
     return MemberNutritionTarget(
         member_id=profile.member_id,
         derivation_date=derivation_date,
@@ -309,4 +351,5 @@ def derive_member_target(
         references=tuple(refs),
         safety_limits=safety,
         reference_gaps=tuple(gaps),
+        safety_gaps=safety_gaps,
     )
