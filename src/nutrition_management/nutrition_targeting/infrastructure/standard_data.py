@@ -127,6 +127,14 @@ def _required_text(value, field: str) -> str:
     return value
 
 
+def _optional_bool(value, field: str, *, default: bool = True) -> bool:
+    if value is None:
+        return default
+    if not isinstance(value, bool):
+        raise StandardPackageError(f"{field} must be boolean")
+    return value
+
+
 def _boundary(value, field: str) -> AgeBoundary | None:
     if value is None:
         return None
@@ -193,6 +201,8 @@ def _reference(row: dict, index: int, source_ids: set[str], source_file: str) ->
             else ApplicableWeightRule(row["applicable_weight_rule"]),
             source_id=source_id,
             source_locator=_required_text(row.get("source_locator"), f"{field}.source_locator"),
+            lower_inclusive=_optional_bool(row.get("lower_inclusive"), f"{field}.lower_inclusive"),
+            upper_inclusive=_optional_bool(row.get("upper_inclusive"), f"{field}.upper_inclusive"),
         )
     except (ValueError, TypeError) as exc:
         raise StandardPackageError(f"invalid {field}: {exc}") from exc
