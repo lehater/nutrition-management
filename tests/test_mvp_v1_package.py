@@ -45,7 +45,9 @@ def test_committed_mvp_v1_package_imports_idempotently_and_derives_adult_coverag
         persisted = repository.active_standard()
         assert persisted.version == "mvp-v1"
         assert persisted.content_digest == package.package_digest
-        assert persisted.safety_mappings == package.standard.safety_mappings
+        assert sorted(persisted.safety_mappings, key=lambda item: item.family_id) == sorted(
+            package.standard.safety_mappings, key=lambda item: item.family_id
+        )
         target = derive_household_target_fact(repository, "household", _DERIVATION_DATE)
 
     resolved_measures = {item.measure for item in target.targets}
