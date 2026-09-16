@@ -1,6 +1,8 @@
 from datetime import UTC, date, datetime
 from decimal import Decimal
 
+import pytest
+
 from nutrition_management.purchase_planning.domain.model import (
     CandidateNutrient,
     EvidenceStatus,
@@ -65,7 +67,16 @@ def test_reporting_distinguishes_purchased_planned_and_surplus_and_recalculates_
     assert plan.total_cost == Decimal("8")  # 2 packages + one delivery fee
 
 
-def test_unknown_selected_nutrient_makes_assessment_indeterminate():
+@pytest.mark.parametrize(
+    "status",
+    [
+        EvidenceStatus.TRACE,
+        EvidenceStatus.BELOW_QUANTIFICATION_LIMIT,
+        EvidenceStatus.BELOW_DETECTION_LIMIT,
+        EvidenceStatus.MISSING,
+    ],
+)
+def test_non_quantitative_selected_nutrient_makes_assessment_indeterminate(status):
     candidate = PurchaseCandidate(
         offer_id="offer-1",
         sku_id="sku-1",
@@ -83,7 +94,7 @@ def test_unknown_selected_nutrient_makes_assessment_indeterminate():
         free_delivery_threshold=None,
         nutrients=(
             CandidateNutrient("ENERCC", EvidenceStatus.KNOWN, Decimal("100")),
-            CandidateNutrient("FIBT", EvidenceStatus.MISSING, None),
+            CandidateNutrient("FIBT", status, None),
         ),
         observed_at=datetime(2026, 9, 15, 10, tzinfo=UTC),
     )
@@ -99,4 +110,5 @@ def test_unknown_selected_nutrient_makes_assessment_indeterminate():
     )
     plan = build_purchase_plan(snapshot, SolverDecision((SolverLineDecision("offer-1", 1, Decimal("1000")),)))
     fiber = next(item for item in plan.assessments if item.measure == "FIBT")
+    assert fiber.amount == 0
     assert fiber.indeterminate is True
