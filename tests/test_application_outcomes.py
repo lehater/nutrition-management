@@ -11,6 +11,7 @@ from nutrition_management.purchase_planning.domain.model import (
     PurchaseCandidate,
     SolverDecision,
     SolverLineDecision,
+    TargetCoverageGap,
 )
 
 NOW = datetime(2026, 9, 15, 12, tzinfo=UTC)
@@ -28,7 +29,7 @@ class SnapshotSource:
         return self.snapshot
 
 
-def _snapshot(candidates=()):
+def _snapshot(candidates=(), target_coverage_gaps=()):
     return PlanningInputSnapshot(
         household_id="h",
         derivation_date=TODAY,
@@ -38,11 +39,22 @@ def _snapshot(candidates=()):
         energy_target_kcal=Decimal("100"),
         targets=(),
         candidates=tuple(candidates),
+        target_coverage_gaps=tuple(target_coverage_gaps),
     )
 
 
-def test_hard_infeasible_maps_to_no_executable_plan():
-    snapshot = _snapshot()
+def _coverage_gap():
+    return TargetCoverageGap(
+        member_id="member",
+        family_id="family",
+        state="unsupported_mapping",
+        reason="no exact mapping",
+    )
+
+
+def test_hard_infeasible_maps_to_no_executable_plan_and_preserves_target_coverage():
+    gap = _coverage_gap()
+    snapshot = _snapshot(target_coverage_gaps=(gap,))
 
     def infeasible(_snapshot):
         raise HardModelInfeasible("no executable basket")
@@ -58,9 +70,10 @@ def test_hard_infeasible_maps_to_no_executable_plan():
     assert plan.outcome == PlanOutcome.NO_EXECUTABLE_PLAN
     assert plan.lines == ()
     assert plan.total_cost == 0
+    assert plan.target_coverage_gaps == (gap,)
 
 
-def test_policy_optimal_basket_with_variety_gap_is_partial():
+def test_policy_optimal_basket_with_variety_gap_is_partial_and_preserves_target_coverage():
     candidate = PurchaseCandidate(
         offer_id="offer",
         sku_id="sku",
@@ -79,7 +92,8 @@ def test_policy_optimal_basket_with_variety_gap_is_partial():
         nutrients=(CandidateNutrient("ENERCC", EvidenceStatus.KNOWN, Decimal("100")),),
         observed_at=NOW,
     )
-    snapshot = _snapshot((candidate,))
+    gap = _coverage_gap()
+    snapshot = _snapshot((candidate,), target_coverage_gaps=(gap,))
 
     def solved(_snapshot):
         return SolverDecision((SolverLineDecision("offer", 1, Decimal("100")),))
@@ -95,3 +109,4 @@ def test_policy_optimal_basket_with_variety_gap_is_partial():
     assert plan.outcome == PlanOutcome.PARTIAL
     assert plan.assessments[0].penalty == 0
     assert plan.represented_base_foods == ("food",)
+    assert plan.target_coverage_gaps == (gap,)
