@@ -10,7 +10,7 @@ This amendment is read together with [`bls-v4-food-knowledge-slice.md`](bls-v4-f
 Implementation-time inspection of the official BLS 4.0 documentation exposed two source facts that were not represented in the original readiness packet:
 
 1. BLS distinguishes `<LOQ` and `<LOD` from both `Spuren` (`TR`) and missing values.
-2. MRI published a February 2026 erratum requiring corrected values for BLS food `M111100` until a later BLS update incorporates the fix.
+2. MRI maintains a BLS 4.0 errata document. The current authoritative state is `August 2026`, broader than the earlier February milk-only correction, and contains direct as well as calculation/propagation corrections that apply before the next BLS update.
 
 The original readiness plan explicitly required an S2 stop when source inspection revealed semantics that could not be represented without weakening accepted meanings. ADR-012 and ADR-013 resolve that stop.
 
@@ -43,15 +43,16 @@ Parser/regression evidence must cover at least:
 
 ## Amended source-correction contract
 
-The deterministic normalized package adds a versioned correction-registry file to its manifest inventory.
+The deterministic normalized package adds two source-governance artifacts to its manifest inventory:
 
-For BLS 4.0 it must contain and apply the official MRI February 2026 erratum for `M111100`:
+- a versioned typed correction registry;
+- errata coverage accounting proving that every correction family in the pinned current official BLS 4.0 errata is applied, propagated/recomputed, or explicitly non-applicable.
 
-- `RETOL = 2.4 µg/100 g`;
-- `VITA = 3.1 µg/100 g`;
-- `VITAA = 2.7 µg/100 g`.
+The exact official errata artifact is pinned by publication state/date, official locator and SHA-256 digest. The original workbook digests remain unchanged.
 
-The original workbook digests remain unchanged. The correction registry records the authoritative erratum locator and enough original-versus-corrected provenance for audit. The package digest covers the correction registry.
+The correction model must support more than direct cell replacement. Package generation must be able to represent direct value/qualifier corrections, source-origin/reference corrections and corrections whose effects propagate through formulas, recipes or other derived BLS values. Unsupported correction types reject generation instead of being silently skipped.
+
+The previously published `M111100` RETOL/VITA/VITAA correction remains a required regression case, but it is not the completeness boundary; **the current August 2026 errata as a whole is**.
 
 ## Downstream implementation impact
 
@@ -62,7 +63,8 @@ The implementation slice must additionally update:
 - Market Catalog projection preservation of non-quantitative evidence states;
 - Purchase Planning evidence handling so every state other than `known`/`zero` is quantitatively unavailable;
 - reporting/regression tests for the extended state set;
-- package manifest validation for the source-correction registry.
+- package manifest validation for the correction registry, pinned errata identity and coverage accounting;
+- source-normalization tooling so correction propagation is deterministic and fail-closed.
 
 No optimizer objective or nutrition-target policy changes are authorized.
 
@@ -75,4 +77,4 @@ S4: `PASS` as amended.
 Open P0: `0`.
 Open P1: `0` after the amendment is implemented before production-package completion.
 
-The exact official XLSX bytes/digests and full 7,140-food category registry remain completion dependencies exactly as before.
+The exact official XLSX bytes/digests, exact current errata bytes/digest and full 7,140-food category registry remain completion dependencies.
