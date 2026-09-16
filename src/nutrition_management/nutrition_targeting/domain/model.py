@@ -35,6 +35,7 @@ class SourceSemanticKind(StrEnum):
     RECOMMENDED_INTAKE = "recommended_intake"
     ESTIMATED_VALUE = "estimated_value"
     GUIDELINE = "guideline"
+    UNCLASSIFIED = "unclassified"
 
 
 class ReferenceScope(StrEnum):
@@ -154,6 +155,10 @@ class ReferenceDefinition:
     def resolved_family_id(self) -> str:
         return self.reference_id if self.family_id is None else self.family_id
 
+    @property
+    def has_open_bound(self) -> bool:
+        return (self.lower is not None and not self.lower_inclusive) or (self.upper is not None and not self.upper_inclusive)
+
     def __post_init__(self) -> None:
         if not self.reference_id or not self.nutrient_measure:
             raise ValueError("reference identity and nutrient measure are required")
@@ -161,15 +166,15 @@ class ReferenceDefinition:
             raise ValueError("family identity must not be empty")
         if self.source_unit == "":
             raise ValueError("source unit must not be empty")
-        if not isinstance(self.lower_inclusive, bool) or not isinstance(self.upper_inclusive, bool):
-            raise ValueError("bound inclusivity flags must be boolean")
         for value in (self.lower, self.upper, self.point):
             if value is not None and value < 0:
                 raise ValueError("reference values must be non-negative")
+        if not isinstance(self.lower_inclusive, bool) or not isinstance(self.upper_inclusive, bool):
+            raise ValueError("bound inclusivity flags must be boolean")
         if self.lower is None and not self.lower_inclusive:
-            raise ValueError("open lower-bound flag requires a lower value")
+            raise ValueError("open lower bound requires a lower value")
         if self.upper is None and not self.upper_inclusive:
-            raise ValueError("open upper-bound flag requires an upper value")
+            raise ValueError("open upper bound requires an upper value")
 
         if self.kind in {ReferenceKind.ADEQUACY_FLOOR, ReferenceKind.LOWER_BOUND}:
             if self.lower is None or self.lower <= 0 or self.upper is not None or self.point is not None:
