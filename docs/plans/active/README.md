@@ -1,60 +1,65 @@
 # Active execution
 
-Current product state: the authorized sourced `mvp-v1` Nutrition Standard Set data/model/import slice is complete.
+Current product work: prepare and authorize the bounded BLS 4.0 Food Knowledge source-data/import slice.
 
-Lifecycle state: **Implementation completion PASS** under accepted S2/S3/S4 gates.
-Implementation authorization: **only** [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
+Lifecycle state: **S4 Implementation Readiness PASS** under accepted S0–S3 product semantics and architecture.
+Implementation authorization after this planning PR merges: **only** [`bls-v4-food-knowledge-slice.md`](bls-v4-food-knowledge-slice.md).
 
 ## Accepted upstream state
 
 - S0 Problem / Evidence: `PASS`.
 - S1 Requirements: `PASS`.
-- S2 Strategic/Tactical Domain Design: `PASS`; ADR-012 resolves source applicability and adult protein weight-basis semantics.
-- S3 Architecture: `PASS`; existing modular monolith, Nutrition Targeting ownership and one relational store remain valid.
-- S4 Implementation Readiness: `PASS` for this bounded standard-data/model/import slice.
-- Planning/readiness increment: squash-merged as commit `1df17d8aa9181a8e8a8aa28b108b88f9e1ac2ec6` via PR #8.
-- First executable implementation slice: completion gate `PASS`, squash-merged as commit `89e59831f9fd0fe83f9353ef498527f49e392342` via PR #7.
+- S2 Strategic/Tactical Domain Design: `PASS`; ADR-004 makes BLS 4.0 the canonical MVP food-composition vocabulary and ADR-005 owns the project food-category taxonomy.
+- S3 Architecture: `PASS`; existing modular monolith, Food Knowledge ownership and one relational store remain valid.
+- Previous `mvp-v1` Nutrition Standard Set slice: completion gate `PASS`, squash-merged as commit `93b44914913ec9b8bdfdfd69d9bd48cc2fefaf4a` via PR #9.
 
-## Authorized implementation
+## Selected next slice
 
-Canonical scope: [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
+Canonical readiness plan: [`bls-v4-food-knowledge-slice.md`](bls-v4-food-knowledge-slice.md).
 
-Implemented:
+Authorized outcome after merge:
 
-`complete sourced mvp-v1 reference/safety corpus + complete explicit mapping-decision registry -> deterministic versioned import -> production adult target derivation with explicit unsupported coverage`.
+`official pinned BLS 4.0 XLSX inputs -> deterministic normalized Food Knowledge package -> transactional/idempotent production import -> BLS-backed Base Food facts available through existing planning boundary`.
 
-The implementation extends Nutrition Targeting domain/persistence and the offline data-package validator/importer so source applicability, units, provenance, mapping status and safety semantics remain explicit and deterministic.
+The implementation preserves:
 
-## Completion evidence
+- BLS 4.0 component codes/native units and `100 g edible portion` basis;
+- all 138 component definitions;
+- missing / trace / zero / known distinctions;
+- per-value origin/reference provenance;
+- deterministic BLS-code-scoped Base Food identity;
+- explicit project-owned category mapping with exact-one classification coverage.
 
-Completion gate: **PASS**.
+## Readiness evidence
 
-- committed `data/nutrition/mvp-v1/` package validates offline;
-- package/source digests are deterministic; current package digest is `bb0a9a860072ac524cf56834aba426b67524556a4692e5c5687d78330bb5bfee`;
-- every DGE manifest `source_id` resolves through an explicit verified official DGE page/tool URL registry rather than a generic overview URL;
-- migration works from the PR #7 schema and an empty database;
-- import is transactional, identical-data idempotent and rejects conflicting same-version data;
-- exactly one active default standard is preserved;
-- every current DGE overview topic is accounted for and alcohol is explicitly non-active;
-- exact age/sex/applicability boundaries, zinc/iron gaps and adult protein BMI/reference-weight boundaries are tested;
-- `per_1000_kcal`, source kind/unit/basis/provenance and Safety Limit form scope round-trip losslessly;
-- every active family has one explicit mapping decision and no mapping is inferred by display name;
-- representative adult `mvp-v1` derivation carries resolved references and unsupported coverage correctly;
-- unsupported target/safety coverage propagates through Planning Snapshot and Purchase Plan reporting without entering numeric optimization;
-- `test-slice-v1`, migration, package E2E, architecture-boundary and regression suites remain green;
-- executable head `986554b1a85a1cf0f18c15db5ed496f3d8b39e36` passed CI #240 / run `35107054694`, including strict manifest reproducibility, solver benchmark and artifact upload.
+Official MRI BLS 4.0 source boundary is concrete:
 
-Final review at executable completion head:
+- source package version: BLS `4.0`, publication year `2025`;
+- DOI: `10.25826/Data20251217-134202-0`;
+- license: `CC BY 4.0` with Max Rubner-Institut attribution;
+- documented main workbook: `BLS_4_0_Daten_2025_DE.xlsx` with 7,140 foods and 138 nutrient components;
+- documented component workbook: `BLS_4_0_Components_DE_EN.xlsx`;
+- each nutrient cell carries value, data-origin category and reference fields;
+- all source quantities use the already accepted `100 g edible portion` basis.
 
-- P0: `0`.
-- P1: `0`.
-- P2: only the already accepted non-blocking readiness risks remain; none authorizes semantic fallback or scope expansion.
-- P3: `0` blocking completion.
+S4 P0: `0`.
+S4 P1: `0`.
+
+Carried P2 implementation risks are recorded in the slice plan and do not authorize heuristic category/name mapping, runtime scraping or semantic fallback.
 
 ## Guardrails
 
-No BLS food-row import, NIDDK/Hall execution, pediatric/infant energy execution, pregnancy/lactation targeting, new phytate/menstruation/menopause profile inputs, optimizer-policy changes, UI/API or runtime scraping.
+This slice does not authorize:
+
+- Market Catalog price/product acquisition or automatic SKU-to-BLS matching;
+- optimizer-policy changes;
+- new Nutrition Targeting mappings;
+- NIDDK/Hall execution;
+- pediatric/infant execution;
+- UI/API/authentication;
+- runtime BLS synchronization;
+- saved Purchase Plan history.
 
 ## Next
 
-Use the `main` commit produced by squash-merging PR #9 as the base of the next separately authorized slice. Do not expand this completed slice implicitly; select and authorize the next scope through the accepted lifecycle.
+Squash-merge this planning/readiness PR. Use the resulting `main` SHA as the base of a fresh implementation branch and implement only the BLS 4.0 source normalization, deterministic package, Food Knowledge persistence/import and regression work authorized by the active plan.
