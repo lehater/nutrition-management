@@ -39,6 +39,14 @@ class MemberSafetyLimit:
 
 
 @dataclass(frozen=True)
+class SafetyCoverageGap:
+    member_id: str
+    family_id: str
+    state: str
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
 class TargetMemberProvenance:
     member_id: str
     age_years: int
@@ -95,6 +103,7 @@ class PlanningInputSnapshot:
     candidates: tuple[PurchaseCandidate, ...]
     member_safety_limits: tuple[MemberSafetyLimit, ...] = ()
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
+    safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -167,3 +176,4 @@ class PurchasePlan:
     max_food_energy_share: Decimal
     provenance_offer_ids: tuple[str, ...]
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
+    safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
