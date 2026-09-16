@@ -1,8 +1,8 @@
 # Active execution
 
-Current product work: implement the authorized sourced `mvp-v1` Nutrition Standard Set data/model/import slice.
+Current product work: complete the authorized sourced `mvp-v1` Nutrition Standard Set data/model/import slice and merge PR #9.
 
-Lifecycle state: **Implementation IN_PROGRESS** under accepted S2/S3/S4 gates.
+Lifecycle state: **Implementation completion PASS — awaiting squash merge of PR #9** under accepted S2/S3/S4 gates.
 Implementation authorization: **only** [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
 
 ## Accepted upstream state
@@ -19,18 +19,19 @@ Implementation authorization: **only** [`mvp-v1-standard-data-slice.md`](mvp-v1-
 
 Canonical scope: [`mvp-v1-standard-data-slice.md`](mvp-v1-standard-data-slice.md).
 
-Implement:
+Implemented:
 
 `complete sourced mvp-v1 reference/safety corpus + complete explicit mapping-decision registry -> deterministic versioned import -> production adult target derivation with explicit unsupported coverage`.
 
-The first implementation step is structural: extend the Nutrition Targeting domain/persistence and offline data-package validator so the source corpus can be represented without flattening applicability, units, provenance or mapping status. Only then load the production source values.
+The implementation extends Nutrition Targeting domain/persistence and the offline data-package validator/importer so source applicability, units, provenance, mapping status and safety semantics remain explicit and deterministic.
 
-## Required completion evidence
+## Completion evidence
 
-Before this slice may be called complete:
+Completion gate: **PASS**.
 
 - committed `data/nutrition/mvp-v1/` package validates offline;
-- package/source digests are deterministic;
+- package/source digests are deterministic; current package digest is `bb0a9a860072ac524cf56834aba426b67524556a4692e5c5687d78330bb5bfee`;
+- every DGE manifest `source_id` resolves through an explicit verified official DGE page/tool URL registry rather than a generic overview URL;
 - migration works from the PR #7 schema and an empty database;
 - import is transactional, identical-data idempotent and rejects conflicting same-version data;
 - exactly one active default standard is preserved;
@@ -39,17 +40,21 @@ Before this slice may be called complete:
 - `per_1000_kcal`, source kind/unit/basis/provenance and Safety Limit form scope round-trip losslessly;
 - every active family has one explicit mapping decision and no mapping is inferred by display name;
 - representative adult `mvp-v1` derivation carries resolved references and unsupported coverage correctly;
-- `test-slice-v1` and architecture-boundary regression suites remain green.
+- unsupported target/safety coverage propagates through Planning Snapshot and Purchase Plan reporting without entering numeric optimization;
+- `test-slice-v1`, migration, package E2E, architecture-boundary and regression suites remain green;
+- executable head `986554b1a85a1cf0f18c15db5ed496f3d8b39e36` passed CI #240 / run `35107054694`, including strict manifest reproducibility, solver benchmark and artifact upload.
+
+Final review at executable completion head:
+
+- P0: `0`.
+- P1: `0`.
+- P2: only the already accepted non-blocking readiness risks remain; none authorizes semantic fallback or scope expansion.
+- P3: `0` blocking completion.
 
 ## Guardrails
 
 No BLS food-row import, NIDDK/Hall execution, pediatric/infant energy execution, pregnancy/lactation targeting, new phytate/menstruation/menopause profile inputs, optimizer-policy changes, UI/API or runtime scraping.
 
-Open P0: `0`.
-Open P1: `0` at implementation start.
-
-Carried P2 risks remain documented in the readiness plan; none authorizes semantic fallback.
-
 ## Next
 
-Implement the typed production Standard Set model, schema migration and deterministic offline data-package validator/import contract. Keep the implementation PR draft until the full sourced corpus and all completion evidence are green.
+Keep PR #9 limited to this authorized slice, obtain a green CI run for the final documentation-only head, mark the PR ready, squash-merge it into `main`, then record the resulting `main` SHA as the base of the next authorized slice.
