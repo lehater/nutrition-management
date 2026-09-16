@@ -9,7 +9,13 @@ class NutrientStatus(StrEnum):
     KNOWN = "known"
     ZERO = "zero"
     TRACE = "trace"
+    BELOW_QUANTIFICATION_LIMIT = "below_quantification_limit"
+    BELOW_DETECTION_LIMIT = "below_detection_limit"
     MISSING = "missing"
+
+    @property
+    def is_quantitatively_known(self) -> bool:
+        return self in {NutrientStatus.KNOWN, NutrientStatus.ZERO}
 
 
 TOP_LEVEL_CATEGORIES = frozenset(
@@ -33,18 +39,18 @@ class NutrientEvidence:
     amount_per_100g: Decimal | None = None
 
     def __post_init__(self) -> None:
-        if self.status in {NutrientStatus.KNOWN, NutrientStatus.ZERO} and self.amount_per_100g is None:
+        if self.status.is_quantitatively_known and self.amount_per_100g is None:
             raise ValueError("known/zero nutrient evidence requires a numeric amount")
         if self.amount_per_100g is not None and self.amount_per_100g < 0:
             raise ValueError("nutrient amount must be non-negative")
         if self.status == NutrientStatus.ZERO and self.amount_per_100g != Decimal(0):
             raise ValueError("zero nutrient evidence must contain numeric zero")
-        if self.status in {NutrientStatus.TRACE, NutrientStatus.MISSING} and self.amount_per_100g is not None:
-            raise ValueError("trace/missing nutrient evidence must not fabricate a numeric amount")
+        if not self.status.is_quantitatively_known and self.amount_per_100g is not None:
+            raise ValueError("non-quantitative nutrient evidence must not fabricate a numeric amount")
 
     @property
     def is_quantitatively_known(self) -> bool:
-        return self.status in {NutrientStatus.KNOWN, NutrientStatus.ZERO}
+        return self.status.is_quantitatively_known
 
 
 @dataclass(frozen=True)
