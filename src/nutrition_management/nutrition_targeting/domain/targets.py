@@ -247,6 +247,17 @@ def derive_member_target(
                 )
             )
             continue
+        if not definition.lower_inclusive or not definition.upper_inclusive:
+            gaps.append(
+                ReferenceGap(
+                    member_id=profile.member_id,
+                    family_id=family_id,
+                    state=ReferenceGapState.UNSUPPORTED_TARGET_SHAPE,
+                    candidate_reference_ids=(definition.reference_id,),
+                    reason="current Purchase Planning target shape cannot represent an open source bound exactly",
+                )
+            )
+            continue
         measure = definition.nutrient_measure if mapping is None else mapping.nutrient_measure
         assert measure is not None
 
