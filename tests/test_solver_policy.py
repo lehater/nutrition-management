@@ -54,11 +54,13 @@ def candidate(
 
 
 def known(measure: str, amount: str):
-    return CandidateNutrient(measure, EvidenceStatus.KNOWN, Decimal(amount))
+    value = Decimal(amount)
+    status = EvidenceStatus.ZERO if value == 0 else EvidenceStatus.KNOWN
+    return CandidateNutrient(measure, status, value)
 
 
-def missing(measure: str):
-    return CandidateNutrient(measure, EvidenceStatus.MISSING, None)
+def non_quantitative(measure: str, status: EvidenceStatus):
+    return CandidateNutrient(measure, status, None)
 
 
 def snapshot(candidates, *, energy="200", targets=()):
@@ -116,7 +118,18 @@ def test_integer_packages_continuous_planned_quantity_and_free_delivery_threshol
     assert plan.lines[0].surplus_grams > 0
 
 
-def test_lower_bound_can_be_proven_with_known_contribution_while_unknown_evidence_remains_visible():
+@pytest.mark.parametrize(
+    "unknown_status",
+    [
+        EvidenceStatus.TRACE,
+        EvidenceStatus.BELOW_QUANTIFICATION_LIMIT,
+        EvidenceStatus.BELOW_DETECTION_LIMIT,
+        EvidenceStatus.MISSING,
+    ],
+)
+def test_lower_bound_can_be_proven_with_known_contribution_while_non_quantitative_evidence_remains_visible(
+    unknown_status,
+):
     unknown = candidate(
         "cheap-unknown",
         sku="u",
@@ -125,7 +138,7 @@ def test_lower_bound_can_be_proven_with_known_contribution_while_unknown_evidenc
         merchant="m",
         channel="c",
         price="1",
-        nutrients=(known("ENERCC", "100"), missing("FIBT")),
+        nutrients=(known("ENERCC", "100"), non_quantitative("FIBT", unknown_status)),
     )
     determinate = candidate(
         "known",
