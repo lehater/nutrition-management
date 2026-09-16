@@ -44,7 +44,15 @@ def test_committed_reference_shards_are_structurally_complete_and_uniquely_ident
     assert len(row_ids) == len(set(row_ids)), "row_id must be globally unique inside mvp-v1"
 
     active_families = {row["family_id"] for row in rows if row["scope"] == "active"}
-    mappings = json.loads((_DATA / "mappings.json").read_text(encoding="utf-8"))["mappings"]
+    mapping_payload = json.loads((_DATA / "mappings.json").read_text(encoding="utf-8"))
+    mappings = mapping_payload["mappings"]
     mapping_families = [item["family_id"] for item in mappings]
     assert len(mapping_families) == len(set(mapping_families))
     assert set(mapping_families) == active_families
+
+    safety_rows = json.loads((_DATA / "safety_limits.json").read_text(encoding="utf-8"))["rows"]
+    active_safety_families = {row["family_id"] for row in safety_rows if row["scope"] == "active"}
+    safety_mappings = mapping_payload["safety_mappings"]
+    safety_mapping_families = [item["family_id"] for item in safety_mappings]
+    assert len(safety_mapping_families) == len(set(safety_mapping_families))
+    assert set(safety_mapping_families) == active_safety_families
