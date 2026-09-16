@@ -66,6 +66,12 @@ class ReferenceGapState(StrEnum):
     UNSUPPORTED_TARGET_SHAPE = "unsupported_target_shape"
 
 
+class SafetyGapState(StrEnum):
+    UNSUPPORTED_APPLICABILITY = "unsupported_applicability"
+    SOURCE_INAPPLICABLE = "source_inapplicable"
+    UNSUPPORTED_MAPPING = "unsupported_mapping"
+
+
 class SafetySemanticKind(StrEnum):
     UL = "ul"
     SAFE_LEVEL = "safe_level"
@@ -131,7 +137,6 @@ class NutritionProfile:
 
 @dataclass(frozen=True)
 class ReferenceDefinition:
-    # `reference_id` is the source-row identity retained for first-slice compatibility.
     reference_id: str
     nutrient_measure: str
     kind: ReferenceKind
@@ -183,14 +188,7 @@ class ReferenceDefinition:
             if self.upper is None or self.upper <= 0 or self.lower is not None or self.point is not None:
                 raise ValueError("upper-bound reference requires only a positive upper value")
         elif self.kind == ReferenceKind.INTERVAL:
-            if (
-                self.lower is None
-                or self.upper is None
-                or self.lower <= 0
-                or self.upper <= 0
-                or self.lower > self.upper
-                or self.point is not None
-            ):
+            if self.lower is None or self.upper is None or self.lower <= 0 or self.upper <= 0 or self.lower > self.upper or self.point is not None:
                 raise ValueError("interval reference requires a positive ordered lower/upper pair")
         elif self.kind == ReferenceKind.POINT:
             if self.point is None or self.point <= 0 or self.lower is not None or self.upper is not None:
@@ -233,6 +231,29 @@ class TargetMapping:
 
 
 @dataclass(frozen=True)
+class SafetyMapping:
+    family_id: str
+    status: MappingStatus
+    nutrient_measure: str | None = None
+    canonical_unit: str | None = None
+    reason: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.family_id:
+            raise ValueError("safety mapping family identity is required")
+        if self.status == MappingStatus.MAPPED:
+            if not self.nutrient_measure or not self.canonical_unit:
+                raise ValueError("mapped safety limit requires canonical measure and unit")
+            if self.reason is not None:
+                raise ValueError("mapped safety limit must not carry unsupported reason")
+        else:
+            if not self.reason:
+                raise ValueError("unsupported safety mapping requires a reason")
+            if self.nutrient_measure is not None or self.canonical_unit is not None:
+                raise ValueError("unsupported safety mapping must not carry canonical mapping fields")
+
+
+@dataclass(frozen=True)
 class SafetyDefinition:
     reference_id: str
     nutrient_measure: str
@@ -266,6 +287,7 @@ class NutritionStandardSet:
     safety_limits: tuple[SafetyDefinition, ...] = ()
     mappings: tuple[TargetMapping, ...] = ()
     content_digest: str | None = None
+    safety_mappings: tuple[SafetyMapping, ...] = ()
 
     def __post_init__(self) -> None:
         if not self.version:
@@ -273,12 +295,15 @@ class NutritionStandardSet:
         reference_ids = [item.reference_id for item in self.references]
         safety_ids = [item.reference_id for item in self.safety_limits]
         mapping_ids = [item.family_id for item in self.mappings]
+        safety_mapping_ids = [item.family_id for item in self.safety_mappings]
         if len(reference_ids) != len(set(reference_ids)):
             raise ValueError("reference ids must be unique within a standard version")
         if len(safety_ids) != len(set(safety_ids)):
             raise ValueError("safety reference ids must be unique within a standard version")
         if len(mapping_ids) != len(set(mapping_ids)):
             raise ValueError("mapping family ids must be unique within a standard version")
+        if len(safety_mapping_ids) != len(set(safety_mapping_ids)):
+            raise ValueError("safety mapping family ids must be unique within a standard version")
         if self.content_digest is not None and not self.content_digest:
             raise ValueError("content digest must not be empty")
         if self.mappings:
@@ -287,9 +312,18 @@ class NutritionStandardSet:
                 missing = sorted(active_families - set(mapping_ids))
                 extra = sorted(set(mapping_ids) - active_families)
                 raise ValueError(f"mapping registry must cover active families exactly; missing={missing}, extra={extra}")
+        if self.safety_mappings:
+            active_safety_families = {item.resolved_family_id for item in self.safety_limits if item.scope == ReferenceScope.ACTIVE}
+            if set(safety_mapping_ids) != active_safety_families:
+                missing = sorted(active_safety_families - set(safety_mapping_ids))
+                extra = sorted(set(safety_mapping_ids) - active_safety_families)
+                raise ValueError(f"safety mapping registry must cover active families exactly; missing={missing}, extra={extra}")
 
     def mapping_for_family(self, family_id: str) -> TargetMapping | None:
         return next((item for item in self.mappings if item.family_id == family_id), None)
+
+    def safety_mapping_for_family(self, family_id: str) -> SafetyMapping | None:
+        return next((item for item in self.safety_mappings if item.family_id == family_id), None)
 
 
 @dataclass(frozen=True)
@@ -297,6 +331,16 @@ class ReferenceGap:
     member_id: str
     family_id: str
     state: ReferenceGapState
+    missing_dimensions: tuple[str, ...] = ()
+    candidate_reference_ids: tuple[str, ...] = ()
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
+class SafetyGap:
+    member_id: str
+    family_id: str
+    state: SafetyGapState
     missing_dimensions: tuple[str, ...] = ()
     candidate_reference_ids: tuple[str, ...] = ()
     reason: str | None = None
@@ -335,6 +379,7 @@ class MemberNutritionTarget:
     references: tuple[ResolvedReference, ...]
     safety_limits: tuple[MemberSafetyLimit, ...]
     reference_gaps: tuple[ReferenceGap, ...] = ()
+    safety_gaps: tuple[SafetyGap, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -346,6 +391,7 @@ class HouseholdNutritionTarget:
     references: tuple[ResolvedReference, ...]
     member_targets: tuple[MemberNutritionTarget, ...]
     reference_gaps: tuple[ReferenceGap, ...] = ()
+    safety_gaps: tuple[SafetyGap, ...] = ()
 
 
 def chronological_age_years(date_of_birth: date, on_date: date) -> int:
