@@ -46,8 +46,8 @@ class SourceNutrientEvidence:
         if self.status == NutrientEvidenceStatus.MISSING:
             raise ValueError("missing nutrient evidence is represented by absence, not an explicit row")
         if self.status in {NutrientEvidenceStatus.KNOWN, NutrientEvidenceStatus.ZERO}:
-            if self.amount_per_100g is None:
-                raise ValueError("known/zero nutrient evidence requires a numeric amount")
+            if not isinstance(self.amount_per_100g, Decimal):
+                raise ValueError("known/zero nutrient evidence requires a Decimal amount")
             if not self.amount_per_100g.is_finite() or self.amount_per_100g < 0:
                 raise ValueError("nutrient amount must be finite and non-negative")
         elif self.amount_per_100g is not None:
@@ -58,6 +58,7 @@ class SourceNutrientEvidence:
 
 @dataclass(frozen=True)
 class SourceFood:
+    base_food_id: str
     source_code: str
     name_de: str
     name_en: str | None
@@ -65,6 +66,8 @@ class SourceFood:
     nutrients: tuple[SourceNutrientEvidence, ...]
 
     def __post_init__(self) -> None:
+        if not self.base_food_id:
+            raise ValueError("base_food_id is required")
         if not self.source_code:
             raise ValueError("source food code is required")
         if not self.name_de:
@@ -74,10 +77,6 @@ class SourceFood:
         component_codes = [item.component_code for item in self.nutrients]
         if len(component_codes) != len(set(component_codes)):
             raise ValueError("source food nutrient component codes must be unique")
-
-    @property
-    def base_food_id(self) -> str:
-        return f"bls:4.0:{self.source_code}"
 
 
 @dataclass(frozen=True)
@@ -116,6 +115,9 @@ class FoodSourceDataset:
         food_codes = [item.source_code for item in self.foods]
         if len(food_codes) != len(set(food_codes)):
             raise ValueError("food source codes must be unique inside one source dataset")
+        base_food_ids = [item.base_food_id for item in self.foods]
+        if len(base_food_ids) != len(set(base_food_ids)):
+            raise ValueError("base food ids must be unique inside one source dataset")
 
         known_components = set(component_codes)
         for food in self.foods:
