@@ -89,7 +89,7 @@ def _write_fixture_package(directory):
                         "component_code": "PROT625",
                         "status": "trace",
                         "amount_per_100g": None,
-                        "source_value_text": "0",
+                        "source_value_text": "TR",
                         "value_origin": "Spuren",
                         "source_reference": "fixture-trace",
                     }
@@ -97,10 +97,30 @@ def _write_fixture_package(directory):
             },
         ]
     }
+    corrections = {
+        "corrections": [
+            {
+                "id": "fixture-direct-energy",
+                "type": "direct_value",
+                "scope": {"food_code": "A000001", "component_code": "ENERCC"},
+                "source_locator": "fixture:errata#direct-energy",
+            }
+        ]
+    }
+    coverage = {
+        "entries": [
+            {
+                "correction_id": "fixture-direct-energy",
+                "outcome": "applied_directly",
+            }
+        ]
+    }
     payloads = {
         "components.json": _bytes(components),
         "category_mappings.json": _bytes(categories),
         "foods.0001.json": _bytes(foods),
+        "corrections.json": _bytes(corrections),
+        "errata_coverage.json": _bytes(coverage),
     }
     for name, payload in payloads.items():
         (directory / name).write_bytes(payload)
@@ -119,6 +139,12 @@ def _write_fixture_package(directory):
         "source_files": {
             "BLS_4_0_Daten_2025_DE.xlsx": "1" * 64,
             "BLS_4_0_Components_DE_EN.xlsx": "2" * 64,
+        },
+        "errata": {
+            "state": "2026-08",
+            "locator": "https://www.blsdb.de/bls#errata",
+            "sha256": "3" * 64,
+            "coverage_complete": True,
         },
         "files": {name: sha256(payload).hexdigest() for name, payload in payloads.items()},
         "food_files": ["foods.0001.json"],
@@ -173,6 +199,33 @@ def test_bls_normalized_package_rejects_tampering_and_category_gaps(tmp_path):
     (package_dir / "manifest.json").write_bytes(_bytes(manifest))
 
     with pytest.raises(BlsV4PackageError, match="no explicit category mapping"):
+        load_bls_v4_package(package_dir, expected_food_count=2, expected_component_count=2)
+
+
+def test_bls_normalized_package_rejects_unaccounted_or_unsupported_errata(tmp_path):
+    package_dir = _write_fixture_package(tmp_path / "bls-4.0")
+    coverage = {"entries": []}
+    coverage_bytes = _bytes(coverage)
+    (package_dir / "errata_coverage.json").write_bytes(coverage_bytes)
+    manifest = json.loads((package_dir / "manifest.json").read_text(encoding="utf-8"))
+    manifest["files"]["errata_coverage.json"] = sha256(coverage_bytes).hexdigest()
+    manifest["package_digest"] = compute_manifest_digest(manifest)
+    (package_dir / "manifest.json").write_bytes(_bytes(manifest))
+
+    with pytest.raises(BlsV4PackageError, match="coverage must account"):
+        load_bls_v4_package(package_dir, expected_food_count=2, expected_component_count=2)
+
+    _write_fixture_package(package_dir)
+    corrections = json.loads((package_dir / "corrections.json").read_text(encoding="utf-8"))
+    corrections["corrections"][0]["type"] = "magic_fix"
+    corrections_bytes = _bytes(corrections)
+    (package_dir / "corrections.json").write_bytes(corrections_bytes)
+    manifest = json.loads((package_dir / "manifest.json").read_text(encoding="utf-8"))
+    manifest["files"]["corrections.json"] = sha256(corrections_bytes).hexdigest()
+    manifest["package_digest"] = compute_manifest_digest(manifest)
+    (package_dir / "manifest.json").write_bytes(_bytes(manifest))
+
+    with pytest.raises(BlsV4PackageError, match="unsupported BLS correction type"):
         load_bls_v4_package(package_dir, expected_food_count=2, expected_component_count=2)
 
 
