@@ -23,6 +23,14 @@ class MemberSafetyFact:
 
 
 @dataclass(frozen=True)
+class SafetyCoverageFact:
+    member_id: str
+    family_id: str
+    state: str
+    reason: str | None = None
+
+
+@dataclass(frozen=True)
 class MemberTargetProvenanceFact:
     member_id: str
     age_years: int
@@ -42,3 +50,4 @@ class HouseholdTargetFact:
     member_ids: tuple[str, ...]
     member_safety_limits: tuple[MemberSafetyFact, ...]
     member_provenance: tuple[MemberTargetProvenanceFact, ...]
+    safety_coverage_gaps: tuple[SafetyCoverageFact, ...] = ()
