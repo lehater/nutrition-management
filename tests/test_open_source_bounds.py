@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+from decimal import Decimal
 from hashlib import sha256
 import json
 
@@ -85,10 +86,10 @@ def test_open_source_bound_round_trips_and_stays_out_of_numeric_target(engine, t
         member_id="adult",
         date_of_birth=date(1990, 1, 1),
         sex=Sex.MALE,
-        height_m=1.8,
-        current_weight_kg=75,
+        height_m=Decimal("1.80"),
+        current_weight_kg=Decimal("75"),
         current_weight_date=date(2026, 9, 16),
-        pal=1.6,
+        pal=Decimal("1.6"),
     )
     target = derive_member_target(profile, standard, date(2026, 9, 16))
     assert target.references == ()
