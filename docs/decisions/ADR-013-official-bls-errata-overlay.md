@@ -7,11 +7,11 @@ Lifecycle owner: `S2 Strategic/Tactical Domain Design / Food Knowledge source go
 
 ## Context
 
-The BLS 4.0 production baseline is pinned to the official 2025 source package by version, DOI and exact input-file digests. After that package was published, the Max Rubner-Institut issued an official February 2026 erratum for food `M111100` (fresh skimmed milk, at most 0.1% fat, pasteurized).
+The BLS 4.0 production baseline is pinned to the official 2025 source package by version, DOI and exact input-file digests. MRI publishes a separate BLS 4.0 errata document containing corrections, error fixes and updates that apply until a later BLS release incorporates them.
 
-The erratum states that the published retinol value was taken from fortified milk by mistake and requires corrected values for all analyses until the next BLS update. It provides corrected values per 100 g for `RETOL` (2.4 µg), `VITA` (3.1 µg) and `VITAA` (2.7 µg), with the latter two following from formula calculation.
+The current authoritative errata is `Stand August 2026`. It is broader than the earlier February 2026 milk-only correction: it includes direct nutrient-value corrections, qualifier/data-quality corrections and corrections whose effects propagate through BLS formulas or recipe calculations.
 
-Importing the raw 2025 workbook unchanged as the production baseline would therefore reproduce a known source defect. Silently changing the workbook-derived values without recording the correction would break reproducibility and provenance.
+Importing the raw 2025 workbook unchanged would therefore knowingly reproduce source defects. Silently changing workbook-derived values without recording the corrections would break reproducibility and provenance.
 
 ## Decision
 
@@ -19,65 +19,84 @@ Importing the raw 2025 workbook unchanged as the production baseline would there
 
 The pinned BLS 4.0 XLSX files retain their own SHA-256 identities. An official erratum does not rewrite or masquerade as those original source bytes.
 
+The exact errata artifact used for a production package is itself pinned by publication state/date, official locator and SHA-256 digest. A rotating download URL is not its identity boundary.
+
 ### Corrections are explicit overlays
 
 Food Knowledge normalization supports a deterministic, versioned source-correction registry applied after raw source extraction and before generation of the normalized production package.
 
-Each correction records at least:
+The registry supports typed corrections rather than assuming every erratum is one direct cell replacement. A correction may represent at least:
 
-- correction/erratum identity and publication date;
+- a direct food/component value or qualifier replacement;
+- a source-origin/reference correction;
+- a formula or calculation correction whose dependent values must be deterministically recomputed;
+- a recipe/derived-value correction whose affected downstream rows are explicitly accounted for.
+
+Each correction record retains enough information to audit the transformation, including:
+
+- correction/errata identity and publication state/date;
 - official source locator;
-- affected BLS food code and component code;
-- original source value/qualifier when available from the pinned input;
-- corrected normalized source value/qualifier;
-- corrected data-origin/reference semantics when the erratum specifies them;
+- correction type;
+- affected BLS food/component or calculation scope;
+- original source value/qualifier when applicable and available from the pinned input;
+- corrected source/effective value or rule;
+- corrected data-origin/reference semantics when specified;
 - rationale/source note.
 
-The correction registry is part of the normalized package file inventory and therefore part of the package digest.
+The correction registry and an errata-coverage record are part of the normalized package file inventory and therefore part of the package digest.
+
+### Full current-errata coverage is mandatory
+
+Production generation applies **all applicable corrections in the pinned current official BLS 4.0 errata**, not a hand-selected subset.
+
+Generation must account for every correction family in the pinned errata as exactly one of:
+
+- applied directly;
+- applied through deterministic recomputation/propagation;
+- demonstrably not applicable to the pinned source/package, with an explicit reason.
+
+An unsupported correction type or an unaccounted errata entry fails package generation. The implementation must not silently omit a correction because the current registry schema cannot express it.
+
+The August 2026 errata includes the previously published `M111100` milk correction (`RETOL`, `VITA`, `VITAA`) as well as additional corrections. The milk values remain a useful regression case, but they are not the completeness boundary for the overlay.
 
 ### Only authoritative corrections qualify
 
 A correction overlay may be applied automatically only when it is published by the same authoritative source owner for the pinned data set (MRI for BLS) or is otherwise accepted by a separate project decision. Community reports or heuristic repairs do not enter the production package automatically.
 
-### BLS 4.0 February 2026 erratum
-
-The BLS 4.0 production package must apply the MRI February 2026 erratum for `M111100` before the slice completion gate passes:
-
-- `RETOL` -> `2.4 µg/100 g`;
-- `VITA` -> `3.1 µg/100 g`;
-- `VITAA` -> `2.7 µg/100 g`.
-
-The normalized package must retain enough correction provenance to show that these values differ intentionally from the pinned 2025 workbook and why.
-
 ### Version upgrades remain separate
 
-When MRI publishes a new BLS release whose source bytes already include the correction, that later release is adopted under its own explicit source/version identity. The 4.0 correction overlay is not silently carried forward unless source review shows it remains applicable.
+When MRI publishes a new BLS release whose source bytes incorporate an erratum, that release is adopted under its own explicit source/version identity. A BLS 4.0 overlay is not silently carried forward unless source review shows it remains applicable.
 
 ## Consequences
 
-- Production planning does not knowingly consume the published 4.0 milk error.
-- Reproducibility remains intact because raw source digests and correction-overlay digest are both explicit.
-- Package generation gains one additional fail-closed input: the versioned official-correction registry.
-- Persistence may retain only the effective normalized value plus correction/source provenance; the committed deterministic package remains the audit record for original-versus-corrected source values.
-- Future official errata can be incorporated without mutating historical input-file identity or inventing a pseudo BLS version.
+- Production planning does not knowingly consume corrections already published by MRI for BLS 4.0.
+- Reproducibility remains intact because raw-source digests, errata-artifact digest, correction registry and coverage accounting are all explicit.
+- Package generation gains a fail-closed source-governance input rather than parser hard-coding.
+- Correction handling can represent direct values and propagated calculation effects without pretending they are the same operation.
+- Persistence may expose only the effective normalized value plus correction/source provenance; the deterministic package remains the full original-versus-corrected audit record.
+- A newer official errata replaces the previous errata input for newly generated production packages; historical package digests remain reproducible.
 
 ## Alternatives considered
 
 ### Import the pinned workbook literally and ignore later errata
 
-Rejected because MRI explicitly requires the corrected values for analyses until the next update; reproducing a known erroneous value is not a useful production baseline.
+Rejected because the source owner explicitly publishes corrections for use before the next BLS release.
+
+### Apply only simple direct-value corrections
+
+Rejected because the current errata contains correction types whose effects are formula- or recipe-derived. Partial support would silently create an internally inconsistent BLS baseline.
 
 ### Edit or replace the downloaded XLSX before hashing it
 
 Rejected because that destroys the identity of the official input bytes and makes the package falsely appear to come directly from the published workbook.
 
-### Treat the erratum as a new BLS version
+### Treat each erratum as a new BLS version
 
-Rejected because MRI has not assigned a new BLS version to this correction. Project source identity must not invent external versioning.
+Rejected because MRI has not assigned those corrections a new BLS version. Project source identity must not invent external versioning.
 
 ### Hard-code corrected values directly in parser code
 
-Rejected because corrections are data/provenance, not parser behavior. A versioned correction registry is reviewable, reproducible and extensible.
+Rejected because corrections are source data/provenance and transformation policy, not workbook parser behavior. A versioned registry is reviewable, reproducible and extensible.
 
 ## Supersession
 
