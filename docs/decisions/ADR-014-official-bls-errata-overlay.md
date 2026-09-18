@@ -1,4 +1,4 @@
-# ADR-013 — Official BLS errata are applied as explicit source-correction overlays
+# ADR-014 — Official BLS errata are applied as explicit source-correction overlays
 
 Status: `accepted`.
 

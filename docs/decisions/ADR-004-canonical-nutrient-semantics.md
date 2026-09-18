@@ -121,4 +121,4 @@ Rejected for the MVP because component-wise fallback/override across different f
 ## Supersession
 
 Supersedes: none.
-Superseded by: none.
+Superseded by: [`ADR-013`](ADR-013-limit-qualified-nutrient-evidence.md) for the four-state-only nutrient-evidence scope.

@@ -3,7 +3,7 @@
 Status: `PASS` — S4 amendment after source inspection.
 Lifecycle owner: Food Knowledge / S4 Implementation Readiness.
 
-This amendment is read together with [`bls-v4-food-knowledge-slice.md`](bls-v4-food-knowledge-slice.md). Where the original readiness plan describes a four-state `missing / trace / zero / known` evidence model or literal import of the pinned workbook, ADR-012 and ADR-013 are authoritative.
+This amendment is read together with [`bls-v4-food-knowledge-slice.md`](bls-v4-food-knowledge-slice.md). Where the original readiness plan describes a four-state `missing / trace / zero / known` evidence model or literal import of the pinned workbook, ADR-013 and ADR-014 are authoritative.
 
 ## Trigger
 
@@ -12,7 +12,7 @@ Implementation-time inspection of the official BLS 4.0 documentation exposed two
 1. BLS distinguishes `<LOQ` and `<LOD` from both `Spuren` (`TR`) and missing values.
 2. MRI maintains a BLS 4.0 errata document. The current authoritative state is `August 2026`, broader than the earlier February milk-only correction, and contains direct as well as calculation/propagation corrections that apply before the next BLS update.
 
-The original readiness plan explicitly required an S2 stop when source inspection revealed semantics that could not be represented without weakening accepted meanings. ADR-012 and ADR-013 resolve that stop.
+The original readiness plan explicitly required an S2 stop when source inspection revealed semantics that could not be represented without weakening accepted meanings. ADR-013 and ADR-014 resolve that stop.
 
 ## Amended evidence contract
 
@@ -70,7 +70,7 @@ No optimizer objective or nutrition-target policy changes are authorized.
 
 ## Readiness result
 
-S2: `PASS` after ADR-012 and ADR-013.
+S2: `PASS` after ADR-013 and ADR-014.
 S3: `PASS`; no architecture change is required.
 S4: `PASS` as amended.
 
