@@ -1,15 +1,15 @@
 # Active execution
 
-Current product work: resolve the BLS 4.0 source-semantics gap discovered during draft implementation PR #11, then resume the bounded Food Knowledge import slice.
+Current product work: repair canonical routing and source-precision semantics discovered while exercising draft implementation PR #11, then resume the bounded Food Knowledge import slice.
 
-Lifecycle state: **S2 PASS / S4 PASS as amended** under ADR-012, ADR-013 and [`bls-v4-food-knowledge-semantic-amendment.md`](bls-v4-food-knowledge-semantic-amendment.md).
-Implementation authorization after this decision PR merges: **only** [`bls-v4-food-knowledge-slice.md`](bls-v4-food-knowledge-slice.md) as amended by [`bls-v4-food-knowledge-semantic-amendment.md`](bls-v4-food-knowledge-semantic-amendment.md).
+Lifecycle state: **S2 PASS / S4 PASS as amended** under ADR-013, ADR-014 and [`bls-v4-food-knowledge-semantic-amendment.md`](bls-v4-food-knowledge-semantic-amendment.md).
+Implementation authorization remains **only** [`bls-v4-food-knowledge-slice.md`](bls-v4-food-knowledge-slice.md) as amended by [`bls-v4-food-knowledge-semantic-amendment.md`](bls-v4-food-knowledge-semantic-amendment.md).
 
 ## Accepted upstream state
 
 - S0 Problem / Evidence: `PASS`.
 - S1 Requirements: `PASS`.
-- S2 Strategic/Tactical Domain Design: `PASS`; ADR-004 remains the BLS 4.0 canonical nutrient anchor, ADR-012 extends Food Knowledge evidence semantics for `<LOQ`/`<LOD`, and ADR-013 defines authoritative BLS errata overlays.
+- S2 Strategic/Tactical Domain Design: `PASS`; ADR-004 remains the BLS 4.0 canonical nutrient anchor, ADR-013 extends Food Knowledge evidence semantics for `<LOQ`/`<LOD`, and ADR-014 defines authoritative BLS errata overlays. ADR-012 remains the earlier Nutrition Targeting source-applicability decision.
 - S3 Architecture: `PASS`; existing modular monolith, Food Knowledge ownership and one relational store remain valid.
 - S4 Implementation Readiness: `PASS` as amended after implementation-time source inspection.
 - Previous `mvp-v1` Nutrition Standard Set slice: completion gate `PASS`, squash-merged as commit `93b44914913ec9b8bdfdfd69d9bd48cc2fefaf4a` via PR #9.
@@ -78,8 +78,8 @@ This slice does not authorize:
 - saved Purchase Plan history.
 
 Open P0: `0`.
-Open P1: `0` at the amended readiness level; implementation PR #11 must implement ADR-012/ADR-013 before it can leave draft.
+Open P1: `0` at the amended readiness level; implementation PR #11 must implement ADR-013/ADR-014 before it can leave draft.
 
 ## Next
 
-Squash-merge this semantic-correction decision PR after CI/review. Then resume draft PR #11 by implementing the six-state evidence contract, closed BLS origin vocabulary, typed correction-registry validation and errata coverage accounting before any XLSX-specific normalizer or production corpus work.
+After this canonical-routing/source-precision clarification is merged, synchronize draft PR #11 with `main` and continue only the already authorized BLS implementation slice. The XLSX boundary must preserve the published source representation before numeric coercion.
