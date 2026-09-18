@@ -8,7 +8,7 @@ Owners: `Food Knowledge` for canonical food-composition components; `Nutrition T
 
 Define the semantic contract that allows Nutrition Targeting quantities to be compared with Food Knowledge quantities without conflating names, units, chemical forms, equivalent expressions or food-composition bases.
 
-The governing decision is [`ADR-004`](../decisions/ADR-004-canonical-nutrient-semantics.md).
+The governing decisions are [`ADR-004`](../decisions/ADR-004-canonical-nutrient-semantics.md) and [`ADR-013`](../decisions/ADR-013-limit-qualified-nutrient-evidence.md).
 
 ## Canonical component vocabulary
 
@@ -127,16 +127,16 @@ An unmappable Safety Limit remains provenance/diagnostic information rather than
 
 ## Food nutrient value state
 
-A nutrient data point has one of these semantic states:
+A nutrient data point has one of these source-preserving semantic states:
 
-- `known numeric` — a quantified amount is available;
-- `known zero` — zero is supported by source evidence/logic;
-- `trace` — the component is present but a reliable numeric amount is unavailable;
-- `unknown` — no reliable value is available.
+- `known` — a positive quantified amount is available;
+- `zero` — a quantified amount of exactly zero is supported by source evidence/logic;
+- `trace` — presence is asserted but no quantitative amount is known;
+- `below_quantification_limit` — the source reports `<LOQ`; no deterministic amount is available;
+- `below_detection_limit` — the source reports `<LOD`; no deterministic amount is available;
+- `missing` — no reliable source value is available.
 
-`trace` and `unknown` are distinct from zero.
-
-For deterministic nutrition coverage, only known numeric values and known zero values provide exact arithmetic evidence. Unquantified trace/unknown values remain uncertainty and cannot prove target satisfaction.
+Only `known` and `zero` are quantitatively known. The other four states remain distinct evidence claims and carry no numeric amount into deterministic nutrition coverage.
 
 ## Provenance
 
@@ -145,7 +145,7 @@ Nutrient provenance is retained per data point when the source provides it, not 
 For BLS 4.0 imports this includes, where available:
 - BLS food identity/version;
 - component code;
-- value;
+- the published source value representation and normalized amount when quantitative;
 - value-origin category;
 - concrete source/reference.
 
@@ -154,6 +154,10 @@ A derived component additionally identifies the formula/version used.
 ## Precision and rounding
 
 Source numeric precision is preserved as source evidence.
+
+For BLS 4.0, the published value representation is provenance because the source deliberately varies decimal places to preserve source precision. The German source distribution uses a comma decimal separator. An XLSX adapter must therefore preserve the published textual representation, or an equivalent representation reconstructed losslessly from the workbook value and formatting, before numeric coercion. Converting a cell through a binary floating-point value and then inventing display text is not sufficient provenance.
+
+The normalized quantitative amount is a separate `Decimal`-semantics value derived from that preserved source representation. Formatting characters are not part of the normalized numeric meaning, but the source representation remains available for audit.
 
 Domain calculations:
 - perform compatible-unit conversion before comparison;
@@ -192,7 +196,7 @@ If the conversion is missing, the Product Card may exist in Market Catalog but i
 - food composition is normalized per 100 g edible portion;
 - generic unit conversion never changes nutrient identity;
 - equivalent/aggregate transformations require an accepted nutrient formula;
-- missing and trace values are never silently treated as zero;
+- `trace`, `below_quantification_limit`, `below_detection_limit` and `missing` values are never silently treated as zero;
 - target coverage is claimed only for accepted target-to-composition mappings;
 - Product Card fallback/override occurs only between semantically identical normalized components;
 - intermediate calculation rounding does not mutate canonical nutrient truth.
