@@ -1,4 +1,4 @@
-# ADR-012 — Limit-qualified nutrient evidence remains distinct from trace and missing
+# ADR-013 — Limit-qualified nutrient evidence remains distinct from trace and missing
 
 Status: `accepted`.
 
