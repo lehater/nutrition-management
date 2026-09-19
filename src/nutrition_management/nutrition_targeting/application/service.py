@@ -8,11 +8,12 @@ from nutrition_management.nutrition_targeting.application.contracts import (
     TargetCoverageFact,
     TargetFact,
 )
+from nutrition_management.nutrition_targeting.application.ports import TargetDerivationSource
 from nutrition_management.nutrition_targeting.domain.aggregation import aggregate_household_target
 from nutrition_management.nutrition_targeting.domain.targets import derive_member_target
 
 
-def derive_household_target_fact(repository, household_id: str, derivation_date) -> HouseholdTargetFact:
+def derive_household_target_fact(repository: TargetDerivationSource, household_id: str, derivation_date) -> HouseholdTargetFact:
     profiles = repository.profiles_for_household(household_id)
     if not profiles:
         raise ValueError(f"unknown or empty household: {household_id}")
