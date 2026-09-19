@@ -9,7 +9,14 @@ class NutrientEvidenceStatus(StrEnum):
     KNOWN = "known"
     ZERO = "zero"
     TRACE = "trace"
+    BELOW_QUANTIFICATION_LIMIT = "below_quantification_limit"
+    BELOW_DETECTION_LIMIT = "below_detection_limit"
+    BELOW_DETECTION_OR_QUANTIFICATION_LIMIT = "below_detection_or_quantification_limit"
     MISSING = "missing"
+
+    @property
+    def is_quantitative(self) -> bool:
+        return self in {NutrientEvidenceStatus.KNOWN, NutrientEvidenceStatus.ZERO}
 
 
 @dataclass(frozen=True)

@@ -6,6 +6,18 @@ from decimal import Decimal
 from enum import StrEnum
 
 
+CORE_CATEGORIES = frozenset(
+    {
+        "fruit_and_vegetables",
+        "legumes_nuts_seeds",
+        "grains_cereal_products_potatoes",
+        "oils_and_fats",
+        "milk_and_dairy",
+        "fish_meat_sausage_eggs",
+    }
+)
+
+
 class TargetKind(StrEnum):
     ADEQUACY_FLOOR = "adequacy_floor"
     LOWER_BOUND = "lower_bound"
@@ -18,7 +30,14 @@ class EvidenceStatus(StrEnum):
     KNOWN = "known"
     ZERO = "zero"
     TRACE = "trace"
+    BELOW_QUANTIFICATION_LIMIT = "below_quantification_limit"
+    BELOW_DETECTION_LIMIT = "below_detection_limit"
+    BELOW_DETECTION_OR_QUANTIFICATION_LIMIT = "below_detection_or_quantification_limit"
     MISSING = "missing"
+
+    @property
+    def is_quantitative(self) -> bool:
+        return self in {EvidenceStatus.KNOWN, EvidenceStatus.ZERO}
 
 
 @dataclass(frozen=True)
@@ -150,6 +169,29 @@ class SafetyDiagnostic:
 
 
 @dataclass(frozen=True)
+class TheoreticalFoodCandidate:
+    base_food_id: str
+    food_name: str
+    category: str
+    measure_amount_per_100g: Decimal
+    energy_amount_per_100g: Decimal | None
+    source_name: str
+    source_version: str | None = None
+
+
+@dataclass(frozen=True)
+class GapSuggestion:
+    measure: str
+    base_food_id: str
+    food_name: str
+    category: str
+    amount_per_100g: Decimal
+    amount_per_100kcal: Decimal | None
+    source_name: str
+    source_version: str | None = None
+
+
+@dataclass(frozen=True)
 class PlanLine:
     offer_id: str
     sku_id: str
@@ -189,3 +231,4 @@ class PurchasePlan:
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
     target_coverage_gaps: tuple[TargetCoverageGap, ...] = ()
     safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
+    gap_suggestions: tuple[GapSuggestion, ...] = ()

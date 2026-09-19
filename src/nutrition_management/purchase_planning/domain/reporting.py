@@ -4,6 +4,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from .model import (
+    CORE_CATEGORIES,
     EvidenceStatus,
     NutrientAssessment,
     PlanLine,
@@ -15,15 +16,6 @@ from .model import (
     TargetKind,
 )
 from .safety import build_safety_diagnostics
-
-CORE_CATEGORIES = {
-    "fruit_and_vegetables",
-    "legumes_nuts_seeds",
-    "grains_cereal_products_potatoes",
-    "oils_and_fats",
-    "milk_and_dairy",
-    "fish_meat_sausage_eggs",
-}
 
 _MECHANICAL_EPS = Decimal("1e-7")
 
@@ -123,7 +115,7 @@ def build_purchase_plan(snapshot: PlanningInputSnapshot, decision: SolverDecisio
             if grams <= 0:
                 continue
             evidence = candidates[offer_id].nutrient(target.measure)
-            if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
+            if not evidence.status.is_quantitative:
                 unknown_evidence = True
             elif evidence.amount_per_100g is not None:
                 amount += evidence.amount_per_100g * grams / Decimal(100)

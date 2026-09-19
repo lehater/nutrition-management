@@ -20,7 +20,7 @@ def build_safety_diagnostics(snapshot: PlanningInputSnapshot, planned_by_offer: 
             if grams <= 0:
                 continue
             evidence = candidates[offer_id].nutrient(measure)
-            if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
+            if not evidence.status.is_quantitative:
                 indeterminate = True
             elif evidence.amount_per_100g is not None:
                 known_planned_amount += evidence.amount_per_100g * grams / Decimal(100)
