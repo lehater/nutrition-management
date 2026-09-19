@@ -6,6 +6,18 @@ from decimal import Decimal
 from enum import StrEnum
 
 
+CORE_CATEGORIES = frozenset(
+    {
+        "fruit_and_vegetables",
+        "legumes_nuts_seeds",
+        "grains_cereal_products_potatoes",
+        "oils_and_fats",
+        "milk_and_dairy",
+        "fish_meat_sausage_eggs",
+    }
+)
+
+
 class TargetKind(StrEnum):
     ADEQUACY_FLOOR = "adequacy_floor"
     LOWER_BOUND = "lower_bound"
