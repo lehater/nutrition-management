@@ -208,6 +208,19 @@ artifacts:
     depends_on:
       - APPLICATION-DESIGN
 
+  - id: COMPONENT-DESIGN
+    authority: COMPONENT-DESIGN
+    path: docs/implementation/component-design.md
+    provides:
+      - nutrition-management.component-design
+    depends_on:
+      - ENGINEERING-DESIGN-POLICY
+      - COMPONENT-DESIGN
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - CLI-CONTRACT
+      - IMPLEMENTATION-STACK
+
   - id: IMPLEMENTATION-PLAN
     authority: IMPLEMENTATION-DESIGN
     path: docs/implementation/implementation-plan.md
