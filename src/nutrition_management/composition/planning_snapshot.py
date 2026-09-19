@@ -7,6 +7,7 @@ from nutrition_management.market_catalog.application.service import executable_m
 from nutrition_management.market_catalog.infrastructure.repository import MarketCatalogRepository
 from nutrition_management.nutrition_targeting.application.service import derive_household_target_fact
 from nutrition_management.nutrition_targeting.infrastructure.repository import NutritionTargetingRepository
+from nutrition_management.purchase_planning.application.ports import PlanningSnapshotSource
 from nutrition_management.purchase_planning.domain.model import (
     CandidateNutrient,
     EvidenceStatus,
@@ -23,7 +24,7 @@ from nutrition_management.purchase_planning.domain.model import (
 POLICY_VERSION = "ADR-007-v1"
 
 
-class PlanningSnapshotSource:
+class SqlitePlanningSnapshotSource(PlanningSnapshotSource):
     def __init__(self, engine):
         self._engine = engine
 
