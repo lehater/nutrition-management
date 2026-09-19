@@ -89,7 +89,7 @@ Contract:
 
 ```python
 class OptimizationSolver(Protocol):
-    def solve(self, snapshot: PlanningInputSnapshot) -> SolverDecision: ...
+    def __call__(self, snapshot: PlanningInputSnapshot) -> SolverDecision: ...
 ```
 
 Application-facing failures:
@@ -120,9 +120,9 @@ Domain modules must not import application ports.
 
 ### Infrastructure components
 
-#### `ScipOptimizationSolver`
+#### SCIP solver adapter
 
-Implements `OptimizationSolver`.
+The existing `solve(snapshot)` function implements the callable `OptimizationSolver` port. A wrapper class is not required.
 
 Responsibilities:
 
@@ -220,7 +220,7 @@ A composition module owns concrete construction:
 
 - SQLite engine/configuration;
 - `SqlitePlanningSnapshotSource`;
-- `ScipOptimizationSolver`;
+- SCIP `solve` adapter;
 - `FoodKnowledgeGapSuggestionSource`;
 - invocation dependencies for Generate Purchase Plan.
 
