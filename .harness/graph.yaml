@@ -79,6 +79,42 @@ artifacts:
       - FOOD-KNOWLEDGE-DOMAIN
       - MARKET-CATALOG-DOMAIN
 
+  - id: FOOD-CATEGORY-TAXONOMY
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-005-mvp-food-category-taxonomy.md
+    provides:
+      - nutrition-management.food-knowledge.category-taxonomy
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+
+  - id: BLS-V4-SOURCE-BASELINE
+    authority: FOOD-KNOWLEDGE
+    path: docs/baseline/bls-v4-source-bytes.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.source-identity
+      - nutrition-management.food-knowledge.bls-v4.source-structure
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+
+  - id: BLS-V4-EVIDENCE-SEMANTICS
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-015-raw-bls-evidence-before-correction.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.evidence-semantics
+      - nutrition-management.food-knowledge.bls-v4.normalization-order
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+      - BLS-V4-SOURCE-BASELINE
+
+  - id: BLS-V4-ERRATA-POLICY
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-014-official-bls-errata-overlay.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.errata-policy
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+      - BLS-V4-SOURCE-BASELINE
+
   - id: TARGET-ARCHITECTURE
     authority: ARCHITECTURE
     path: docs/architecture/target-architecture.md
@@ -114,4 +150,9 @@ artifacts:
       - CORE-DOMAIN-MODEL
       - TARGET-ARCHITECTURE
 
-questions: []
+questions:
+  - id: Q-BLS-V4-CATEGORY-ASSIGNMENT
+    authority: FOOD-KNOWLEDGE
+    text: What accepted deterministic rule or mapping assigns every imported BLS 4.0 Base Food to exactly one MVP top-level Food Category?
+    blocks_capabilities:
+      - nutrition-management.food-knowledge.bls-v4.category-assignment
