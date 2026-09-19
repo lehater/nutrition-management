@@ -1,3 +1,6 @@
+import json
+from pathlib import Path
+
 import pytest
 
 from nutrition_management.food_knowledge.application.bls_v4_identity import BLS_V4_MAIN_SHA256
@@ -205,3 +208,27 @@ def test_category_registry_rejects_unpinned_source_set():
             registry(("B", "grains_cereal_products_potatoes")),
             expected_count=1,
         )
+
+
+def test_checked_in_candidate_registry_is_structurally_consistent():
+    candidate = json.loads(
+        Path(".harness/candidates/bls-v4-category-registry.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    prefixes = [item["prefix"] for item in candidate["rules"]]
+    synthetic_codes = [
+        prefix + "0" * (7 - len(prefix))
+        for prefix in prefixes
+    ]
+    report = analyze_category_registry(
+        source(*synthetic_codes),
+        candidate,
+        expected_count=len(synthetic_codes),
+    )
+
+    assert report["structural_errors"] == []
+    assert report["unmapped"] == []
+    assert report["ambiguous"] == {}
+    assert report["unused_rules"] == []
+    assert report["resolved_count"] == len(synthetic_codes)
