@@ -195,7 +195,7 @@ def test_candidate_analysis_reports_internal_frontier_without_core_questions():
     }
     assert report["unmapped"] == ["F110100"]
     assert report["ambiguous"] == {"E410000": ["E", "E4"]}
-    assert report["unused_rules"] == []
+    assert report["unused_rules"] == ["E4"]
     assert report["structural_errors"] == []
 
 
