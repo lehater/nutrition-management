@@ -1,0 +1,56 @@
+version: 1
+kind: harness-design-profile
+id: BLS-V4-PRODUCTION-IMPORT
+
+expectations:
+  - id: SOURCE-IDENTITY
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.source-identity
+    authority: FOOD-KNOWLEDGE
+
+  - id: SOURCE-CODE-SET
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.source-code-set
+    authority: FOOD-KNOWLEDGE
+    depends_on: [SOURCE-IDENTITY]
+
+  - id: EVIDENCE-SEMANTICS
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
+    authority: FOOD-KNOWLEDGE
+    depends_on: [SOURCE-IDENTITY]
+
+  - id: ERRATA-POLICY
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.errata-policy
+    authority: FOOD-KNOWLEDGE
+    depends_on: [SOURCE-IDENTITY]
+
+  - id: CATEGORY-TAXONOMY
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.category-taxonomy
+    authority: FOOD-KNOWLEDGE
+    depends_on: [SOURCE-IDENTITY]
+
+  - id: CATEGORY-ASSIGNMENT
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.category-assignment
+    authority: FOOD-KNOWLEDGE
+    depends_on:
+      - CATEGORY-TAXONOMY
+      - SOURCE-CODE-SET
+
+  - id: PRODUCTION-PACKAGE-CONTRACT
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.production-package-contract
+    authority: FOOD-KNOWLEDGE
+    depends_on:
+      - EVIDENCE-SEMANTICS
+      - ERRATA-POLICY
+      - CATEGORY-ASSIGNMENT
+
+  - id: IMPORT-VERIFICATION
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.verification
+    authority: VERIFICATION
+    depends_on: [PRODUCTION-PACKAGE-CONTRACT]

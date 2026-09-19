@@ -18,6 +18,15 @@ NOW = datetime(2026, 9, 15, 12, tzinfo=UTC)
 TODAY = date(2026, 9, 15)
 
 
+class EmptySuggestionSource:
+    def __init__(self):
+        self.calls = []
+
+    def candidates_for_measure(self, measure):
+        self.calls.append(measure)
+        return ()
+
+
 class SnapshotSource:
     def __init__(self, snapshot):
         self.snapshot = snapshot
@@ -61,6 +70,7 @@ def test_hard_infeasible_maps_to_no_executable_plan_and_preserves_target_coverag
 
     plan = generate_purchase_plan(
         snapshot_source=SnapshotSource(snapshot),
+        suggestion_source=EmptySuggestionSource(),
         solver=infeasible,
         household_id="h",
         derivation_date=TODAY,
@@ -100,6 +110,7 @@ def test_policy_optimal_basket_with_variety_gap_is_partial_and_preserves_target_
 
     plan = generate_purchase_plan(
         snapshot_source=SnapshotSource(snapshot),
+        suggestion_source=EmptySuggestionSource(),
         solver=solved,
         household_id="h",
         derivation_date=TODAY,

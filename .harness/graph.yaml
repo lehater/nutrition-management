@@ -1,0 +1,183 @@
+authorities:
+  - id: PRODUCT
+  - id: DOMAIN-STRUCTURE
+  - id: NUTRITION-TARGETING
+  - id: FOOD-KNOWLEDGE
+  - id: MARKET-CATALOG
+  - id: PURCHASE-PLANNING
+  - id: ARCHITECTURE
+  - id: VERIFICATION
+
+artifacts:
+  - id: PROBLEM
+    authority: PRODUCT
+    path: docs/problem.md
+    provides:
+      - nutrition-management.problem
+    depends_on: []
+
+  - id: PRODUCT-REQUIREMENTS
+    authority: PRODUCT
+    path: docs/requirements/product-requirements.md
+    provides:
+      - nutrition-management.requirements
+    depends_on:
+      - PROBLEM
+
+  - id: STRATEGIC-DOMAIN
+    authority: DOMAIN-STRUCTURE
+    path: docs/domain/strategic-model.md
+    provides:
+      - nutrition-management.domain.boundaries
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+
+  - id: CONTEXT-MAP
+    authority: DOMAIN-STRUCTURE
+    path: docs/domain/context-map.md
+    provides:
+      - nutrition-management.domain.context-contracts
+    depends_on:
+      - STRATEGIC-DOMAIN
+
+  - id: NUTRITION-TARGETING-DOMAIN
+    authority: NUTRITION-TARGETING
+    path: docs/domain/nutrition-targeting.md
+    provides:
+      - nutrition-management.domain.nutrition-targeting
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+
+  - id: FOOD-KNOWLEDGE-DOMAIN
+    authority: FOOD-KNOWLEDGE
+    path: docs/domain/food-knowledge.md
+    provides:
+      - nutrition-management.domain.food-knowledge
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+
+  - id: MARKET-CATALOG-DOMAIN
+    authority: MARKET-CATALOG
+    path: docs/domain/market-catalog.md
+    provides:
+      - nutrition-management.domain.market-catalog
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+
+  - id: PURCHASE-PLANNING-DOMAIN
+    authority: PURCHASE-PLANNING
+    path: docs/domain/purchase-planning.md
+    provides:
+      - nutrition-management.domain.purchase-planning
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+
+  - id: NUTRIENT-EVIDENCE-SEMANTICS
+    authority: FOOD-KNOWLEDGE
+    path: docs/domain/nutrient-semantics.md
+    provides:
+      - nutrition-management.food-knowledge.nutrient-evidence-semantics
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+
+  - id: FOOD-CATEGORY-TAXONOMY
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-005-mvp-food-category-taxonomy.md
+    provides:
+      - nutrition-management.food-knowledge.category-taxonomy
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+
+  - id: BLS-V4-SOURCE-BASELINE
+    authority: FOOD-KNOWLEDGE
+    path: docs/baseline/bls-v4-source-bytes.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.source-identity
+      - nutrition-management.food-knowledge.bls-v4.source-structure
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+
+  - id: BLS-V4-EVIDENCE-SEMANTICS
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-015-raw-bls-evidence-before-correction.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.evidence-semantics
+      - nutrition-management.food-knowledge.bls-v4.normalization-order
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+      - BLS-V4-SOURCE-BASELINE
+
+  - id: BLS-V4-ERRATA-POLICY
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-014-official-bls-errata-overlay.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.errata-policy
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+      - BLS-V4-SOURCE-BASELINE
+
+  - id: BLS-V4-CATEGORY-ASSIGNMENT-DECISION
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-016-bls-v4-explicit-category-registry.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.category-assignment-policy
+    depends_on:
+      - FOOD-CATEGORY-TAXONOMY
+      - BLS-V4-SOURCE-BASELINE
+
+  - id: GAP-SUGGESTION-RANKING-DECISION
+    authority: PURCHASE-PLANNING
+    path: docs/decisions/ADR-017-gap-suggestion-energy-density-fallback.md
+    provides:
+      - nutrition-management.purchase-planning.gap-suggestion-ranking
+    depends_on:
+      - PURCHASE-PLANNING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+
+  - id: TARGET-ARCHITECTURE
+    authority: ARCHITECTURE
+    path: docs/architecture/target-architecture.md
+    provides:
+      - nutrition-management.architecture
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
+  - id: VERIFICATION-STRATEGY
+    authority: VERIFICATION
+    path: .harness/knowledge/verification-strategy.yaml
+    provides:
+      - nutrition-management.verification.strategy
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+      - TARGET-ARCHITECTURE
+
+questions:
+  - id: Q-BLS-V4-CATEGORY-ASSIGNMENT
+    authority: FOOD-KNOWLEDGE
+    text: What accepted deterministic rule or mapping assigns every imported BLS 4.0 Base Food to exactly one MVP top-level Food Category?
+    blocks_capabilities:
+      - nutrition-management.food-knowledge.bls-v4.category-assignment
+    resolution: BLS-V4-CATEGORY-ASSIGNMENT-DECISION
+
+  - id: Q-GAP-SUGGESTION-UNKNOWN-ENERGY-RANKING
+    authority: PURCHASE-PLANNING
+    text: How are eligible theoretical foods without positive known energy ordered against foods whose missing-nutrient amount per 100 kcal is computable?
+    blocks:
+      - PURCHASE-PLANNING-DOMAIN
+    resolution: GAP-SUGGESTION-RANKING-DECISION

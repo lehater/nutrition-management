@@ -8,6 +8,7 @@ from enum import Enum
 import json
 
 from nutrition_management.composition.database import create_sqlite_engine
+from nutrition_management.composition.gap_suggestions import FoodKnowledgeGapSuggestionSource
 from nutrition_management.composition.planning_snapshot import PlanningSnapshotSource
 from nutrition_management.purchase_planning.application.service import generate_purchase_plan
 from nutrition_management.purchase_planning.infrastructure.solver_adapter import solve
@@ -41,6 +42,7 @@ def main(argv=None) -> int:
     try:
         plan = generate_purchase_plan(
             snapshot_source=PlanningSnapshotSource(engine),
+            suggestion_source=FoodKnowledgeGapSuggestionSource(engine),
             solver=solve,
             household_id=args.household,
             derivation_date=derivation_date,
