@@ -4,6 +4,7 @@ from collections import defaultdict
 from decimal import Decimal
 
 from .model import (
+    CORE_CATEGORIES,
     EvidenceStatus,
     NutrientAssessment,
     PlanLine,
@@ -15,15 +16,6 @@ from .model import (
     TargetKind,
 )
 from .safety import build_safety_diagnostics
-
-CORE_CATEGORIES = {
-    "fruit_and_vegetables",
-    "legumes_nuts_seeds",
-    "grains_cereal_products_potatoes",
-    "oils_and_fats",
-    "milk_and_dairy",
-    "fish_meat_sausage_eggs",
-}
 
 _MECHANICAL_EPS = Decimal("1e-7")
 
