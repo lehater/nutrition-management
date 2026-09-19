@@ -67,6 +67,7 @@ authorities:
         requires:
           - capability: nutrition-management.domain.food-knowledge
       - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
+        knowledge_kind: pinned-source-entity-set
         requires:
           - capability: nutrition-management.food-knowledge.bls-v4.source-identity
       - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
@@ -83,6 +84,7 @@ authorities:
           - capability: nutrition-management.food-knowledge.category-taxonomy
           - capability: nutrition-management.food-knowledge.bls-v4.source-identity
       - capability: nutrition-management.food-knowledge.bls-v4.category-assignment
+        knowledge_kind: source-classification-registry
         requires:
           - capability: nutrition-management.food-knowledge.category-taxonomy
           - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
@@ -148,6 +150,7 @@ authorities:
       public_contract: Produces project and source-import verification capabilities.
     produces:
       - capability: nutrition-management.verification.strategy
+        knowledge_kind: verification-strategy
         requires:
           - capability: nutrition-management.requirements
           - capability: nutrition-management.domain.nutrition-targeting
