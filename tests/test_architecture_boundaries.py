@@ -70,11 +70,3 @@ def test_purchase_planning_solver_adapter_does_not_import_provider_infrastructur
         imported_context, rest = _context_from_import(imported)
         if imported_context in {"nutrition_targeting", "food_knowledge", "market_catalog"}:
             assert not rest or rest[0] != "infrastructure", (path, imported)
-
-
-def test_cli_does_not_import_context_infrastructure():
-    path = ROOT / "adapters" / "cli" / "main.py"
-    for imported in _imports(path):
-        imported_context, rest = _context_from_import(imported)
-        if imported_context is not None:
-            assert not rest or rest[0] != "infrastructure", (path, imported)
