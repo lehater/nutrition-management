@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+from datetime import date, datetime
 from typing import Protocol
 
-from nutrition_management.purchase_planning.domain.model import TheoreticalFoodCandidate
+from nutrition_management.purchase_planning.domain.model import (
+    PlanningInputSnapshot,
+    SolverDecision,
+    TheoreticalFoodCandidate,
+)
 
 
 class SolverTechnicalFailure(RuntimeError):
@@ -11,6 +16,19 @@ class SolverTechnicalFailure(RuntimeError):
 
 class HardModelInfeasible(RuntimeError):
     """The correctly constructed hard executability model has no non-empty solution."""
+
+
+class PlanningSnapshotSource(Protocol):
+    def capture(
+        self,
+        household_id: str,
+        derivation_date: date,
+        market_as_of: datetime,
+    ) -> PlanningInputSnapshot: ...
+
+
+class OptimizationSolver(Protocol):
+    def solve(self, snapshot: PlanningInputSnapshot) -> SolverDecision: ...
 
 
 class GapSuggestionSource(Protocol):
