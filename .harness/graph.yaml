@@ -124,6 +124,15 @@ artifacts:
       - FOOD-CATEGORY-TAXONOMY
       - BLS-V4-SOURCE-BASELINE
 
+  - id: GAP-SUGGESTION-RANKING-DECISION
+    authority: PURCHASE-PLANNING
+    path: docs/decisions/ADR-017-gap-suggestion-energy-density-fallback.md
+    provides:
+      - nutrition-management.purchase-planning.gap-suggestion-ranking
+    depends_on:
+      - PURCHASE-PLANNING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+
   - id: TARGET-ARCHITECTURE
     authority: ARCHITECTURE
     path: docs/architecture/target-architecture.md
@@ -172,3 +181,4 @@ questions:
     text: How are eligible theoretical foods without positive known energy ordered against foods whose missing-nutrient amount per 100 kcal is computable?
     blocks:
       - PURCHASE-PLANNING-DOMAIN
+    resolution: GAP-SUGGESTION-RANKING-DECISION
