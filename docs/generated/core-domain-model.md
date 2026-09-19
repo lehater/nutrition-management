@@ -21,13 +21,11 @@ Provide a compact cross-context model of the accepted MVP concepts and invariant
 Responsibilities:
 
 - Contain one or more Household Members for calculation.
-
 ### Household Member
 
 Responsibilities:
 
 - Contribute one current Nutrition Profile to household nutritional demand.
-
 ### Base Food
 
 Responsibilities:
@@ -35,7 +33,6 @@ Responsibilities:
 - Own normalized nutrient profile.
 - Own food-category membership.
 - Own nutrition-data provenance.
-
 ### Product Card
 
 Responsibilities:
@@ -43,7 +40,6 @@ Responsibilities:
 - Represent a concrete commercial food product linked to one Base Food.
 - Own commercial product identity and package quantity.
 - Own product-specific nutrient overrides when known.
-
 ### Purchase Plan
 
 Responsibilities:
