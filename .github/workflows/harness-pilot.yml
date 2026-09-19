@@ -37,9 +37,10 @@ jobs:
       - name: Evaluate BLS import slice
         run: python .harness-tool/target_state.py .harness/profiles/bls-v4-production-import.yaml .harness/graph.yaml
 
-      - name: Verify BLS semantic blocker routing
+      - name: Verify BLS Question to CREATE transition
         run: |
           python - <<'PY'
+          import copy
           import sys
           from pathlib import Path
           import yaml
@@ -49,15 +50,27 @@ jobs:
 
           profile = yaml.safe_load(Path(".harness/profiles/bls-v4-production-import.yaml").read_text())
           model = yaml.safe_load(Path(".harness/graph.yaml").read_text())
-          result = evaluate_target_state(profile, model)
 
-          assert result["status"] == "BLOCKED", result
-          assert result["create"] == [], result
-          wait = {item["expectation"]: item for item in result["wait"]}
+          unresolved = copy.deepcopy(model)
+          for question in unresolved["questions"]:
+              if question["id"] == "Q-BLS-V4-CATEGORY-ASSIGNMENT":
+                  question.pop("resolution", None)
+
+          blocked = evaluate_target_state(profile, unresolved)
+          assert blocked["status"] == "BLOCKED", blocked
+          assert blocked["create"] == [], blocked
+          wait = {item["expectation"]: item for item in blocked["wait"]}
           assert wait["CATEGORY-ASSIGNMENT"]["providers"] == [], wait
           assert wait["CATEGORY-ASSIGNMENT"]["questions"] == ["Q-BLS-V4-CATEGORY-ASSIGNMENT"], wait
-          pending = {item["expectation"] for item in result["pending"]}
-          assert pending == {"PRODUCTION-PACKAGE-CONTRACT", "IMPORT-VERIFICATION"}, result
+
+          resolved = evaluate_target_state(profile, model)
+          assert resolved["status"] == "READY", resolved
+          create = {item["expectation"]: item for item in resolved["create"]}
+          assert set(create) == {"CATEGORY-ASSIGNMENT"}, resolved
+          assert create["CATEGORY-ASSIGNMENT"]["capability"] == "nutrition-management.food-knowledge.bls-v4.category-assignment"
+          assert resolved["wait"] == [], resolved
+          pending = {item["expectation"] for item in resolved["pending"]}
+          assert pending == {"PRODUCTION-PACKAGE-CONTRACT", "IMPORT-VERIFICATION"}, resolved
           PY
 
       - name: Re-render human documentation
