@@ -115,6 +115,15 @@ artifacts:
       - FOOD-KNOWLEDGE-DOMAIN
       - BLS-V4-SOURCE-BASELINE
 
+  - id: BLS-V4-CATEGORY-ASSIGNMENT-DECISION
+    authority: FOOD-KNOWLEDGE
+    path: docs/decisions/ADR-016-bls-v4-explicit-category-registry.md
+    provides:
+      - nutrition-management.food-knowledge.bls-v4.category-assignment-policy
+    depends_on:
+      - FOOD-CATEGORY-TAXONOMY
+      - BLS-V4-SOURCE-BASELINE
+
   - id: TARGET-ARCHITECTURE
     authority: ARCHITECTURE
     path: docs/architecture/target-architecture.md
@@ -156,3 +165,4 @@ questions:
     text: What accepted deterministic rule or mapping assigns every imported BLS 4.0 Base Food to exactly one MVP top-level Food Category?
     blocks_capabilities:
       - nutrition-management.food-knowledge.bls-v4.category-assignment
+    resolution: BLS-V4-CATEGORY-ASSIGNMENT-DECISION
