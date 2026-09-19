@@ -1,16 +1,25 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date, datetime
 from decimal import Decimal
 
-from nutrition_management.purchase_planning.application.ports import HardModelInfeasible
+from nutrition_management.purchase_planning.application.ports import (
+    GapSuggestionSource,
+    HardModelInfeasible,
+)
 from nutrition_management.purchase_planning.domain.model import PlanOutcome, PurchasePlan
 from nutrition_management.purchase_planning.domain.reporting import build_purchase_plan
+from nutrition_management.purchase_planning.domain.suggestions import (
+    positive_gap_measures,
+    rank_gap_suggestions,
+)
 
 
 def generate_purchase_plan(
     *,
     snapshot_source,
+    suggestion_source: GapSuggestionSource,
     solver,
     household_id: str,
     derivation_date: date,
@@ -40,4 +49,15 @@ def generate_purchase_plan(
             target_coverage_gaps=snapshot.target_coverage_gaps,
             safety_coverage_gaps=snapshot.safety_coverage_gaps,
         )
-    return build_purchase_plan(snapshot, decision)
+
+    plan = build_purchase_plan(snapshot, decision)
+    suggestions = []
+    for measure in positive_gap_measures(snapshot, plan):
+        suggestions.extend(
+            rank_gap_suggestions(
+                measure=measure,
+                foods=suggestion_source.candidates_for_measure(measure),
+                represented_categories=plan.represented_categories,
+            )
+        )
+    return replace(plan, gap_suggestions=tuple(suggestions))
