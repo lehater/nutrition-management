@@ -242,3 +242,4 @@ Nutrition provides positive evidence that Verification Design and Test Design ar
 The candidate boundary reduces coding-agent freedom over *what to test* without dictating *how test code is written*.
 
 This is one-project evidence only. Do not canonicalize a universal Harness TEST-DESIGN Authority until portability is checked on a materially different project.
+
