@@ -91,4 +91,16 @@ artifacts:
       - MARKET-CATALOG-DOMAIN
       - PURCHASE-PLANNING-DOMAIN
 
+  - id: CORE-DOMAIN-MODEL
+    authority: DOMAIN-STRUCTURE
+    path: .harness/knowledge/core-domain-model.yaml
+    provides:
+      - nutrition-management.domain.core-concepts
+    depends_on:
+      - CONTEXT-MAP
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
 questions: []
