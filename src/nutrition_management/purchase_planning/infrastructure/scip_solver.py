@@ -205,7 +205,7 @@ def _build_model(snapshot: PlanningInputSnapshot) -> tuple[Model, _Vars]:
         unknown_quantities = []
         for item in candidates:
             evidence = item.nutrient(target.measure)
-            if evidence.status in {EvidenceStatus.TRACE, EvidenceStatus.MISSING}:
+            if not evidence.status.is_quantitative:
                 unknown_quantities.append(planned[item.offer_id])
             elif evidence.amount_per_100g is not None:
                 known_terms.append(_f(evidence.amount_per_100g / Decimal(100)) * planned[item.offer_id])
