@@ -74,7 +74,7 @@ A non-executable catalog item may still exist upstream but cannot appear as an e
 
 Purchase Planning evaluates only quantitatively resolved upstream targets with accepted target-to-food Nutrient Measure mappings.
 
-Food values with `known` or `zero` evidence provide exact arithmetic evidence. `trace`, `below_quantification_limit`, `below_detection_limit` and `missing` remain distinct non-quantitative uncertainty states.
+Food values with `known` or `zero` evidence provide exact arithmetic evidence. `trace`, `below_quantification_limit`, `below_detection_limit`, `below_detection_or_quantification_limit` and `missing` remain distinct non-quantitative uncertainty states.
 
 For mapped target kinds:
 - recommended-intake and estimated-value points are adequacy floors;
@@ -86,7 +86,7 @@ For mapped target kinds:
 
 Purchase Planning never rewrites the upstream Nutrition Reference. Its tolerance is downstream scoring policy only.
 
-For lower-bound evidence, known contributions can prove a minimum even when some selected foods carry non-quantitative evidence for that nutrient; that uncertainty remains flagged. For upper-bound, interval and point assessments, any selected-food `trace`, `below_quantification_limit`, `below_detection_limit` or `missing` contribution makes the assessment `indeterminate` because compliance cannot be proven.
+For lower-bound evidence, known contributions can prove a minimum even when some selected foods carry non-quantitative evidence for that nutrient; that uncertainty remains flagged. For upper-bound, interval and point assessments, any selected-food `trace`, `below_quantification_limit`, `below_detection_limit`, `below_detection_or_quantification_limit` or `missing` contribution makes the assessment `indeterminate` because compliance cannot be proven.
 
 Unsupported coverage has two distinct upstream/downstream causes and preserves that reason:
 
