@@ -14,6 +14,8 @@ authorities:
     depends_on:
       - TARGET-ARCHITECTURE
 
+  - id: ENGINEERING-POLICY
+  - id: COMPONENT-DESIGN
   - id: APPLICATION-DESIGN
   - id: DATA-DESIGN
   - id: INTERFACE-DESIGN
@@ -215,7 +217,6 @@ artifacts:
       - nutrition-management.component-design
     depends_on:
       - ENGINEERING-DESIGN-POLICY
-      - COMPONENT-DESIGN
       - APPLICATION-DESIGN
       - DATA-DESIGN
       - CLI-CONTRACT
@@ -227,6 +228,7 @@ artifacts:
     provides:
       - nutrition-management.implementation.plan
     depends_on:
+      - COMPONENT-DESIGN
       - APPLICATION-DESIGN
       - DATA-DESIGN
       - CLI-CONTRACT
