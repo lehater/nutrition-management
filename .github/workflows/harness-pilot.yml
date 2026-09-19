@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: lehater/harness
-          ref: 684810737c43feb28849fb05b8443b13e3bf2789
+          ref: 2b5af44130f5fc8b4a53e0b7e168817b61210725
           path: .harness-tool
 
       - uses: actions/setup-python@v6
@@ -36,6 +36,29 @@ jobs:
 
       - name: Evaluate BLS import slice
         run: python .harness-tool/target_state.py .harness/profiles/bls-v4-production-import.yaml .harness/graph.yaml
+
+      - name: Verify BLS semantic blocker routing
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          import yaml
+
+          sys.path.insert(0, ".harness-tool")
+          from target_state import evaluate_target_state
+
+          profile = yaml.safe_load(Path(".harness/profiles/bls-v4-production-import.yaml").read_text())
+          model = yaml.safe_load(Path(".harness/graph.yaml").read_text())
+          result = evaluate_target_state(profile, model)
+
+          assert result["status"] == "BLOCKED", result
+          assert result["create"] == [], result
+          wait = {item["expectation"]: item for item in result["wait"]}
+          assert wait["CATEGORY-ASSIGNMENT"]["providers"] == [], wait
+          assert wait["CATEGORY-ASSIGNMENT"]["questions"] == ["Q-BLS-V4-CATEGORY-ASSIGNMENT"], wait
+          pending = {item["expectation"] for item in result["pending"]}
+          assert pending == {"PRODUCTION-PACKAGE-CONTRACT", "IMPORT-VERIFICATION"}, result
+          PY
 
       - name: Re-render human documentation
         run: python .harness-tool/workspace.py render .
