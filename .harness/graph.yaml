@@ -1,0 +1,94 @@
+authorities:
+  - id: PRODUCT
+  - id: DOMAIN-STRUCTURE
+  - id: NUTRITION-TARGETING
+  - id: FOOD-KNOWLEDGE
+  - id: MARKET-CATALOG
+  - id: PURCHASE-PLANNING
+  - id: ARCHITECTURE
+
+artifacts:
+  - id: PROBLEM
+    authority: PRODUCT
+    path: docs/problem.md
+    provides:
+      - nutrition-management.problem
+    depends_on: []
+
+  - id: PRODUCT-REQUIREMENTS
+    authority: PRODUCT
+    path: docs/requirements/product-requirements.md
+    provides:
+      - nutrition-management.requirements
+    depends_on:
+      - PROBLEM
+
+  - id: STRATEGIC-DOMAIN
+    authority: DOMAIN-STRUCTURE
+    path: docs/domain/strategic-model.md
+    provides:
+      - nutrition-management.domain.boundaries
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+
+  - id: CONTEXT-MAP
+    authority: DOMAIN-STRUCTURE
+    path: docs/domain/context-map.md
+    provides:
+      - nutrition-management.domain.context-contracts
+    depends_on:
+      - STRATEGIC-DOMAIN
+
+  - id: NUTRITION-TARGETING-DOMAIN
+    authority: NUTRITION-TARGETING
+    path: docs/domain/nutrition-targeting.md
+    provides:
+      - nutrition-management.domain.nutrition-targeting
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+
+  - id: FOOD-KNOWLEDGE-DOMAIN
+    authority: FOOD-KNOWLEDGE
+    path: docs/domain/food-knowledge.md
+    provides:
+      - nutrition-management.domain.food-knowledge
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+
+  - id: MARKET-CATALOG-DOMAIN
+    authority: MARKET-CATALOG
+    path: docs/domain/market-catalog.md
+    provides:
+      - nutrition-management.domain.market-catalog
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+
+  - id: PURCHASE-PLANNING-DOMAIN
+    authority: PURCHASE-PLANNING
+    path: docs/domain/purchase-planning.md
+    provides:
+      - nutrition-management.domain.purchase-planning
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+
+  - id: TARGET-ARCHITECTURE
+    authority: ARCHITECTURE
+    path: docs/architecture/target-architecture.md
+    provides:
+      - nutrition-management.architecture
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CONTEXT-MAP
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
+questions: []
