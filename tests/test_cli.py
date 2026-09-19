@@ -33,3 +33,5 @@ def test_cli_drives_same_use_case_and_emits_canonical_json(engine, db_path, caps
 
 
 # Coding-boundary experiment: component contracts are exercised by CI.
+
+# Component-design refinement preserves existing solver callable behavior.
