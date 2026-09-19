@@ -26,3 +26,8 @@ Problem / Evidence → Product Scope → Requirements → Strategic Domain → T
 See `design-review.md` for the revalidation record and `implementation-design.md` for the terminal pre-code artifact.
 
 
+
+
+## Canonical test-design boundary
+
+`../verification/test-design.md` is the accepted executable-contract refinement of Verification Design. It precedes terminal Implementation Design and constrains what implementation/test agents must prove while leaving concrete test code mechanics free.
