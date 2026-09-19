@@ -25,3 +25,4 @@ Problem / Evidence → Product Scope → Requirements → Strategic Domain → T
 
 See `design-review.md` for the revalidation record and `implementation-design.md` for the terminal pre-code artifact.
 
+
