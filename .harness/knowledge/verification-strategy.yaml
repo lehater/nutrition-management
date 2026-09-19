@@ -1,0 +1,38 @@
+version: 1
+kind: harness-knowledge-artifact
+artifact: VERIFICATION-STRATEGY
+schema: verification-plan/v1
+title: Nutrition Management Verification Strategy
+
+content:
+  purpose: Define the minimum verification evidence required to accept changes to the current MVP design and implementation baseline.
+  scope: Current Nutrition Management MVP requirements, domain boundaries, architecture constraints, deterministic planning behavior, and committed nutrition-standard data.
+  checks:
+    - id: DOMAIN-BEHAVIOR
+      objective: Verify accepted behavior and invariants inside each bounded context.
+      evidence:
+        - tests/test_nutrition_targeting.py
+        - tests/test_food_knowledge.py
+        - tests/test_market_catalog.py
+        - tests/test_solver_policy.py
+    - id: ARCHITECTURE-BOUNDARIES
+      objective: Verify framework independence, context dependency direction, and database ownership boundaries.
+      evidence:
+        - tests/test_architecture_boundaries.py
+    - id: END-TO-END-PLANNING
+      objective: Verify the representative household-to-purchase-plan path remains deterministic and policy-complete.
+      evidence:
+        - tests/test_e2e.py
+    - id: STANDARD-DATA-INTEGRITY
+      objective: Verify committed mvp-v1 nutrition-standard data remains structurally complete and reproducible.
+      evidence:
+        - tests/test_mvp_v1_manifest.py
+        - uv run python tools/build_mvp_v1_manifest.py --check
+    - id: GENERATED-DOCUMENTATION
+      objective: Verify human-readable Harness projections are reproducible from canonical managed knowledge.
+      evidence:
+        - python .harness-tool/workspace.py render .
+        - git diff --exit-code -- docs/generated
+  out_of_scope:
+    - Solver performance benchmarking is diagnostic evidence, not a pull-request correctness gate.
+    - The incomplete BLS 4.0 production import is outside the integrated baseline until separately re-authorized.
