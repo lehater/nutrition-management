@@ -180,6 +180,18 @@ authorities:
         requires:
           - capability: nutrition-management.application-design
 
+  - id: ENGINEERING-POLICY
+    responsibility: Own cross-cutting engineering design constraints selected for this project.
+    boundary:
+      semantic_cohesion: Normative principles that constrain implementation-facing design across authorities.
+      independent_change: Engineering policy can evolve without redefining product/domain semantics.
+      public_contract: Produces explicit reviewable design obligations for downstream design authorities.
+    produces:
+      - capability: nutrition-management.engineering-policy
+        knowledge_kind: engineering-policy
+        requires:
+          - capability: nutrition-management.architecture
+
   - id: COMPONENT-DESIGN
     responsibility: Own implementation-facing component decomposition and dependency contracts.
     boundary:
@@ -190,6 +202,7 @@ authorities:
       - capability: nutrition-management.component-design
         knowledge_kind: component-design
         requires:
+          - capability: nutrition-management.engineering-policy
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
