@@ -62,3 +62,19 @@ def test_database_foreign_keys_never_cross_context_prefixes(engine):
             target = foreign_key["referred_table"]
             target_prefix = target.split("_", 1)[0]
             assert source_prefix == target_prefix, (table, target)
+
+
+def test_purchase_planning_solver_adapter_does_not_import_provider_infrastructure():
+    path = ROOT / "purchase_planning" / "infrastructure" / "solver_adapter.py"
+    for imported in _imports(path):
+        imported_context, rest = _context_from_import(imported)
+        if imported_context in {"nutrition_targeting", "food_knowledge", "market_catalog"}:
+            assert not rest or rest[0] != "infrastructure", (path, imported)
+
+
+def test_cli_does_not_import_context_infrastructure():
+    path = ROOT / "adapters" / "cli" / "main.py"
+    for imported in _imports(path):
+        imported_context, rest = _context_from_import(imported)
+        if imported_context is not None:
+            assert not rest or rest[0] != "infrastructure", (path, imported)
