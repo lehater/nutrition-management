@@ -11,10 +11,46 @@ authorities:
   - id: APPLICATION-DESIGN
   - id: DATA-DESIGN
   - id: INTERFACE-DESIGN
+  - id: REDESIGN-VERIFICATION
   - id: IMPLEMENTATION-DESIGN
   - id: VERIFICATION
 
 artifacts:
+  - id: REDESIGN-REVALIDATION
+    authority: PRODUCT
+    path: docs/redesign/component-design.md
+    provides: []
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - TARGET-ARCHITECTURE
+
+  - id: REDESIGN-VERIFICATION-DESIGN
+    authority: REDESIGN-VERIFICATION
+    path: docs/redesign/verification-design.md
+    provides:
+      - nutrition-management.redesign.verification-design
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - TARGET-ARCHITECTURE
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - CLI-CONTRACT
+      - ENGINEERING-DESIGN-POLICY
+      - COMPONENT-DESIGN
+
+  - id: REDESIGN-IMPLEMENTATION-DESIGN
+    authority: IMPLEMENTATION-DESIGN
+    path: docs/redesign/implementation-design.md
+    provides:
+      - nutrition-management.redesign.implementation-design
+    depends_on:
+      - COMPONENT-DESIGN
+      - REDESIGN-VERIFICATION-DESIGN
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - CLI-CONTRACT
+      - IMPLEMENTATION-STACK
+
   - id: ENGINEERING-DESIGN-POLICY
     authority: ENGINEERING-POLICY
     path: docs/engineering/engineering-design-policy.md
@@ -221,28 +257,6 @@ artifacts:
       - DATA-DESIGN
       - CLI-CONTRACT
       - IMPLEMENTATION-STACK
-
-  - id: IMPLEMENTATION-PLAN
-    authority: IMPLEMENTATION-DESIGN
-    path: docs/implementation/implementation-plan.md
-    provides:
-      - nutrition-management.implementation.plan
-    depends_on:
-      - COMPONENT-DESIGN
-      - APPLICATION-DESIGN
-      - DATA-DESIGN
-      - CLI-CONTRACT
-      - IMPLEMENTATION-STACK
-      - VERIFICATION-STRATEGY
-
-  - id: IMPLEMENTATION-COMPLETION-CRITERIA
-    authority: IMPLEMENTATION-DESIGN
-    path: docs/implementation/completion-criteria.md
-    provides:
-      - nutrition-management.implementation.completion-criteria
-    depends_on:
-      - IMPLEMENTATION-PLAN
-      - VERIFICATION-STRATEGY
 
   - id: IMPLEMENTATION-STACK
     authority: IMPLEMENTATION-DESIGN

@@ -13,6 +13,7 @@ The `docs/` tree is a versioned project knowledge base, not a dump of discussion
 | `decisions/` | Which consequential project choice was made, why, and what does it supersede? |
 | `plans/active/` | What is being executed now, what is blocked, and what is next? |
 | `baseline/` | Which explicit historical project snapshot/provenance packet is worth retaining? |
+| `redesign/` | What is the accepted clean pre-code design baseline, including component, verification and terminal Implementation Design? |
 
 ## Reading rule
 
@@ -21,3 +22,8 @@ Start from the task, not from the whole documentation tree. Read the nearest app
 ## Writing rule
 
 Accepted project truth goes into its owning living artifact. Durable rationale goes into an ADR when needed. Git history is the default archive.
+
+
+## Current pre-code baseline
+
+The accepted implementation-facing baseline is `redesign/component-design.md`, `redesign/verification-design.md` and `redesign/implementation-design.md`. Earlier implementation-plan/component-design/completion-criteria artifacts were retired after the clean redesign. Existing implementation code is not design evidence.

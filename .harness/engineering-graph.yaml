@@ -208,6 +208,24 @@ authorities:
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.implementation.stack
 
+  - id: REDESIGN-VERIFICATION
+    responsibility: Own verification evidence required by the clean redesign independently of existing tests.
+    boundary:
+      semantic_cohesion: Design-derived evidence obligations from domain through implementation boundaries.
+      independent_change: Verification realization may evolve without redefining accepted semantics.
+      public_contract: Produces the redesign verification design consumed by implementation authorization.
+    produces:
+      - capability: nutrition-management.redesign.verification-design
+        knowledge_kind: verification-strategy
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.architecture
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.engineering-policy
+          - capability: nutrition-management.component-design
+
   - id: IMPLEMENTATION-DESIGN
     responsibility: Own concrete implementation choices and executable implementation completion contract.
     boundary:
@@ -218,18 +236,15 @@ authorities:
       - capability: nutrition-management.implementation.stack
         requires:
           - capability: nutrition-management.architecture
-      - capability: nutrition-management.implementation.plan
+      - capability: nutrition-management.redesign.implementation-design
+        knowledge_kind: implementation-design
         requires:
           - capability: nutrition-management.component-design
+          - capability: nutrition-management.redesign.verification-design
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.implementation.stack
-          - capability: nutrition-management.verification.strategy
-      - capability: nutrition-management.implementation.completion-criteria
-        requires:
-          - capability: nutrition-management.implementation.plan
-          - capability: nutrition-management.verification.strategy
 
   - id: VERIFICATION
     responsibility: Own verification strategy and acceptance evidence design.
@@ -267,8 +282,8 @@ consumers:
       - capability: nutrition-management.interface.cli
       - capability: nutrition-management.implementation.stack
       - capability: nutrition-management.component-design
-      - capability: nutrition-management.implementation.plan
-      - capability: nutrition-management.implementation.completion-criteria
+      - capability: nutrition-management.redesign.implementation-design
+      - capability: nutrition-management.redesign.verification-design
       - capability: nutrition-management.verification.strategy
 
   - id: THEORETICAL-GAP-SUGGESTIONS
