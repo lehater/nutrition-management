@@ -7,6 +7,7 @@ authorities:
   - id: PURCHASE-PLANNING
   - id: ARCHITECTURE
   - id: ENGINEERING-POLICY
+  - id: OPERABILITY-DESIGN
   - id: COMPONENT-DESIGN
   - id: APPLICATION-DESIGN
   - id: DATA-DESIGN
@@ -36,6 +37,7 @@ artifacts:
       - DATA-DESIGN
       - CLI-CONTRACT
       - ENGINEERING-DESIGN-POLICY
+      - OPERABILITY-DESIGN
       - COMPONENT-DESIGN
 
   - id: REDESIGN-IMPLEMENTATION-DESIGN
@@ -246,6 +248,17 @@ artifacts:
     depends_on:
       - APPLICATION-DESIGN
 
+  - id: OPERABILITY-DESIGN
+    authority: OPERABILITY-DESIGN
+    path: docs/redesign/operability-design.md
+    provides:
+      - nutrition-management.operability
+    depends_on:
+      - TARGET-ARCHITECTURE
+      - APPLICATION-DESIGN
+      - CLI-CONTRACT
+      - ENGINEERING-DESIGN-POLICY
+
   - id: COMPONENT-DESIGN
     authority: COMPONENT-DESIGN
     path: docs/implementation/component-design.md
@@ -253,6 +266,7 @@ artifacts:
       - nutrition-management.component-design
     depends_on:
       - ENGINEERING-DESIGN-POLICY
+      - OPERABILITY-DESIGN
       - APPLICATION-DESIGN
       - DATA-DESIGN
       - CLI-CONTRACT
