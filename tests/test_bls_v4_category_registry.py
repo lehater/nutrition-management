@@ -2,6 +2,7 @@ import pytest
 
 from nutrition_management.food_knowledge.application.category_registry import (
     CategoryRegistryError,
+    analyze_category_registry,
     resolve_category_registry,
     validate_category_registry,
 )
@@ -166,3 +167,25 @@ def test_source_code_baseline_must_be_unique_and_complete():
             registry(("B", "grains_cereal_products_potatoes")),
             expected_count=2,
         )
+
+
+def test_candidate_analysis_reports_internal_frontier_without_core_questions():
+    report = analyze_category_registry(
+        source("B111000", "E110000", "E410000", "F110100"),
+        registry(
+            ("B", "grains_cereal_products_potatoes"),
+            ("E", "fish_meat_sausage_eggs"),
+            ("E4", "grains_cereal_products_potatoes"),
+        ),
+        expected_count=4,
+    )
+
+    assert report["resolved_count"] == 2
+    assert report["resolved"] == {
+        "B111000": "grains_cereal_products_potatoes",
+        "E110000": "fish_meat_sausage_eggs",
+    }
+    assert report["unmapped"] == ["F110100"]
+    assert report["ambiguous"] == {"E410000": ["E", "E4"]}
+    assert report["unused_rules"] == []
+    assert report["structural_errors"] == []
