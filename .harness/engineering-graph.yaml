@@ -142,6 +142,66 @@ authorities:
           - capability: nutrition-management.domain.market-catalog
           - capability: nutrition-management.domain.purchase-planning
 
+  - id: APPLICATION-DESIGN
+    responsibility: Own implementation-facing application orchestration and published application contracts.
+    boundary:
+      semantic_cohesion: Use-case orchestration, ports and cross-context application collaboration.
+      independent_change: Application orchestration can change behind accepted domain and architecture contracts.
+      public_contract: Produces implementation-facing application design.
+    produces:
+      - capability: nutrition-management.application-design
+        requires:
+          - capability: nutrition-management.architecture
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+          - capability: nutrition-management.domain.purchase-planning
+
+  - id: DATA-DESIGN
+    responsibility: Own implementation-facing persistence representation and migration contracts.
+    boundary:
+      semantic_cohesion: Relational representation, ownership, identifiers, numeric and temporal persistence.
+      independent_change: Physical representation can evolve behind domain and application contracts.
+      public_contract: Produces accepted persistence design.
+    produces:
+      - capability: nutrition-management.data-design
+        requires:
+          - capability: nutrition-management.architecture
+          - capability: nutrition-management.application-design
+
+  - id: INTERFACE-DESIGN
+    responsibility: Own the first-slice external CLI interaction contract.
+    boundary:
+      semantic_cohesion: User-visible invocation, inputs, output and failure boundary.
+      independent_change: The outer adapter can change without redefining application/domain semantics.
+      public_contract: Produces the accepted CLI contract.
+    produces:
+      - capability: nutrition-management.interface.cli
+        requires:
+          - capability: nutrition-management.application-design
+
+  - id: IMPLEMENTATION-DESIGN
+    responsibility: Own concrete implementation choices and executable implementation completion contract.
+    boundary:
+      semantic_cohesion: Stack, implementation sequence and completion criteria.
+      independent_change: Implementation mechanics can change behind accepted architecture/application contracts.
+      public_contract: Produces an implementation-ready plan without redefining upstream semantics.
+    produces:
+      - capability: nutrition-management.implementation.stack
+        requires:
+          - capability: nutrition-management.architecture
+      - capability: nutrition-management.implementation.plan
+        requires:
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.implementation.stack
+          - capability: nutrition-management.verification.strategy
+      - capability: nutrition-management.implementation.completion-criteria
+        requires:
+          - capability: nutrition-management.implementation.plan
+          - capability: nutrition-management.verification.strategy
+
   - id: VERIFICATION
     responsibility: Own verification strategy and acceptance evidence design.
     boundary:
@@ -173,6 +233,12 @@ consumers:
       - capability: nutrition-management.domain.market-catalog
       - capability: nutrition-management.domain.purchase-planning
       - capability: nutrition-management.architecture
+      - capability: nutrition-management.application-design
+      - capability: nutrition-management.data-design
+      - capability: nutrition-management.interface.cli
+      - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.implementation.plan
+      - capability: nutrition-management.implementation.completion-criteria
       - capability: nutrition-management.verification.strategy
 
   - id: THEORETICAL-GAP-SUGGESTIONS

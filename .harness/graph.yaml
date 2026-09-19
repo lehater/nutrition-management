@@ -6,6 +6,10 @@ authorities:
   - id: MARKET-CATALOG
   - id: PURCHASE-PLANNING
   - id: ARCHITECTURE
+  - id: APPLICATION-DESIGN
+  - id: DATA-DESIGN
+  - id: INTERFACE-DESIGN
+  - id: IMPLEMENTATION-DESIGN
   - id: VERIFICATION
 
 artifacts:
@@ -165,6 +169,64 @@ artifacts:
       - FOOD-KNOWLEDGE-DOMAIN
       - MARKET-CATALOG-DOMAIN
       - PURCHASE-PLANNING-DOMAIN
+      - TARGET-ARCHITECTURE
+
+  - id: APPLICATION-DESIGN
+    authority: APPLICATION-DESIGN
+    path: docs/application/application-design.md
+    provides:
+      - nutrition-management.application-design
+    depends_on:
+      - TARGET-ARCHITECTURE
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
+  - id: DATA-DESIGN
+    authority: DATA-DESIGN
+    path: docs/data/data-design.md
+    provides:
+      - nutrition-management.data-design
+    depends_on:
+      - TARGET-ARCHITECTURE
+      - APPLICATION-DESIGN
+
+  - id: CLI-CONTRACT
+    authority: INTERFACE-DESIGN
+    path: docs/interface/cli-contract.md
+    provides:
+      - nutrition-management.interface.cli
+    depends_on:
+      - APPLICATION-DESIGN
+
+  - id: IMPLEMENTATION-PLAN
+    authority: IMPLEMENTATION-DESIGN
+    path: docs/implementation/implementation-plan.md
+    provides:
+      - nutrition-management.implementation.plan
+    depends_on:
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - CLI-CONTRACT
+      - IMPLEMENTATION-STACK
+      - VERIFICATION-STRATEGY
+
+  - id: IMPLEMENTATION-COMPLETION-CRITERIA
+    authority: IMPLEMENTATION-DESIGN
+    path: docs/implementation/completion-criteria.md
+    provides:
+      - nutrition-management.implementation.completion-criteria
+    depends_on:
+      - IMPLEMENTATION-PLAN
+      - VERIFICATION-STRATEGY
+
+  - id: IMPLEMENTATION-STACK
+    authority: IMPLEMENTATION-DESIGN
+    path: docs/decisions/ADR-010-first-implementation-stack.md
+    provides:
+      - nutrition-management.implementation.stack
+    depends_on:
       - TARGET-ARCHITECTURE
 
 questions:

@@ -2,7 +2,7 @@
 
 Current product work: **none**.
 
-Implementation authorization: **none**.
+Implementation authorization: **MVP implementation is design-ready; execution must follow the accepted implementation plan and completion criteria.**
 
 ## Integrated baseline
 
@@ -22,6 +22,12 @@ The previous draft implementation was an incomplete WIP: CI was green for its br
 
 No source digest, corpus, category decision or correction may be fabricated.
 
+## Implementation readiness
+
+Harness `IMPLEMENTATION` is the canonical readiness target. Its accepted inputs are the application design, data design, CLI contract, implementation stack, implementation plan, completion criteria and verification strategy.
+
+The BLS 4.0 production-import consumer remains a separate scope and is not authorized by MVP implementation readiness.
+
 ## Blockers
 
-None for the repository baseline itself.
+None for the accepted MVP implementation baseline itself.
