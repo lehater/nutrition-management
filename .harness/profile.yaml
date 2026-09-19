@@ -1,0 +1,49 @@
+version: 1
+kind: harness-design-profile
+id: NUTRITION-MANAGEMENT-MVP-DESIGN
+
+expectations:
+  - id: PROBLEM
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.problem
+    authority: PRODUCT
+
+  - id: REQUIREMENTS
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.requirements
+    authority: PRODUCT
+
+  - id: DOMAIN-BOUNDARIES
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.boundaries
+    authority: DOMAIN-STRUCTURE
+
+  - id: DOMAIN-CONTRACTS
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.context-contracts
+    authority: DOMAIN-STRUCTURE
+
+  - id: NUTRITION-TARGETING
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.nutrition-targeting
+    authority: NUTRITION-TARGETING
+
+  - id: FOOD-KNOWLEDGE
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.food-knowledge
+    authority: FOOD-KNOWLEDGE
+
+  - id: MARKET-CATALOG
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.market-catalog
+    authority: MARKET-CATALOG
+
+  - id: PURCHASE-PLANNING
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.purchase-planning
+    authority: PURCHASE-PLANNING
+
+  - id: ARCHITECTURE
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.architecture
+    authority: ARCHITECTURE
