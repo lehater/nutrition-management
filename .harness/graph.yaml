@@ -11,15 +11,15 @@ authorities:
   - id: APPLICATION-DESIGN
   - id: DATA-DESIGN
   - id: INTERFACE-DESIGN
-  - id: REDESIGN-VERIFICATION
+  - id: VERIFICATION-DESIGN
   - id: TEST-DESIGN
   - id: IMPLEMENTATION-DESIGN
   - id: VERIFICATION
 
 artifacts:
-  - id: TEST-DESIGN-RESEARCH
+  - id: TEST-DESIGN
     authority: TEST-DESIGN
-    path: docs/research/test-design-authority.md
+    path: docs/verification/test-design.md
     provides:
       - nutrition-management.test-design
     depends_on:
@@ -34,21 +34,21 @@ artifacts:
       - DATA-DESIGN
       - CLI-CONTRACT
       - COMPONENT-DESIGN
-      - REDESIGN-VERIFICATION-DESIGN
+      - VERIFICATION-DESIGN-DESIGN
 
   - id: REDESIGN-REVALIDATION
     authority: PRODUCT
-    path: docs/redesign/component-design.md
+    path: docs/redesign/design-review.md
     provides: []
     depends_on:
       - PRODUCT-REQUIREMENTS
       - TARGET-ARCHITECTURE
 
-  - id: REDESIGN-VERIFICATION-DESIGN
-    authority: REDESIGN-VERIFICATION
+  - id: VERIFICATION-DESIGN-DESIGN
+    authority: VERIFICATION-DESIGN
     path: docs/redesign/verification-design.md
     provides:
-      - nutrition-management.redesign.verification-design
+      - nutrition-management.verification-design
     depends_on:
       - PRODUCT-REQUIREMENTS
       - TARGET-ARCHITECTURE
@@ -62,11 +62,11 @@ artifacts:
     authority: IMPLEMENTATION-DESIGN
     path: docs/redesign/implementation-design.md
     provides:
-      - nutrition-management.redesign.implementation-design
+      - nutrition-management.implementation-design
     depends_on:
       - COMPONENT-DESIGN
-      - REDESIGN-VERIFICATION-DESIGN
-      - TEST-DESIGN-RESEARCH
+      - VERIFICATION-DESIGN-DESIGN
+      - TEST-DESIGN
       - APPLICATION-DESIGN
       - DATA-DESIGN
       - CLI-CONTRACT
