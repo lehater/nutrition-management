@@ -233,3 +233,4 @@ The candidate boundary reduces coding-agent freedom over *what to test* without 
 
 The Test Design is accepted as project engineering knowledge. Harness-level portability/canonicalization remains independently governed by Harness.
 
+
