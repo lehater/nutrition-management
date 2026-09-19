@@ -245,18 +245,6 @@ authorities:
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.implementation.stack
-      - capability: nutrition-management.implementation.plan
-        requires:
-          - capability: nutrition-management.component-design
-          - capability: nutrition-management.application-design
-          - capability: nutrition-management.data-design
-          - capability: nutrition-management.interface.cli
-          - capability: nutrition-management.implementation.stack
-          - capability: nutrition-management.verification.strategy
-      - capability: nutrition-management.implementation.completion-criteria
-        requires:
-          - capability: nutrition-management.implementation.plan
-          - capability: nutrition-management.verification.strategy
 
   - id: VERIFICATION
     responsibility: Own verification strategy and acceptance evidence design.
@@ -296,8 +284,6 @@ consumers:
       - capability: nutrition-management.component-design
       - capability: nutrition-management.redesign.implementation-design
       - capability: nutrition-management.redesign.verification-design
-      - capability: nutrition-management.implementation.plan
-      - capability: nutrition-management.implementation.completion-criteria
       - capability: nutrition-management.verification.strategy
 
   - id: THEORETICAL-GAP-SUGGESTIONS
