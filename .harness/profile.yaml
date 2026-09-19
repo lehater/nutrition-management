@@ -47,3 +47,8 @@ expectations:
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.architecture
     authority: ARCHITECTURE
+
+  - id: CORE-DOMAIN-MODEL
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.domain.core-concepts
+    authority: DOMAIN-STRUCTURE
