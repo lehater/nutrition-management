@@ -1,4 +1,4 @@
-# ADR-016 — BLS 4.0 category assignment is an explicit exhaustive project registry
+# ADR-016 — BLS 4.0 category assignment is an explicit exhaustive project decision registry
 
 Status: `accepted` for the Harness pilot branch.
 
@@ -7,68 +7,87 @@ Lifecycle owner: `S2 Strategic/Tactical Domain Design / Food Knowledge classific
 
 ## Context
 
-ADR-005 defines the project top-level Food Category taxonomy for planning variety and explicitly rejects using BLS food-code groups as the project planning taxonomy.
+ADR-005 defines the project top-level Food Category taxonomy for planning variety and explicitly rejects using BLS food groups directly as the project planning taxonomy.
 
-The future BLS 4.0 production import contains 7,140 Base Foods. Every imported Base Food must have exactly one primary MVP top-level Food Category before it can enter canonical Food Knowledge.
+The future BLS 4.0 production import contains 7,140 Base Foods. Every imported Base Food must resolve to exactly one primary MVP top-level Food Category before it can enter canonical Food Knowledge.
 
-The accepted BLS source artifacts provide source identity, names, nutrient composition and BLS-native classification structure, but they do not provide the project-specific DGE-aligned category assignment required by ADR-005.
+BLS codes are hierarchical and their source-native groups are useful classification evidence, but those groups are not themselves the project taxonomy. Import-time inference from a code prefix, display name or nutrient profile would hide project classification decisions inside parser behavior.
 
-Inferring the project category from a BLS code prefix, food name, nutrient profile or BLS-native grouping would therefore introduce an undocumented heuristic into canonical Food Knowledge.
+A literal 7,140-row project table is sufficient but unnecessarily duplicates classification decisions when a reviewed source-code prefix has one accepted project meaning for every covered code.
 
 ## Decision
 
-### Category assignment is explicit data
+### Category assignment is explicit project data
 
-BLS 4.0 category membership is represented by a versioned project-owned registry keyed by exact BLS food code.
+BLS 4.0 category membership is governed by a versioned project-owned decision registry.
 
-Each registry entry contains:
+The registry may contain:
 
-- exact BLS 4.0 food code;
-- exactly one accepted ADR-005 top-level Food Category.
+- explicit BLS code-prefix rules where the whole covered source subset has one accepted ADR-005 category;
+- exact-code overrides for exceptions or cases that require narrower decisions.
 
-The registry is canonical Food Knowledge data for the BLS 4.0 source version.
+Rules and overrides are canonical Food Knowledge data. They are not parser heuristics.
 
-### Coverage is exhaustive and exact
+### Resolution semantics are deterministic
 
-For the pinned BLS 4.0 source baseline:
+For a pinned BLS 4.0 source code:
 
-- every one of the 7,140 distinct BLS food codes must occur exactly once in the category registry;
-- no registry code may be absent from the pinned source;
-- no source food may be missing from the registry;
-- every category value must belong to the ADR-005 controlled top-level vocabulary.
+1. an exact-code override, when present, is authoritative for that code;
+2. otherwise exactly one prefix rule must match;
+3. zero matching rules is an unmapped source food;
+4. more than one matching prefix rule is invalid configuration rather than an implicit precedence rule.
 
-Package generation fails closed on missing, duplicate, unknown or invalid assignments.
+Prefix rules therefore must be non-overlapping for source codes that do not have an exact override.
+
+### Coverage is exhaustive against the pinned source set
+
+Validation evaluates the registry against the exact pinned BLS 4.0 source-code set.
+
+For all 7,140 distinct source codes:
+
+- every source code resolves to exactly one accepted ADR-005 top-level Food Category;
+- every exact override references an existing source code;
+- every prefix rule matches at least one source code;
+- no source code remains unmapped;
+- no invalid category value is accepted.
+
+The materialized per-code mapping is a deterministic projection of the canonical decision registry and may be emitted into the normalized production package.
 
 ### No implicit fallback
 
 `other_or_composite` is a normal explicit project category, not an automatic fallback.
 
-A food is assigned `other_or_composite` only when the accepted classification explicitly chooses it. Unknown or difficult classification does not silently become `other_or_composite`.
+A rule or exact override may assign it explicitly. Absence of a classification decision never becomes `other_or_composite` automatically.
 
-### No heuristic derivation becomes canonical truth
+### Evidence does not become authority
 
-BLS-native grouping, food-code structure, names, nutrient profiles or agent classification may be used as evidence or assistance while preparing the registry, but none of them independently determines the canonical category.
+BLS-native grouping, code hierarchy, names, nutrient profiles or agent/model suggestions may be used as evidence while preparing rules and overrides.
 
-The accepted registry is the classification decision boundary.
+They do not independently determine the project category. The reviewed registry is the classification decision boundary.
 
 ### Version scope is explicit
 
-The registry is specific to the pinned BLS 4.0 food-code set. A later BLS release requires explicit coverage review and a separately versioned registry state.
+The registry is specific to the pinned BLS 4.0 source-code set. A later BLS release requires explicit coverage review and a separately accepted registry state.
 
 ## Consequences
 
-- category semantics remain aligned with ADR-005 rather than BLS source organization;
-- import behavior is deterministic and reproducible;
-- every imported Base Food has exactly one explicit project category;
-- ambiguous classifications remain reviewable instead of becoming hidden parser heuristics;
-- the production package can validate category coverage independently from nutrient normalization;
-- agent assistance may accelerate classification without becoming the source of truth.
+- project category semantics remain aligned with ADR-005 rather than BLS source organization;
+- repeated classification decisions can be represented once as explicit reviewed prefix rules;
+- exceptions remain visible as exact-code overrides;
+- package generation can deterministically materialize a complete 7,140-row mapping;
+- exact coverage remains independently verifiable against pinned source identity;
+- ambiguous classifications cannot disappear into parser code or an implicit fallback;
+- agent assistance may propose candidate rules/overrides without becoming the source of truth.
 
 ## Alternatives considered
 
-### Derive category from BLS food-code group
+### Store exactly 7,140 manually repeated rows as canonical truth
 
-Rejected because ADR-005 already rejects BLS grouping as the planning taxonomy and no accepted one-to-one semantic mapping exists.
+Rejected as the only allowed representation because it duplicates identical reviewed decisions and makes review unnecessarily noisy. A materialized 7,140-row projection remains valid package output.
+
+### Derive category directly from BLS food-code group at import time
+
+Rejected because ADR-005 does not adopt the BLS grouping as project taxonomy. Source hierarchy is evidence for explicit project rules, not authority.
 
 ### Classify by food name or nutrient profile during import
 
@@ -77,10 +96,6 @@ Rejected because classification would become heuristic, difficult to audit and s
 ### Default unmapped foods to `other_or_composite`
 
 Rejected because absence of a decision is not the same as an accepted composite-food classification.
-
-### Store no category until later
-
-Rejected because canonical Base Food semantics require exactly one primary top-level category.
 
 ## Supersession
 
