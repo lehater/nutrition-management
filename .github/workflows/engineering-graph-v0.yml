@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: lehater/harness
-          ref: 5f18997aea10a15ed71596f1f0bd9d195e8c64da
+          ref: 8b88580bdeb38b844cbb896531281b2fb1745700
           path: .harness-tool
 
       - uses: actions/setup-python@v6
@@ -205,9 +205,9 @@ jobs:
           assert routed["unrouted"] == [], routed
           assert len(routed["routed"]) == 1, routed
           item = routed["routed"][0]
-          assert item["capability"] == (
+          assert item["capabilities"] == [
               "nutrition-management.food-knowledge.bls-v4.source-code-set"
-          ), item
+          ], item
           assert item["knowledge_kind"] == "pinned-source-entity-set", item
           assert item["skill"] == (
               "skills/artifacts/pinned-source-entity-set/SKILL.md"
