@@ -1,7 +1,7 @@
 import pytest
 
 from nutrition_management.food_knowledge.domain.model import TOP_LEVEL_CATEGORIES
-from tools.validate_bls_v4_category_registry import (
+from nutrition_management.food_knowledge.application.category_registry import (
     CategoryRegistryError,
     validate_category_registry,
 )
