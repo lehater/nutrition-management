@@ -161,10 +161,13 @@ Unsupported coverage is always shown separately, including for a `mapped_complet
 ## Gap-closing theoretical suggestions
 
 For a positive mapped adequacy gap, theoretical Base Foods with a known positive amount of the missing Nutrient Measure are ranked by:
-1. higher amount per `100 kcal`, when energy is positive and known;
-2. higher amount per `100 g edible portion`;
-3. a core category not already materially represented;
-4. stable Base Food identity.
+1. foods with a computable amount per `100 kcal` (positive known energy) before foods whose energy evidence cannot support that density;
+2. within the computable class, higher amount per `100 kcal`;
+3. then higher amount per `100 g edible portion`;
+4. then a core category not already materially represented;
+5. stable Base Food identity.
+
+When energy is zero or non-quantitative, no numeric per-`100 kcal` value is invented; the food remains eligible in the fallback class and is ranked from the per-`100 g` criterion onward. This clarification is recorded by ADR-017.
 
 For an energy gap, rank by `ENERCC` per `100 g` instead of the trivial per-100-kcal measure.
 
