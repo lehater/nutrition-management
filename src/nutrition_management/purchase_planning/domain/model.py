@@ -127,7 +127,6 @@ class PlanningInputSnapshot:
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
     target_coverage_gaps: tuple[TargetCoverageGap, ...] = ()
     safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
-    gap_suggestions: tuple[GapSuggestion, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -225,3 +224,4 @@ class PurchasePlan:
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
     target_coverage_gaps: tuple[TargetCoverageGap, ...] = ()
     safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
+    gap_suggestions: tuple[GapSuggestion, ...] = ()
