@@ -29,7 +29,7 @@ def generate_purchase_plan(
 ) -> PurchasePlan:
     snapshot = snapshot_source.capture(household_id, derivation_date, market_as_of)
     try:
-        decision = solver.solve(snapshot)
+        decision = solver(snapshot)
     except HardModelInfeasible:
         return PurchasePlan(
             household_id=snapshot.household_id,
