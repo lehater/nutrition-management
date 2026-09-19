@@ -7,7 +7,7 @@ Lifecycle layer: `S2 Domain Semantics / Tactical DDD`.
 
 Own normalized nutritional knowledge about foods independently of whether a concrete commercial product is currently sold.
 
-Canonical nutrient identity/unit/basis and evidence-state semantics are defined in [`nutrient-semantics.md`](nutrient-semantics.md), accepted by [`ADR-004`](../decisions/ADR-004-canonical-nutrient-semantics.md), and extended by [`ADR-013`](../decisions/ADR-013-limit-qualified-nutrient-evidence.md).
+Canonical nutrient identity/unit/basis and evidence-state semantics are defined in [`nutrient-semantics.md`](nutrient-semantics.md), accepted by [`ADR-004`](../decisions/ADR-004-canonical-nutrient-semantics.md), and extended by [`ADR-013`](../decisions/ADR-013-limit-qualified-nutrient-evidence.md) and [`ADR-015`](../decisions/ADR-015-raw-bls-evidence-before-correction.md).
 
 The MVP top-level food-category decision is recorded in [`ADR-005`](../decisions/ADR-005-mvp-food-category-taxonomy.md).
 
@@ -33,7 +33,7 @@ For the MVP:
 - energy comparison uses BLS `ENERCC` in kcal;
 - equivalent/aggregate nutrients retain their explicit component/form semantics;
 - derived Nutrient Measures are explicit versioned formulas over canonical components;
-- `trace`, `below_quantification_limit`, `below_detection_limit` and `missing` are non-quantitative evidence states and are not equivalent to zero.
+- `trace`, `below_quantification_limit`, `below_detection_limit`, `below_detection_or_quantification_limit` and `missing` are non-quantitative evidence states and are not equivalent to zero.
 
 A nutrient data point retains source/provenance at the finest available level. BLS 4.0 imports therefore retain per-component value origin/reference where available.
 
@@ -80,7 +80,7 @@ BLS 4.0 is the canonical MVP semantic vocabulary and preferred baseline source f
 
 - map a source nutrient value to an accepted canonical component only when nutrient/form semantics match;
 - normalize source units and food basis to the canonical component unit per 100 g edible portion;
-- preserve `known`, `zero`, `trace`, `below_quantification_limit`, `below_detection_limit` and `missing` evidence states;
+- preserve `known`, `zero`, `trace`, `below_quantification_limit`, `below_detection_limit`, `below_detection_or_quantification_limit` and `missing` evidence states;
 - evaluate accepted derived Nutrient Measures from canonical components when their inputs are sufficiently known;
 - classify a Base Food into exactly one MVP top-level Food Category and optional subcategories;
 - determine whether a category/Base Food is materially represented from planned utilized quantity;
@@ -116,7 +116,7 @@ An override can replace a Base Food component only after it is normalized to the
 - normalized food composition is expressed per 100 g edible portion;
 - nutrient identity is not inferred from display-name equality;
 - generic unit conversion never changes nutrient identity;
-- non-quantitative nutrient evidence (`trace`, `below_quantification_limit`, `below_detection_limit`, `missing`) is not silently treated as zero;
+- non-quantitative nutrient evidence (`trace`, `below_quantification_limit`, `below_detection_limit`, `below_detection_or_quantification_limit`, `missing`) is not silently treated as zero;
 - nutritional provenance is retained with normalized data;
 - every Base Food has exactly one primary MVP top-level category;
 - variety material representation is based on planned utilized quantity, not purchased package surplus;
@@ -127,7 +127,7 @@ An override can replace a Base Food component only after it is normalized to the
 
 ## Precision and rounding
 
-Source numeric precision is retained as provenance. For BLS 4.0, the published source-value representation that carries its decimal precision is retained separately from the normalized quantitative amount; XLSX extraction must not discard that precision through premature numeric coercion. Semantic normalization and derived-measure evaluation do not intentionally round intermediate results. Human-facing rounding is downstream presentation policy; optimizer tolerance is Purchase Planning policy.
+Source numeric precision is retained as provenance. For the pinned BLS 4.0 XLSX baseline, the exact OOXML lexical numeric representation is retained separately from the normalized quantitative amount; extraction must not discard that precision through premature numeric coercion. Semantic normalization and derived-measure evaluation do not intentionally round intermediate results. Human-facing rounding is downstream presentation policy; optimizer tolerance is Purchase Planning policy.
 
 ## MVP data acquisition
 
