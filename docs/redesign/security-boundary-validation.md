@@ -48,3 +48,27 @@ Implementation would be blocked if a network/multi-user boundary were introduced
 - SECURITY-ANALYSIS can be applicable without SECURITY-ARCHITECTURE.
 - Security analysis must be able to return NOT_APPLICABLE/covered rather than manufacture controls.
 - No Security Core entity is required.
+
+## Extended security-surface review
+
+### Secrets, encryption and configuration
+
+No application credential is required by the accepted local MVP. The SQLite path is a resource location, not a secret. No remote transport or application-managed encryption/key lifecycle is accepted. Application encryption-at-rest, key rotation and secret stores are therefore NOT_REQUIRED_BY_CURRENT_DESIGN, not implementation defaults. If confidentiality against the host/storage operator later becomes required, Security Architecture must define that protection/trust boundary before Data/Implementation choose a mechanism.
+
+### Unsafe interpretation and input
+
+External/manual imports are data, not executable configuration or code. Import content must not be evaluated as executable expressions, templates, shell fragments or SQL. Parser/library mechanics remain implementation freedom. Invalid representation already fails before canonical persistence.
+
+### Dependency/supply-chain constraints
+
+No project package allowlist, signing scheme, vulnerability threshold or update SLA is accepted. Generic dependency hygiene belongs to Engineering Policy/organizational policy if selected; Security Analysis may identify a project-specific dependency threat but must not invent organization-wide governance.
+
+### Security verification obligations
+
+- malformed/untrusted imports cannot commit invalid canonical provider state;
+- import content is not executed/interpreted as code;
+- diagnostics do not disclose full personal profiles/planning snapshots by default;
+- no network/authentication surface appears without reopening Security/Interface/System Architecture;
+- no application secret/config source is introduced by implementation convention.
+
+This review strengthens the negative-case result: no independent Security Architecture contract is needed for the accepted Nutrition MVP.
