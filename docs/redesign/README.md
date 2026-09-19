@@ -24,3 +24,4 @@ The implementation-facing design is deliberately technology-neutral until Implem
 Problem / Evidence → Product Scope → Requirements → Strategic Domain → Tactical Domain → Quality/Security → System Architecture → Application/Data/Interface Design → Engineering Policy → Component Design → Verification Design → Implementation Design → IMPLEMENTATION.
 
 See `design-review.md` for the revalidation record and `implementation-design.md` for the terminal pre-code artifact.
+
