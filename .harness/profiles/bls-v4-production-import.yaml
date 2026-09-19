@@ -8,6 +8,12 @@ expectations:
     capability: nutrition-management.food-knowledge.bls-v4.source-identity
     authority: FOOD-KNOWLEDGE
 
+  - id: SOURCE-CODE-SET
+    subject: BLS-V4-IMPORT
+    capability: nutrition-management.food-knowledge.bls-v4.source-code-set
+    authority: FOOD-KNOWLEDGE
+    depends_on: [SOURCE-IDENTITY]
+
   - id: EVIDENCE-SEMANTICS
     subject: BLS-V4-IMPORT
     capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
@@ -32,7 +38,7 @@ expectations:
     authority: FOOD-KNOWLEDGE
     depends_on:
       - CATEGORY-TAXONOMY
-      - SOURCE-IDENTITY
+      - SOURCE-CODE-SET
 
   - id: PRODUCTION-PACKAGE-CONTRACT
     subject: BLS-V4-IMPORT
