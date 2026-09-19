@@ -1,0 +1,39 @@
+version: 1
+kind: harness-design-profile
+id: THEORETICAL-GAP-SUGGESTIONS
+
+expectations:
+  - id: REQUIREMENTS
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.requirements
+    authority: PRODUCT
+
+  - id: CONTEXT-CONTRACTS
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.domain.context-contracts
+    authority: DOMAIN-STRUCTURE
+    depends_on: [REQUIREMENTS]
+
+  - id: FOOD-KNOWLEDGE
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.domain.food-knowledge
+    authority: FOOD-KNOWLEDGE
+    depends_on: [CONTEXT-CONTRACTS]
+
+  - id: PURCHASE-PLANNING
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.domain.purchase-planning
+    authority: PURCHASE-PLANNING
+    depends_on: [CONTEXT-CONTRACTS, FOOD-KNOWLEDGE]
+
+  - id: ARCHITECTURE
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.architecture
+    authority: ARCHITECTURE
+    depends_on: [PURCHASE-PLANNING]
+
+  - id: VERIFICATION
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.verification.strategy
+    authority: VERIFICATION
+    depends_on: [ARCHITECTURE]
