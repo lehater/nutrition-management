@@ -180,6 +180,21 @@ authorities:
         requires:
           - capability: nutrition-management.application-design
 
+  - id: COMPONENT-DESIGN
+    responsibility: Own implementation-facing component decomposition and dependency contracts.
+    boundary:
+      semantic_cohesion: Decisions that constrain how accepted application behavior is decomposed into code components.
+      independent_change: Component decomposition can change behind stable application/domain contracts without changing system architecture.
+      public_contract: Produces a code-design contract sufficient for implementation without inventing structural dependencies.
+    produces:
+      - capability: nutrition-management.component-design
+        knowledge_kind: component-design
+        requires:
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.implementation.stack
+
   - id: IMPLEMENTATION-DESIGN
     responsibility: Own concrete implementation choices and executable implementation completion contract.
     boundary:
@@ -192,6 +207,7 @@ authorities:
           - capability: nutrition-management.architecture
       - capability: nutrition-management.implementation.plan
         requires:
+          - capability: nutrition-management.component-design
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
@@ -237,6 +253,7 @@ consumers:
       - capability: nutrition-management.data-design
       - capability: nutrition-management.interface.cli
       - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.component-design
       - capability: nutrition-management.implementation.plan
       - capability: nutrition-management.implementation.completion-criteria
       - capability: nutrition-management.verification.strategy
