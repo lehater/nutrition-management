@@ -52,3 +52,8 @@ expectations:
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.core-concepts
     authority: DOMAIN-STRUCTURE
+
+  - id: VERIFICATION-STRATEGY
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.verification.strategy
+    authority: VERIFICATION
