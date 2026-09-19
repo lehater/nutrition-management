@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from nutrition_management.adapters.cli.main import canonical_plan_json
+from nutrition_management.composition.gap_suggestions import FoodKnowledgeGapSuggestionSource
 from nutrition_management.composition.planning_snapshot import PlanningSnapshotSource
 from nutrition_management.purchase_planning.application.service import generate_purchase_plan
 from nutrition_management.purchase_planning.domain.model import PlanOutcome
@@ -23,6 +24,7 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
 
     first = generate_purchase_plan(
         snapshot_source=source,
+        suggestion_source=FoodKnowledgeGapSuggestionSource(engine),
         solver=solve,
         household_id=HOUSEHOLD_ID,
         derivation_date=DERIVATION_DATE,
@@ -30,6 +32,7 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     )
     second = generate_purchase_plan(
         snapshot_source=source,
+        suggestion_source=FoodKnowledgeGapSuggestionSource(engine),
         solver=solve,
         household_id=HOUSEHOLD_ID,
         derivation_date=DERIVATION_DATE,
@@ -49,4 +52,5 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     assert first.max_food_energy_share <= Decimal("0.25") + Decimal("1e-7")
     assert any(line.surplus_grams > 0 for line in first.lines)
     assert first.target_member_provenance == snapshot.target_member_provenance
+    assert first.gap_suggestions == ()
     assert canonical_plan_json(first) == canonical_plan_json(second)
