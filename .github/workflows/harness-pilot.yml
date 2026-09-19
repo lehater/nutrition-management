@@ -34,6 +34,27 @@ jobs:
       - name: Validate target state and managed knowledge
         run: python .harness-tool/workspace.py validate .
 
+      - name: Verify gap-suggestions design is complete
+        run: |
+          python - <<'PY'
+          import sys
+          from pathlib import Path
+          import yaml
+
+          sys.path.insert(0, ".harness-tool")
+          from target_state import evaluate_target_state
+
+          profile = yaml.safe_load(
+              Path(".harness/profiles/theoretical-gap-suggestions.yaml").read_text()
+          )
+          model = yaml.safe_load(Path(".harness/graph.yaml").read_text())
+          result = evaluate_target_state(profile, model)
+          assert result["status"] == "COMPLETE", result
+          assert result["create"] == [], result
+          assert result["wait"] == [], result
+          assert result["pending"] == [], result
+          PY
+
       - name: Evaluate BLS import slice
         run: python .harness-tool/target_state.py .harness/profiles/bls-v4-production-import.yaml .harness/graph.yaml
 
