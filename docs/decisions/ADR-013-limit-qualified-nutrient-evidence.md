@@ -87,4 +87,4 @@ Rejected for this slice because the BLS display marker does not by itself provid
 ## Supersession
 
 Supersedes: the four-state-only scope of the `Unknown, trace and zero` subsection of ADR-004.
-Superseded by: none.
+Superseded by: ADR-015 for the exhaustive evidence-state set when the source reports the combined `<LOD or <LOQ` marker.
