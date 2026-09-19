@@ -78,3 +78,4 @@ def test_targeting_application_ports_are_use_case_narrow():
     assert "active_standard" not in ProfileSink.__dict__
     assert set(StandardSink.__dict__) >= {"add_standard"}
     assert "profiles_for_household" not in StandardSink.__dict__
+
