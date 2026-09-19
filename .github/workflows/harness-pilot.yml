@@ -37,7 +37,7 @@ jobs:
       - name: Evaluate BLS import slice
         run: python .harness-tool/target_state.py .harness/profiles/bls-v4-production-import.yaml .harness/graph.yaml
 
-      - name: Verify BLS Question to CREATE transition
+      - name: Verify BLS source-set and Question frontier
         run: |
           python - <<'PY'
           import copy
@@ -51,7 +51,36 @@ jobs:
           profile = yaml.safe_load(Path(".harness/profiles/bls-v4-production-import.yaml").read_text())
           model = yaml.safe_load(Path(".harness/graph.yaml").read_text())
 
-          unresolved = copy.deepcopy(model)
+          current = evaluate_target_state(profile, model)
+          assert current["status"] == "READY", current
+          assert {item["expectation"] for item in current["create"]} == {"SOURCE-CODE-SET"}, current
+          assert current["wait"] == [], current
+          current_pending = {item["expectation"] for item in current["pending"]}
+          assert current_pending == {
+              "CATEGORY-ASSIGNMENT",
+              "PRODUCTION-PACKAGE-CONTRACT",
+              "IMPORT-VERIFICATION",
+          }, current
+
+          with_source_set = copy.deepcopy(model)
+          with_source_set["artifacts"].append(
+              {
+                  "id": "BLS-V4-SOURCE-CODE-SET",
+                  "authority": "FOOD-KNOWLEDGE",
+                  "path": "data/food/bls-4.0/source_codes.json",
+                  "provides": [
+                      "nutrition-management.food-knowledge.bls-v4.source-code-set"
+                  ],
+                  "depends_on": ["BLS-V4-SOURCE-BASELINE"],
+              }
+          )
+
+          resolved = evaluate_target_state(profile, with_source_set)
+          assert resolved["status"] == "READY", resolved
+          assert {item["expectation"] for item in resolved["create"]} == {"CATEGORY-ASSIGNMENT"}, resolved
+          assert resolved["wait"] == [], resolved
+
+          unresolved = copy.deepcopy(with_source_set)
           for question in unresolved["questions"]:
               if question["id"] == "Q-BLS-V4-CATEGORY-ASSIGNMENT":
                   question.pop("resolution", None)
@@ -61,16 +90,14 @@ jobs:
           assert blocked["create"] == [], blocked
           wait = {item["expectation"]: item for item in blocked["wait"]}
           assert wait["CATEGORY-ASSIGNMENT"]["providers"] == [], wait
-          assert wait["CATEGORY-ASSIGNMENT"]["questions"] == ["Q-BLS-V4-CATEGORY-ASSIGNMENT"], wait
-
-          resolved = evaluate_target_state(profile, model)
-          assert resolved["status"] == "READY", resolved
-          create = {item["expectation"]: item for item in resolved["create"]}
-          assert set(create) == {"CATEGORY-ASSIGNMENT"}, resolved
-          assert create["CATEGORY-ASSIGNMENT"]["capability"] == "nutrition-management.food-knowledge.bls-v4.category-assignment"
-          assert resolved["wait"] == [], resolved
-          pending = {item["expectation"] for item in resolved["pending"]}
-          assert pending == {"PRODUCTION-PACKAGE-CONTRACT", "IMPORT-VERIFICATION"}, resolved
+          assert wait["CATEGORY-ASSIGNMENT"]["questions"] == [
+              "Q-BLS-V4-CATEGORY-ASSIGNMENT"
+          ], wait
+          blocked_pending = {item["expectation"] for item in blocked["pending"]}
+          assert blocked_pending == {
+              "PRODUCTION-PACKAGE-CONTRACT",
+              "IMPORT-VERIFICATION",
+          }, blocked
           PY
 
       - name: Re-render human documentation
