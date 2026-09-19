@@ -171,6 +171,18 @@ artifacts:
       - PURCHASE-PLANNING-DOMAIN
       - TARGET-ARCHITECTURE
 
+  - id: APPLICATION-DESIGN
+    authority: APPLICATION-DESIGN
+    path: docs/application/application-design.md
+    provides:
+      - nutrition-management.application-design
+    depends_on:
+      - TARGET-ARCHITECTURE
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
   - id: IMPLEMENTATION-STACK
     authority: IMPLEMENTATION-DESIGN
     path: docs/decisions/ADR-010-first-implementation-stack.md
