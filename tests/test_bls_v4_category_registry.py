@@ -1,5 +1,6 @@
 import pytest
 
+from nutrition_management.food_knowledge.application.bls_v4_identity import BLS_V4_MAIN_SHA256
 from nutrition_management.food_knowledge.application.category_registry import (
     CategoryRegistryError,
     analyze_category_registry,
@@ -10,7 +11,11 @@ from nutrition_management.food_knowledge.domain.model import TOP_LEVEL_CATEGORIE
 
 
 def source(*codes):
-    return {"source_version": "4.0", "source_codes": list(codes)}
+    return {
+        "source_version": "4.0",
+        "source_sha256": BLS_V4_MAIN_SHA256,
+        "source_codes": list(codes),
+    }
 
 
 def registry(*rules, overrides=()):
@@ -189,3 +194,14 @@ def test_candidate_analysis_reports_internal_frontier_without_core_questions():
     assert report["ambiguous"] == {"E410000": ["E", "E4"]}
     assert report["unused_rules"] == []
     assert report["structural_errors"] == []
+
+
+def test_category_registry_rejects_unpinned_source_set():
+    value = source("B111000")
+    value["source_sha256"] = "0" * 64
+    with pytest.raises(CategoryRegistryError, match="source_sha256 must match pinned"):
+        validate_category_registry(
+            value,
+            registry(("B", "grains_cereal_products_potatoes")),
+            expected_count=1,
+        )
