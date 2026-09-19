@@ -1,0 +1,54 @@
+version: 1
+kind: harness-knowledge-artifact
+artifact: CORE-DOMAIN-MODEL
+schema: domain-model/v1
+title: Nutrition Management Core Domain Model
+
+content:
+  purpose: Provide a compact cross-context model of the accepted MVP concepts and invariants for navigation and review.
+
+  terms:
+    - term: Household
+      meaning: Calculation scope containing one or more Household Members.
+    - term: Household Member
+      meaning: Person whose current Nutrition Profile contributes nutritional demand to the household target.
+    - term: Base Food
+      meaning: Normalized theoretical food identity used as the nutritional base for commercial Product Cards.
+    - term: Product Card
+      meaning: Concrete commercial food product linked to one Base Food.
+    - term: Purchase Plan
+      meaning: Primary recommended 30-day household basket built from executable commercial offers.
+
+  concepts:
+    - name: Household
+      responsibilities:
+        - Contain one or more Household Members for calculation.
+    - name: Household Member
+      responsibilities:
+        - Contribute one current Nutrition Profile to household nutritional demand.
+    - name: Base Food
+      responsibilities:
+        - Own normalized nutrient profile.
+        - Own food-category membership.
+        - Own nutrition-data provenance.
+    - name: Product Card
+      responsibilities:
+        - Represent a concrete commercial food product linked to one Base Food.
+        - Own commercial product identity and package quantity.
+        - Own product-specific nutrient overrides when known.
+    - name: Purchase Plan
+      responsibilities:
+        - Recommend one executable 30-day household basket.
+        - Preserve mapped nutritional coverage, uncertainty, variety and acquisition cost in the result.
+
+  invariants:
+    - id: HOUSEHOLD-NONEMPTY
+      statement: A Household contains one or more Household Members.
+    - id: MEMBER-CURRENT-PROFILE
+      statement: The MVP keeps one current Nutrition Profile per Household Member.
+    - id: BASE-FOOD-PRIMARY-CATEGORY
+      statement: Every Base Food has exactly one primary MVP top-level Food Category.
+    - id: PURCHASE-PLAN-EXECUTABLE-ONLY
+      statement: A Purchase Plan selects only executable Product Cards and Offers.
+    - id: PROVIDER-FACTS-AUTHORITATIVE
+      statement: Cross-context consumers do not reinterpret provider-owned facts as their own canonical truth.
