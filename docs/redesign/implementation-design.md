@@ -108,4 +108,4 @@ Any such need becomes an upstream Question.
 
 ## Ready-for-code criterion
 
-The design is ready for coding when the canonical Engineering Graph requires this Implementation Design and Verification Design, all their upstream capabilities are accepted, and IMPLEMENTATION evaluates COMPLETE. This criterion means design-complete/implementation-authorized; it does not mean implementation exists.
+The design is ready for coding when the canonical Engineering Graph requires this Implementation Design, Verification Design and Test Design, all their upstream capabilities are accepted, and IMPLEMENTATION evaluates COMPLETE. This criterion means design-complete/implementation-authorized; it does not mean implementation exists.
