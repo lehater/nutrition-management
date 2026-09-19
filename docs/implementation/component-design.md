@@ -1,6 +1,6 @@
 # MVP Component Design
 
-Status: research candidate.
+Status: canonical implementation-facing design.
 
 Normative constraints: `docs/engineering/engineering-design-policy.md`.
 
