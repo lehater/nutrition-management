@@ -12,48 +12,71 @@ expectations:
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.requirements
     authority: PRODUCT
+    depends_on: [PROBLEM]
 
   - id: DOMAIN-BOUNDARIES
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.boundaries
     authority: DOMAIN-STRUCTURE
+    depends_on: [REQUIREMENTS]
 
   - id: DOMAIN-CONTRACTS
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.context-contracts
     authority: DOMAIN-STRUCTURE
+    depends_on: [DOMAIN-BOUNDARIES]
 
   - id: NUTRITION-TARGETING
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.nutrition-targeting
     authority: NUTRITION-TARGETING
+    depends_on: [DOMAIN-CONTRACTS]
 
   - id: FOOD-KNOWLEDGE
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.food-knowledge
     authority: FOOD-KNOWLEDGE
+    depends_on: [DOMAIN-CONTRACTS]
 
   - id: MARKET-CATALOG
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.market-catalog
     authority: MARKET-CATALOG
+    depends_on: [DOMAIN-CONTRACTS]
 
   - id: PURCHASE-PLANNING
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.purchase-planning
     authority: PURCHASE-PLANNING
-
-  - id: ARCHITECTURE
-    subject: NUTRITION-MANAGEMENT
-    capability: nutrition-management.architecture
-    authority: ARCHITECTURE
+    depends_on:
+      - NUTRITION-TARGETING
+      - FOOD-KNOWLEDGE
+      - MARKET-CATALOG
 
   - id: CORE-DOMAIN-MODEL
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.domain.core-concepts
     authority: DOMAIN-STRUCTURE
+    depends_on:
+      - NUTRITION-TARGETING
+      - FOOD-KNOWLEDGE
+      - MARKET-CATALOG
+      - PURCHASE-PLANNING
+
+  - id: ARCHITECTURE
+    subject: NUTRITION-MANAGEMENT
+    capability: nutrition-management.architecture
+    authority: ARCHITECTURE
+    depends_on:
+      - NUTRITION-TARGETING
+      - FOOD-KNOWLEDGE
+      - MARKET-CATALOG
+      - PURCHASE-PLANNING
 
   - id: VERIFICATION-STRATEGY
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.verification.strategy
     authority: VERIFICATION
+    depends_on:
+      - ARCHITECTURE
+      - CORE-DOMAIN-MODEL
