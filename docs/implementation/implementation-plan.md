@@ -8,7 +8,7 @@ Realize the accepted Nutrition Management MVP as one Python modular monolith wit
 
 ## Inputs
 
-Implementation is governed by:
+Implementation is governed by the Engineering Design Policy and Component Design in addition to:
 
 - accepted product requirements and domain/context contracts;
 - target architecture and ADR-008/009;
@@ -19,6 +19,18 @@ Implementation is governed by:
 - verification strategy.
 
 If implementation exposes a contradiction in these inputs, create an upstream design Question instead of resolving it implicitly in code.
+
+## Slice 0 — enforce component contracts
+
+Before feature coding, align the implementation surface with the accepted Component Design:
+
+- define narrow Purchase Planning `PlanningSnapshotSource` and `OptimizationSolver` application ports alongside `GapSuggestionSource`;
+- make the coherent SQLite snapshot adapter implement the snapshot port;
+- make the SCIP adapter implement the solver port without exposing SCIP types;
+- extract narrow provider persistence Protocols where an application service currently depends on concrete infrastructure;
+- extend structural tests for the forbidden dependency edges in Component Design.
+
+Exit evidence: application code can be tested with port substitutes; architecture tests reject application→infrastructure and consumer→provider-infrastructure dependencies.
 
 ## Slice 1 — executable project skeleton
 

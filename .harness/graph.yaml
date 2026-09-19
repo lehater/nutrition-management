@@ -6,6 +6,8 @@ authorities:
   - id: MARKET-CATALOG
   - id: PURCHASE-PLANNING
   - id: ARCHITECTURE
+  - id: ENGINEERING-POLICY
+  - id: COMPONENT-DESIGN
   - id: APPLICATION-DESIGN
   - id: DATA-DESIGN
   - id: INTERFACE-DESIGN
@@ -13,6 +15,14 @@ authorities:
   - id: VERIFICATION
 
 artifacts:
+  - id: ENGINEERING-DESIGN-POLICY
+    authority: ENGINEERING-POLICY
+    path: docs/engineering/engineering-design-policy.md
+    provides:
+      - nutrition-management.engineering-policy
+    depends_on:
+      - TARGET-ARCHITECTURE
+
   - id: PROBLEM
     authority: PRODUCT
     path: docs/problem.md
@@ -200,12 +210,25 @@ artifacts:
     depends_on:
       - APPLICATION-DESIGN
 
+  - id: COMPONENT-DESIGN
+    authority: COMPONENT-DESIGN
+    path: docs/implementation/component-design.md
+    provides:
+      - nutrition-management.component-design
+    depends_on:
+      - ENGINEERING-DESIGN-POLICY
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - CLI-CONTRACT
+      - IMPLEMENTATION-STACK
+
   - id: IMPLEMENTATION-PLAN
     authority: IMPLEMENTATION-DESIGN
     path: docs/implementation/implementation-plan.md
     provides:
       - nutrition-management.implementation.plan
     depends_on:
+      - COMPONENT-DESIGN
       - APPLICATION-DESIGN
       - DATA-DESIGN
       - CLI-CONTRACT
