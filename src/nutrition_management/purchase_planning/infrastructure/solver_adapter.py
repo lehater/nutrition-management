@@ -2,7 +2,6 @@ from decimal import Decimal, ROUND_HALF_EVEN
 
 from nutrition_management.purchase_planning.application.ports import (
     HardModelInfeasible,
-    OptimizationSolver,
     SolverTechnicalFailure,
 )
 from nutrition_management.purchase_planning.domain.model import SolverDecision, SolverLineDecision
@@ -35,11 +34,10 @@ def _normalize_decision(snapshot, decision: SolverDecision) -> SolverDecision:
 
 
 
-class ScipOptimizationSolver(OptimizationSolver):
-    def solve(self, snapshot):
-        try:
-            return _normalize_decision(snapshot, scip_solver.solve(snapshot))
-        except scip_solver.HardModelInfeasible as exc:
-            raise HardModelInfeasible(str(exc)) from exc
-        except scip_solver.SolverTechnicalFailure as exc:
-            raise SolverTechnicalFailure(str(exc)) from exc
+def solve(snapshot):
+    try:
+        return _normalize_decision(snapshot, scip_solver.solve(snapshot))
+    except scip_solver.HardModelInfeasible as exc:
+        raise HardModelInfeasible(str(exc)) from exc
+    except scip_solver.SolverTechnicalFailure as exc:
+        raise SolverTechnicalFailure(str(exc)) from exc
