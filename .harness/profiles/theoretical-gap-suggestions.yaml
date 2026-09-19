@@ -26,11 +26,17 @@ expectations:
     authority: PURCHASE-PLANNING
     depends_on: [CONTEXT-CONTRACTS, FOOD-KNOWLEDGE]
 
+  - id: GAP-SUGGESTION-RANKING
+    subject: GAP-SUGGESTIONS
+    capability: nutrition-management.purchase-planning.gap-suggestion-ranking
+    authority: PURCHASE-PLANNING
+    depends_on: [PURCHASE-PLANNING]
+
   - id: ARCHITECTURE
     subject: GAP-SUGGESTIONS
     capability: nutrition-management.architecture
     authority: ARCHITECTURE
-    depends_on: [PURCHASE-PLANNING]
+    depends_on: [PURCHASE-PLANNING, GAP-SUGGESTION-RANKING]
 
   - id: VERIFICATION
     subject: GAP-SUGGESTIONS
