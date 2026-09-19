@@ -31,3 +31,5 @@ def test_cli_drives_same_use_case_and_emits_canonical_json(engine, db_path, caps
     assert payload["market_as_of"] == MARKET_AS_OF.isoformat()
     assert payload["lines"]
 
+
+# Coding-boundary experiment: component contracts are exercised by CI.
