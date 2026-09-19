@@ -62,3 +62,19 @@ def test_database_foreign_keys_never_cross_context_prefixes(engine):
             target = foreign_key["referred_table"]
             target_prefix = target.split("_", 1)[0]
             assert source_prefix == target_prefix, (table, target)
+
+
+def test_targeting_application_ports_are_use_case_narrow():
+    from nutrition_management.nutrition_targeting.application.ports import (
+        ProfileSink,
+        StandardSink,
+        TargetDerivationSource,
+    )
+
+    assert set(TargetDerivationSource.__dict__) >= {"profiles_for_household", "active_standard"}
+    assert "add_profile" not in TargetDerivationSource.__dict__
+    assert "add_standard" not in TargetDerivationSource.__dict__
+    assert set(ProfileSink.__dict__) >= {"add_profile"}
+    assert "active_standard" not in ProfileSink.__dict__
+    assert set(StandardSink.__dict__) >= {"add_standard"}
+    assert "profiles_for_household" not in StandardSink.__dict__
