@@ -7,6 +7,8 @@ from decimal import Decimal
 from nutrition_management.purchase_planning.application.ports import (
     GapSuggestionSource,
     HardModelInfeasible,
+    OptimizationSolver,
+    PlanningSnapshotSource,
 )
 from nutrition_management.purchase_planning.domain.model import PlanOutcome, PurchasePlan
 from nutrition_management.purchase_planning.domain.reporting import build_purchase_plan
@@ -18,16 +20,16 @@ from nutrition_management.purchase_planning.domain.suggestions import (
 
 def generate_purchase_plan(
     *,
-    snapshot_source,
+    snapshot_source: PlanningSnapshotSource,
     suggestion_source: GapSuggestionSource,
-    solver,
+    solver: OptimizationSolver,
     household_id: str,
     derivation_date: date,
     market_as_of: datetime,
 ) -> PurchasePlan:
     snapshot = snapshot_source.capture(household_id, derivation_date, market_as_of)
     try:
-        decision = solver(snapshot)
+        decision = solver.solve(snapshot)
     except HardModelInfeasible:
         return PurchasePlan(
             household_id=snapshot.household_id,
