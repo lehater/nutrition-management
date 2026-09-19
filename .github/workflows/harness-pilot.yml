@@ -34,6 +34,9 @@ jobs:
       - name: Validate target state and managed knowledge
         run: python .harness-tool/workspace.py validate .
 
+      - name: Evaluate BLS import slice
+        run: python .harness-tool/target_state.py .harness/profiles/bls-v4-production-import.yaml .harness/graph.yaml
+
       - name: Re-render human documentation
         run: python .harness-tool/workspace.py render .
 
