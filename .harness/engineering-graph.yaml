@@ -226,6 +226,29 @@ authorities:
           - capability: nutrition-management.engineering-policy
           - capability: nutrition-management.component-design
 
+  - id: TEST-DESIGN
+    responsibility: Own executable behavioral test contracts and scenario/property catalogue derived from accepted verification and design knowledge.
+    boundary:
+      semantic_cohesion: Observable test preconditions, operations, outcomes, invariants, failure distinctions and traceability.
+      independent_change: Test scenario realization can evolve while required evidence and product semantics remain stable.
+      public_contract: Produces test-design knowledge sufficient for a TDD coding agent to decide how to write tests, not what behavior must be tested.
+    produces:
+      - capability: nutrition-management.test-design
+        knowledge_kind: test-design
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.context-contracts
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+          - capability: nutrition-management.domain.purchase-planning
+          - capability: nutrition-management.architecture
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.component-design
+          - capability: nutrition-management.redesign.verification-design
+
   - id: IMPLEMENTATION-DESIGN
     responsibility: Own concrete implementation choices and executable implementation completion contract.
     boundary:
@@ -241,6 +264,7 @@ authorities:
         requires:
           - capability: nutrition-management.component-design
           - capability: nutrition-management.redesign.verification-design
+          - capability: nutrition-management.test-design
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
@@ -284,6 +308,7 @@ consumers:
       - capability: nutrition-management.component-design
       - capability: nutrition-management.redesign.implementation-design
       - capability: nutrition-management.redesign.verification-design
+      - capability: nutrition-management.test-design
       - capability: nutrition-management.verification.strategy
 
   - id: THEORETICAL-GAP-SUGGESTIONS
