@@ -11,7 +11,7 @@ from nutrition_management.composition.database import create_sqlite_engine
 from nutrition_management.composition.gap_suggestions import FoodKnowledgeGapSuggestionSource
 from nutrition_management.composition.planning_snapshot import SqlitePlanningSnapshotSource
 from nutrition_management.purchase_planning.application.service import generate_purchase_plan
-from nutrition_management.purchase_planning.infrastructure.solver_adapter import ScipOptimizationSolver
+from nutrition_management.purchase_planning.infrastructure.solver_adapter import solve
 
 
 def _json_default(value):
@@ -43,7 +43,7 @@ def main(argv=None) -> int:
         plan = generate_purchase_plan(
             snapshot_source=SqlitePlanningSnapshotSource(engine),
             suggestion_source=FoodKnowledgeGapSuggestionSource(engine),
-            solver=ScipOptimizationSolver(),
+            solver=solve,
             household_id=args.household,
             derivation_date=derivation_date,
             market_as_of=market_as_of,
