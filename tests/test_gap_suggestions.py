@@ -6,9 +6,12 @@ from nutrition_management.food_knowledge.application.contracts import (
     NutrientEvidenceStatus,
     NutrientFact,
 )
+from nutrition_management.food_knowledge.application.imports import import_food
 from nutrition_management.food_knowledge.application.queries import (
     theoretical_foods_with_positive_measure,
 )
+from nutrition_management.food_knowledge.infrastructure.repository import FoodKnowledgeRepository
+from nutrition_management.composition.gap_suggestions import FoodKnowledgeGapSuggestionSource
 from nutrition_management.purchase_planning.application.service import (
     generate_purchase_plan,
 )
@@ -254,3 +257,58 @@ def test_generate_plan_enriches_only_positive_adequacy_gap_after_solver():
     assert suggestion.measure == "FIBT"
     assert suggestion.source_name == "food-source"
     assert suggestion.source_version == "v1"
+
+
+def test_food_knowledge_gap_source_projects_provider_contract_with_provenance(engine):
+    with engine.begin() as connection:
+        repository = FoodKnowledgeRepository(connection)
+        import_food(
+            repository,
+            FoodFact(
+                base_food_id="theoretical-food",
+                name="Theoretical Food",
+                category="legumes_nuts_seeds",
+                nutrients=(
+                    NutrientFact(
+                        "FIBT",
+                        NutrientEvidenceStatus.KNOWN,
+                        Decimal("12"),
+                    ),
+                    NutrientFact(
+                        "ENERCC",
+                        NutrientEvidenceStatus.KNOWN,
+                        Decimal("240"),
+                    ),
+                ),
+                source_name="canonical-food-source",
+                source_version="2026",
+            ),
+        )
+        import_food(
+            repository,
+            FoodFact(
+                base_food_id="trace-food",
+                name="Trace Food",
+                category="fruit_and_vegetables",
+                nutrients=(
+                    NutrientFact("FIBT", NutrientEvidenceStatus.TRACE, None),
+                    NutrientFact(
+                        "ENERCC",
+                        NutrientEvidenceStatus.KNOWN,
+                        Decimal("50"),
+                    ),
+                ),
+                source_name="canonical-food-source",
+                source_version="2026",
+            ),
+        )
+
+    result = FoodKnowledgeGapSuggestionSource(engine).candidates_for_measure("FIBT")
+
+    assert len(result) == 1
+    candidate = result[0]
+    assert candidate.base_food_id == "theoretical-food"
+    assert candidate.measure_amount_per_100g == Decimal("12")
+    assert candidate.energy_amount_per_100g == Decimal("240")
+    assert candidate.source_name == "canonical-food-source"
+    assert candidate.source_version == "2026"
