@@ -1,0 +1,201 @@
+version: 1
+kind: harness-engineering-graph
+id: NUTRITION-MANAGEMENT-ENGINEERING
+default_subject: NUTRITION-MANAGEMENT
+
+authorities:
+  - id: PRODUCT
+    responsibility: Own accepted product problem framing, intent and requirements.
+    boundary:
+      semantic_cohesion: Product-facing decisions about the problem and required behavior.
+      independent_change: Product intent can change before domain or architecture changes.
+      public_contract: Produces problem and requirements capabilities consumed by downstream design.
+    produces:
+      - capability: nutrition-management.problem
+        requires: []
+      - capability: nutrition-management.requirements
+        requires:
+          - capability: nutrition-management.problem
+
+  - id: DOMAIN-STRUCTURE
+    responsibility: Own strategic domain boundaries and context relationships.
+    boundary:
+      semantic_cohesion: Cross-context domain structure and contracts.
+      independent_change: Domain boundaries may change without changing context-internal tactical semantics.
+      public_contract: Produces domain boundary and context-contract knowledge.
+    produces:
+      - capability: nutrition-management.domain.boundaries
+        requires:
+          - capability: nutrition-management.requirements
+      - capability: nutrition-management.domain.context-contracts
+        requires:
+          - capability: nutrition-management.domain.boundaries
+
+  - id: NUTRITION-TARGETING
+    responsibility: Own Nutrition Targeting domain semantics.
+    boundary:
+      semantic_cohesion: One bounded class of nutrition-target derivation decisions.
+      independent_change: Targeting semantics can evolve behind accepted context contracts.
+      public_contract: Produces accepted Nutrition Targeting domain knowledge.
+    produces:
+      - capability: nutrition-management.domain.nutrition-targeting
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.context-contracts
+
+  - id: FOOD-KNOWLEDGE
+    responsibility: Own Food Knowledge semantics and accepted external-food data decisions.
+    boundary:
+      semantic_cohesion: Food identity, nutrient evidence, taxonomy and source normalization knowledge.
+      independent_change: Food Knowledge can evolve behind its published context contracts.
+      public_contract: Produces Food Knowledge domain and BLS source/classification capabilities.
+    produces:
+      - capability: nutrition-management.domain.food-knowledge
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.context-contracts
+      - capability: nutrition-management.food-knowledge.nutrient-evidence-semantics
+        requires:
+          - capability: nutrition-management.domain.food-knowledge
+      - capability: nutrition-management.food-knowledge.category-taxonomy
+        requires:
+          - capability: nutrition-management.domain.food-knowledge
+      - capability: nutrition-management.food-knowledge.bls-v4.source-identity
+        requires:
+          - capability: nutrition-management.domain.food-knowledge
+      - capability: nutrition-management.food-knowledge.bls-v4.source-structure
+        requires:
+          - capability: nutrition-management.domain.food-knowledge
+      - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
+        requires:
+          - capability: nutrition-management.food-knowledge.bls-v4.source-identity
+      - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
+        requires:
+          - capability: nutrition-management.food-knowledge.bls-v4.source-identity
+      - capability: nutrition-management.food-knowledge.bls-v4.normalization-order
+        requires:
+          - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
+      - capability: nutrition-management.food-knowledge.bls-v4.errata-policy
+        requires:
+          - capability: nutrition-management.food-knowledge.bls-v4.source-identity
+      - capability: nutrition-management.food-knowledge.bls-v4.category-assignment-policy
+        requires:
+          - capability: nutrition-management.food-knowledge.category-taxonomy
+          - capability: nutrition-management.food-knowledge.bls-v4.source-identity
+      - capability: nutrition-management.food-knowledge.bls-v4.category-assignment
+        requires:
+          - capability: nutrition-management.food-knowledge.category-taxonomy
+          - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
+          - capability: nutrition-management.food-knowledge.bls-v4.category-assignment-policy
+      - capability: nutrition-management.food-knowledge.bls-v4.production-package-contract
+        requires:
+          - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
+          - capability: nutrition-management.food-knowledge.bls-v4.errata-policy
+          - capability: nutrition-management.food-knowledge.bls-v4.category-assignment
+
+  - id: MARKET-CATALOG
+    responsibility: Own executable Market Catalog domain semantics.
+    boundary:
+      semantic_cohesion: Market offer and executable catalogue semantics.
+      independent_change: Market representation can evolve behind accepted context contracts.
+      public_contract: Produces accepted Market Catalog domain knowledge.
+    produces:
+      - capability: nutrition-management.domain.market-catalog
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.context-contracts
+
+  - id: PURCHASE-PLANNING
+    responsibility: Own Purchase Planning semantics and decision policies.
+    boundary:
+      semantic_cohesion: Executable purchase-plan behavior and ranking decisions.
+      independent_change: Planning policy can evolve without changing upstream context ownership.
+      public_contract: Produces Purchase Planning domain and plan-policy knowledge.
+    produces:
+      - capability: nutrition-management.domain.purchase-planning
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.context-contracts
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+      - capability: nutrition-management.purchase-planning.gap-suggestion-ranking
+        requires:
+          - capability: nutrition-management.domain.purchase-planning
+          - capability: nutrition-management.domain.food-knowledge
+
+  - id: ARCHITECTURE
+    responsibility: Own accepted system architecture for Nutrition Management.
+    boundary:
+      semantic_cohesion: Structural system decisions across bounded contexts.
+      independent_change: Architecture can change while accepted product/domain semantics remain stable.
+      public_contract: Produces the implementation-facing architecture capability.
+    produces:
+      - capability: nutrition-management.architecture
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.context-contracts
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+          - capability: nutrition-management.domain.purchase-planning
+
+  - id: VERIFICATION
+    responsibility: Own verification strategy and acceptance evidence design.
+    boundary:
+      semantic_cohesion: Decisions about how accepted behavior and constraints are verified.
+      independent_change: Verification evidence design can change without changing product semantics.
+      public_contract: Produces project and source-import verification capabilities.
+    produces:
+      - capability: nutrition-management.verification.strategy
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+          - capability: nutrition-management.domain.purchase-planning
+          - capability: nutrition-management.architecture
+      - capability: nutrition-management.food-knowledge.bls-v4.verification
+        requires:
+          - capability: nutrition-management.food-knowledge.bls-v4.production-package-contract
+
+consumers:
+  - id: IMPLEMENTATION
+    purpose: Implement the accepted Nutrition Management MVP without inventing upstream design.
+    requires:
+      - capability: nutrition-management.requirements
+      - capability: nutrition-management.domain.context-contracts
+      - capability: nutrition-management.domain.nutrition-targeting
+      - capability: nutrition-management.domain.food-knowledge
+      - capability: nutrition-management.domain.market-catalog
+      - capability: nutrition-management.domain.purchase-planning
+      - capability: nutrition-management.architecture
+      - capability: nutrition-management.verification.strategy
+
+  - id: THEORETICAL-GAP-SUGGESTIONS
+    purpose: Implement theoretical gap-closing suggestions from accepted planning and food knowledge.
+    requires:
+      - capability: nutrition-management.purchase-planning.gap-suggestion-ranking
+      - capability: nutrition-management.architecture
+      - capability: nutrition-management.verification.strategy
+
+  - id: NUTRIENT-EVIDENCE-PROPAGATION
+    purpose: Propagate accepted nutrient evidence semantics through executable planning.
+    requires:
+      - capability: nutrition-management.food-knowledge.nutrient-evidence-semantics
+      - capability: nutrition-management.domain.market-catalog
+      - capability: nutrition-management.domain.purchase-planning
+      - capability: nutrition-management.architecture
+      - capability: nutrition-management.verification.strategy
+
+  - id: BLS-V4-PRODUCTION-IMPORT
+    purpose: Prepare all accepted engineering knowledge required for deterministic BLS 4.0 production import.
+    requires:
+      - capability: nutrition-management.food-knowledge.bls-v4.source-identity
+      - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
+      - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
+      - capability: nutrition-management.food-knowledge.bls-v4.errata-policy
+      - capability: nutrition-management.food-knowledge.category-taxonomy
+      - capability: nutrition-management.food-knowledge.bls-v4.category-assignment
+      - capability: nutrition-management.food-knowledge.bls-v4.production-package-contract
+      - capability: nutrition-management.food-knowledge.bls-v4.verification
