@@ -115,6 +115,7 @@ class PlanningInputSnapshot:
     target_member_provenance: tuple[TargetMemberProvenance, ...] = ()
     target_coverage_gaps: tuple[TargetCoverageGap, ...] = ()
     safety_coverage_gaps: tuple[SafetyCoverageGap, ...] = ()
+    gap_suggestions: tuple[GapSuggestion, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -147,6 +148,29 @@ class SafetyDiagnostic:
     exceeds_period_equivalent: bool
     indeterminate: bool
     allocation_guarantee: bool = False
+
+
+@dataclass(frozen=True)
+class TheoreticalFoodCandidate:
+    base_food_id: str
+    food_name: str
+    category: str
+    measure_amount_per_100g: Decimal
+    energy_amount_per_100g: Decimal | None
+    source_name: str
+    source_version: str | None = None
+
+
+@dataclass(frozen=True)
+class GapSuggestion:
+    measure: str
+    base_food_id: str
+    food_name: str
+    category: str
+    amount_per_100g: Decimal
+    amount_per_100kcal: Decimal | None
+    source_name: str
+    source_version: str | None = None
 
 
 @dataclass(frozen=True)
