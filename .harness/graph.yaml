@@ -6,14 +6,6 @@ authorities:
   - id: MARKET-CATALOG
   - id: PURCHASE-PLANNING
   - id: ARCHITECTURE
-  - id: ENGINEERING-DESIGN-POLICY
-    authority: ENGINEERING-POLICY
-    path: docs/engineering/engineering-design-policy.md
-    provides:
-      - nutrition-management.engineering-policy
-    depends_on:
-      - TARGET-ARCHITECTURE
-
   - id: ENGINEERING-POLICY
   - id: COMPONENT-DESIGN
   - id: APPLICATION-DESIGN
@@ -23,6 +15,14 @@ authorities:
   - id: VERIFICATION
 
 artifacts:
+  - id: ENGINEERING-DESIGN-POLICY
+    authority: ENGINEERING-POLICY
+    path: docs/engineering/engineering-design-policy.md
+    provides:
+      - nutrition-management.engineering-policy
+    depends_on:
+      - TARGET-ARCHITECTURE
+
   - id: PROBLEM
     authority: PRODUCT
     path: docs/problem.md
