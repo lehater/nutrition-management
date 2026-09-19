@@ -164,13 +164,33 @@ Mapping is implemented as small explicit pure functions local to this adapter (t
 
 Responsibility: orchestrate active standard/profile retrieval and domain derivation; publish the provider-owned immutable application contract.
 
-### Persistence port boundary
+### Persistence ports
 
-For implementation readiness, Nutrition Targeting application code must depend only on the minimal operations it requires from its persistence collaborator. If the existing concrete repository is passed directly today, implementation work should extract a narrow application-owned Protocol when required to remove an application→infrastructure dependency.
+Nutrition Targeting application owns use-case-shaped persistence contracts rather than one broad repository abstraction.
 
-The port contains only operations used by targeting application services (profiles/active standard and explicit import/activation operations for their respective use cases); do not create a generic CRUD repository.
+`TargetDerivationSource` is the read contract for `derive_household_target_fact`:
 
-### `SqlAlchemyNutritionTargetingRepository`
+```python
+class TargetDerivationSource(Protocol):
+    def profiles_for_household(self, household_id: str) -> tuple[NutritionProfile, ...]: ...
+    def active_standard(self) -> NutritionStandardSet: ...
+```
+
+Import commands use separate narrow write contracts:
+
+```python
+class ProfileSink(Protocol):
+    def add_profile(self, household_id: str, profile: NutritionProfile) -> None: ...
+
+class StandardSink(Protocol):
+    def add_standard(self, standard: NutritionStandardSet, *, active: bool = False) -> None: ...
+```
+
+This split is required by ISP/CQS: target derivation does not depend on import/activation operations, and import use cases do not receive unrelated query methods. These Protocols describe existing repository capabilities; they do not require separate runtime wrapper classes.
+
+Do not create a generic CRUD repository or a single umbrella `NutritionTargetingRepositoryPort`.
+
+### `NutritionTargetingRepository`
 
 Infrastructure implementation of the targeting persistence contract. Owns SQLAlchemy table mapping and Decimal/date/source representation translation.
 
