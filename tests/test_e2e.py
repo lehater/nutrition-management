@@ -5,7 +5,7 @@ from nutrition_management.composition.gap_suggestions import FoodKnowledgeGapSug
 from nutrition_management.composition.planning_snapshot import SqlitePlanningSnapshotSource
 from nutrition_management.purchase_planning.application.service import generate_purchase_plan
 from nutrition_management.purchase_planning.domain.model import PlanOutcome
-from nutrition_management.purchase_planning.infrastructure.solver_adapter import ScipOptimizationSolver
+from nutrition_management.purchase_planning.infrastructure.solver_adapter import solve
 
 from fixture_loader import DERIVATION_DATE, HOUSEHOLD_ID, MARKET_AS_OF, load_acceptance_fixture
 
@@ -25,7 +25,7 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     first = generate_purchase_plan(
         snapshot_source=source,
         suggestion_source=FoodKnowledgeGapSuggestionSource(engine),
-        solver=ScipOptimizationSolver(),
+        solver=solve,
         household_id=HOUSEHOLD_ID,
         derivation_date=DERIVATION_DATE,
         market_as_of=MARKET_AS_OF,
@@ -33,7 +33,7 @@ def test_acceptance_slice_generates_deterministic_mapped_complete_plan(engine):
     second = generate_purchase_plan(
         snapshot_source=source,
         suggestion_source=FoodKnowledgeGapSuggestionSource(engine),
-        solver=ScipOptimizationSolver(),
+        solver=solve,
         household_id=HOUSEHOLD_ID,
         derivation_date=DERIVATION_DATE,
         market_as_of=MARKET_AS_OF,
