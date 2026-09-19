@@ -79,6 +79,14 @@ artifacts:
       - FOOD-KNOWLEDGE-DOMAIN
       - MARKET-CATALOG-DOMAIN
 
+  - id: NUTRIENT-EVIDENCE-SEMANTICS
+    authority: FOOD-KNOWLEDGE
+    path: docs/domain/nutrient-semantics.md
+    provides:
+      - nutrition-management.food-knowledge.nutrient-evidence-semantics
+    depends_on:
+      - FOOD-KNOWLEDGE-DOMAIN
+
   - id: FOOD-CATEGORY-TAXONOMY
     authority: FOOD-KNOWLEDGE
     path: docs/decisions/ADR-005-mvp-food-category-taxonomy.md
