@@ -53,16 +53,6 @@ expectations:
       - FOOD-KNOWLEDGE
       - MARKET-CATALOG
 
-  - id: CORE-DOMAIN-MODEL
-    subject: NUTRITION-MANAGEMENT
-    capability: nutrition-management.domain.core-concepts
-    authority: DOMAIN-STRUCTURE
-    depends_on:
-      - NUTRITION-TARGETING
-      - FOOD-KNOWLEDGE
-      - MARKET-CATALOG
-      - PURCHASE-PLANNING
-
   - id: ARCHITECTURE
     subject: NUTRITION-MANAGEMENT
     capability: nutrition-management.architecture
@@ -79,4 +69,7 @@ expectations:
     authority: VERIFICATION
     depends_on:
       - ARCHITECTURE
-      - CORE-DOMAIN-MODEL
+      - NUTRITION-TARGETING
+      - FOOD-KNOWLEDGE
+      - MARKET-CATALOG
+      - PURCHASE-PLANNING
