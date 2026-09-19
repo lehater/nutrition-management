@@ -28,7 +28,7 @@ class PlanningSnapshotSource(Protocol):
 
 
 class OptimizationSolver(Protocol):
-    def solve(self, snapshot: PlanningInputSnapshot) -> SolverDecision: ...
+    def __call__(self, snapshot: PlanningInputSnapshot) -> SolverDecision: ...
 
 
 class GapSuggestionSource(Protocol):
