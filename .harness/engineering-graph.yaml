@@ -192,6 +192,21 @@ authorities:
         requires:
           - capability: nutrition-management.architecture
 
+  - id: OPERABILITY-DESIGN
+    responsibility: Own runtime evidence and diagnosability contracts derived from accepted product, architecture, interface, security and quality truth.
+    boundary:
+      semantic_cohesion: Runtime correlation, diagnostic event semantics, failure evidence and operational visibility.
+      independent_change: Operational evidence can evolve without redefining product/domain/interface semantics or selecting implementation libraries.
+      public_contract: Produces runtime evidence requirements consumed by component, verification and implementation design.
+    produces:
+      - capability: nutrition-management.operability
+        knowledge_kind: operability-design
+        requires:
+          - capability: nutrition-management.architecture
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.engineering-policy
+
   - id: COMPONENT-DESIGN
     responsibility: Own implementation-facing component decomposition and dependency contracts.
     boundary:
@@ -203,6 +218,7 @@ authorities:
         knowledge_kind: component-design
         requires:
           - capability: nutrition-management.engineering-policy
+          - capability: nutrition-management.operability
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
@@ -225,6 +241,7 @@ authorities:
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.engineering-policy
           - capability: nutrition-management.component-design
+          - capability: nutrition-management.operability
 
   - id: IMPLEMENTATION-DESIGN
     responsibility: Own concrete implementation choices and executable implementation completion contract.
@@ -282,6 +299,7 @@ consumers:
       - capability: nutrition-management.interface.cli
       - capability: nutrition-management.implementation.stack
       - capability: nutrition-management.component-design
+      - capability: nutrition-management.operability
       - capability: nutrition-management.redesign.implementation-design
       - capability: nutrition-management.redesign.verification-design
       - capability: nutrition-management.verification.strategy
