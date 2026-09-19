@@ -2,10 +2,15 @@ from __future__ import annotations
 
 from typing import Any
 
+from nutrition_management.food_knowledge.application.bls_v4_identity import (
+    BLS_V4_MAIN_SHA256,
+    BLS_V4_PRODUCTION_FOOD_COUNT,
+    BLS_V4_SOURCE_VERSION,
+)
 from nutrition_management.food_knowledge.domain.model import TOP_LEVEL_CATEGORIES
 
-SOURCE_VERSION = "4.0"
-PRODUCTION_FOOD_COUNT = 7140
+SOURCE_VERSION = BLS_V4_SOURCE_VERSION
+PRODUCTION_FOOD_COUNT = BLS_V4_PRODUCTION_FOOD_COUNT
 
 
 class CategoryRegistryError(ValueError):
@@ -19,6 +24,10 @@ def _validate_source_codes(
 ) -> tuple[str, ...]:
     if source.get("source_version") != SOURCE_VERSION:
         raise CategoryRegistryError(f"source_version must be {SOURCE_VERSION}")
+    if source.get("source_sha256") != BLS_V4_MAIN_SHA256:
+        raise CategoryRegistryError(
+            f"source_sha256 must match pinned BLS 4.0 main workbook {BLS_V4_MAIN_SHA256}"
+        )
     codes = source.get("source_codes")
     if not isinstance(codes, list) or any(not isinstance(code, str) or not code for code in codes):
         raise CategoryRegistryError("source_codes must be non-empty strings")
