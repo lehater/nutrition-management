@@ -18,7 +18,7 @@ authorities:
 artifacts:
   - id: REDESIGN-REVALIDATION
     authority: PRODUCT
-    path: docs/redesign/design-review.md
+    path: docs/redesign/component-design.md
     provides: []
     depends_on:
       - PRODUCT-REQUIREMENTS
