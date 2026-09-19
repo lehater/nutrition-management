@@ -154,18 +154,6 @@ artifacts:
       - MARKET-CATALOG-DOMAIN
       - PURCHASE-PLANNING-DOMAIN
 
-  - id: CORE-DOMAIN-MODEL
-    authority: DOMAIN-STRUCTURE
-    path: .harness/knowledge/core-domain-model.yaml
-    provides:
-      - nutrition-management.domain.core-concepts
-    depends_on:
-      - CONTEXT-MAP
-      - NUTRITION-TARGETING-DOMAIN
-      - FOOD-KNOWLEDGE-DOMAIN
-      - MARKET-CATALOG-DOMAIN
-      - PURCHASE-PLANNING-DOMAIN
-
   - id: VERIFICATION-STRATEGY
     authority: VERIFICATION
     path: .harness/knowledge/verification-strategy.yaml
@@ -173,7 +161,10 @@ artifacts:
       - nutrition-management.verification.strategy
     depends_on:
       - PRODUCT-REQUIREMENTS
-      - CORE-DOMAIN-MODEL
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
       - TARGET-ARCHITECTURE
 
 questions:
