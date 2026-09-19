@@ -6,6 +6,7 @@ authorities:
   - id: MARKET-CATALOG
   - id: PURCHASE-PLANNING
   - id: ARCHITECTURE
+  - id: VERIFICATION
 
 artifacts:
   - id: PROBLEM
@@ -102,5 +103,15 @@ artifacts:
       - FOOD-KNOWLEDGE-DOMAIN
       - MARKET-CATALOG-DOMAIN
       - PURCHASE-PLANNING-DOMAIN
+
+  - id: VERIFICATION-STRATEGY
+    authority: VERIFICATION
+    path: .harness/knowledge/verification-strategy.yaml
+    provides:
+      - nutrition-management.verification.strategy
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - CORE-DOMAIN-MODEL
+      - TARGET-ARCHITECTURE
 
 questions: []
