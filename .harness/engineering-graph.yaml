@@ -196,13 +196,7 @@ authorities:
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.implementation.stack
-          - capability: nutrition-management.application-design
-      - capability: nutrition-management.data-design
-      - capability: nutrition-management.interface.cli
-      - capability: nutrition-management.implementation.stack
-      - capability: nutrition-management.implementation.plan
-      - capability: nutrition-management.implementation.completion-criteria
-      - capability: nutrition-management.verification.strategy
+          - capability: nutrition-management.verification.strategy
       - capability: nutrition-management.implementation.completion-criteria
         requires:
           - capability: nutrition-management.implementation.plan
@@ -239,6 +233,12 @@ consumers:
       - capability: nutrition-management.domain.market-catalog
       - capability: nutrition-management.domain.purchase-planning
       - capability: nutrition-management.architecture
+      - capability: nutrition-management.application-design
+      - capability: nutrition-management.data-design
+      - capability: nutrition-management.interface.cli
+      - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.implementation.plan
+      - capability: nutrition-management.implementation.completion-criteria
       - capability: nutrition-management.verification.strategy
 
   - id: THEORETICAL-GAP-SUGGESTIONS
