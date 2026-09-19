@@ -166,3 +166,9 @@ questions:
     blocks_capabilities:
       - nutrition-management.food-knowledge.bls-v4.category-assignment
     resolution: BLS-V4-CATEGORY-ASSIGNMENT-DECISION
+
+  - id: Q-GAP-SUGGESTION-UNKNOWN-ENERGY-RANKING
+    authority: PURCHASE-PLANNING
+    text: How are eligible theoretical foods without positive known energy ordered against foods whose missing-nutrient amount per 100 kcal is computable?
+    blocks:
+      - PURCHASE-PLANNING-DOMAIN
