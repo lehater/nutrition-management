@@ -261,7 +261,7 @@ def test_safety_treats_every_non_quantitative_state_as_indeterminate(status):
 
 
 @pytest.mark.parametrize("status", NON_QUANTITATIVE_PLANNING_STATUSES)
-def test_solver_avoids_non_quantitative_fiber_when_determinate_option_exists(status):
+def test_solver_avoids_non_quantitative_upper_bound_when_determinate_option_exists(status):
     unknown = _planning_candidate(
         "unknown",
         fiber_status=status,
@@ -270,12 +270,28 @@ def test_solver_avoids_non_quantitative_fiber_when_determinate_option_exists(sta
     )
     known = _planning_candidate(
         "known",
-        fiber_status=EvidenceStatus.KNOWN,
-        fiber_amount=Decimal("10"),
+        fiber_status=EvidenceStatus.ZERO,
+        fiber_amount=Decimal("0"),
         price=Decimal("5"),
     )
+    snapshot = PlanningInputSnapshot(
+        household_id="h",
+        derivation_date=TODAY,
+        market_as_of=NOW,
+        standard_version="test",
+        policy_version="ADR-007-v1",
+        energy_target_kcal=Decimal("100"),
+        targets=(
+            TargetDimension(
+                "FIBT",
+                TargetKind.UPPER_BOUND,
+                upper=Decimal("10"),
+            ),
+        ),
+        candidates=(unknown, known),
+    )
 
-    decision = solver_adapter.solve(_snapshot(unknown, known))
+    decision = solver_adapter.solve(snapshot)
 
     chosen = {item.offer_id for item in decision.lines}
     assert "known" in chosen
