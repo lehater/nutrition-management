@@ -6,9 +6,13 @@ import re
 from zipfile import BadZipFile, ZipFile
 import xml.etree.ElementTree as ET
 
-BLS_V4_MAIN_SHA256 = "524bbefe25b691f5cb3de7a9f3e27fa2967aebfeabf217d99414ba7806e78c60"
-BLS_V4_SOURCE_VERSION = "4.0"
-PRODUCTION_FOOD_COUNT = 7140
+from nutrition_management.food_knowledge.application.bls_v4_identity import (
+    BLS_V4_MAIN_SHA256,
+    BLS_V4_PRODUCTION_FOOD_COUNT,
+    BLS_V4_SOURCE_VERSION,
+)
+
+PRODUCTION_FOOD_COUNT = BLS_V4_PRODUCTION_FOOD_COUNT
 
 _NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 _REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
