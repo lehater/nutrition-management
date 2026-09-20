@@ -16,7 +16,17 @@ def main():
     graph=load(".harness/engineering-graph.yaml")
     model=load(".harness/graph.yaml")
 
-    backend_manifest=compile_manifest(graph,model,"IMPLEMENTATION",harness_version="research-prototype",project_revision="nutrition-research",recipe_id="nutrition-backend-human-docs")
+    backend_manifest=compile_manifest(
+        graph,
+        model,
+        "IMPLEMENTATION",
+        harness_version="research-prototype",
+        project_revision="nutrition-research",
+        recipe_id="nutrition-backend-human-docs",
+        extra_capabilities=[
+            "nutrition-management.food-knowledge.nutrient-evidence-semantics"
+        ],
+    )
     assert backend_manifest["target"]["status"]=="COMPLETE", backend_manifest["target"]
     backend_plan=validate_recipe(load("docs/research/human-projection/backend.yaml"),backend_manifest)
     assert [d["id"] for d in backend_plan["documents"]]==["overview","domain-and-data","implementation-guide","verification-and-readiness"]
