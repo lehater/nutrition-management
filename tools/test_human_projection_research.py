@@ -120,15 +120,17 @@ def main():
         assert overview_result["documents"]==["overview.md"]
         generated_overview=(overview_review/"documents/overview.md").read_text(encoding="utf-8")
         benchmark=(ROOT/"docs/generated/overview.md").read_text(encoding="utf-8")
-        for marker in (
-            "modular-monolith",
-            "transactional relational database",
-            "GeneratePurchasePlan",
-            "technical",
-            "No HTTP API",
-        ):
-            assert marker.lower() in generated_overview.lower(), marker
-            assert marker.lower() in benchmark.lower(), marker
+        coverage_pairs = {
+            "system-shape": ("modular-monolith", "modular-monolith"),
+            "database-shape": ("transactional relational database", "transactional relational database"),
+            "primary-flow": ("GeneratePurchasePlan", "planning request"),
+            "technical-failure-boundary": ("technical solver, import or database failure", "technical solver/import/database failure"),
+            "external-interface": ("deterministic CLI", "deterministic CLI"),
+            "no-http-first-slice": ("does not require HTTP", "There is no HTTP API"),
+        }
+        for concept, (generated_marker, benchmark_marker) in coverage_pairs.items():
+            assert generated_marker.lower() in generated_overview.lower(), concept
+            assert benchmark_marker.lower() in benchmark.lower(), concept
 
         frontend_review=Path(temp_dir)/"frontend-review"
         frontend_result=materialize_package(
