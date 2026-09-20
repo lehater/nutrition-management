@@ -301,12 +301,22 @@ authorities:
           - capability: nutrition-management.frontend.component-design
 
   - id: TEST-DESIGN
-    responsibility: Own executable behavioral contracts for the user-facing frontend.
+    responsibility: Own executable behavioral contracts derived from accepted system and interface design.
     boundary:
-      semantic_cohesion: Preconditions, operations and observable frontend oracles.
-      independent_change: Test realization can evolve without redefining accepted frontend semantics.
-      public_contract: Produces accepted frontend test design.
+      semantic_cohesion: Preconditions, operations and observable behavioral oracles.
+      independent_change: Test realization can evolve without redefining accepted system or interface semantics.
+      public_contract: Produces accepted backend/CLI and frontend Test Design capabilities.
     produces:
+      - capability: nutrition-management.redesign.test-design
+        knowledge_kind: test-design
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.architecture
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.component-design
+          - capability: nutrition-management.redesign.verification-design
       - capability: nutrition-management.frontend.test-design
         knowledge_kind: test-design
         requires:
@@ -328,6 +338,7 @@ authorities:
         requires:
           - capability: nutrition-management.component-design
           - capability: nutrition-management.redesign.verification-design
+          - capability: nutrition-management.redesign.test-design
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
@@ -380,6 +391,7 @@ consumers:
       - capability: nutrition-management.component-design
       - capability: nutrition-management.redesign.implementation-design
       - capability: nutrition-management.redesign.verification-design
+      - capability: nutrition-management.redesign.test-design
       - capability: nutrition-management.verification.strategy
 
   - id: FRONTEND-IMPLEMENTATION
