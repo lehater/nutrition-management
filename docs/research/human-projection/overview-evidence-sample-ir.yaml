@@ -1,0 +1,78 @@
+version: 1
+kind: harness-human-projection-ir
+manifest_digest: __DYNAMIC__
+
+documents:
+  - id: overview
+    sections:
+      - id: product-boundary
+        claims:
+          - text: Nutrition Management is an advisory system that calculates and compares feasible household purchase plans rather than enforcing dietary rules.
+            sources: [PRODUCT-REQUIREMENTS]
+            evidence:
+              - source: PRODUCT-REQUIREMENTS
+                locator: advisory-boundary
+                excerpt: "The system is advisory: it calculates and compares feasible purchase plans and their trade-offs rather than enforcing dietary rules."
+          - text: The accepted MVP plans for one 30-day calculation period and excludes medical/therapeutic diet handling, allergies, consumption tracking, inventory, meal planning and FX conversion.
+            sources: [PRODUCT-REQUIREMENTS]
+            evidence:
+              - source: PRODUCT-REQUIREMENTS
+                locator: household-nutrition-targeting
+                excerpt: "a single MVP calculation period of 30 days;"
+              - source: PRODUCT-REQUIREMENTS
+                locator: mvp-scope-boundaries
+                excerpt: "medical or therapeutic diet handling;"
+      - id: system-shape
+        claims:
+          - text: The MVP is one deployable modular-monolith process backed by one transactional relational database.
+            sources: [TARGET-ARCHITECTURE]
+            evidence:
+              - source: TARGET-ARCHITECTURE
+                locator: system-topology
+                excerpt: "The MVP is one deployable modular-monolith application process backed by one transactional relational database."
+          - text: Four context-aligned modules preserve ownership: Nutrition Targeting, Food Knowledge, Market Catalog and Purchase Planning; no Bounded Context is a network service in the MVP.
+            sources: [TARGET-ARCHITECTURE, STRATEGIC-DOMAIN]
+            evidence:
+              - source: TARGET-ARCHITECTURE
+                locator: system-topology
+                excerpt: "Inside the process, four context-aligned modules preserve semantic ownership:"
+              - source: STRATEGIC-DOMAIN
+                locator: subdomains-and-bounded-contexts
+                excerpt: "### Nutrition Targeting"
+      - id: primary-flow
+        claims:
+          - text: GeneratePurchasePlan is the implementation-facing end-to-end use case and uses explicit derivation-date and market-as-of inputs.
+            sources: [APPLICATION-DESIGN]
+            evidence:
+              - source: APPLICATION-DESIGN
+                locator: primary-use-case
+                excerpt: "`GeneratePurchasePlan` is the implementation-facing end-to-end use case."
+          - text: Provider facts are captured in one coherent read scope into an immutable planning snapshot, the read scope closes, and solver execution proceeds without further provider reads.
+            sources: [APPLICATION-DESIGN, TARGET-ARCHITECTURE]
+            evidence:
+              - source: APPLICATION-DESIGN
+                locator: execution
+                excerpt: "composition captures those provider facts inside one coherent relational read scope and closes that scope."
+              - source: TARGET-ARCHITECTURE
+                locator: primary-planning-flow
+                excerpt: "end the database read scope;"
+          - text: Technical solver, import or database failure remains an application failure and is not relabeled as an accepted partial or no-executable-plan domain outcome.
+            sources: [TARGET-ARCHITECTURE]
+            evidence:
+              - source: TARGET-ARCHITECTURE
+                locator: primary-planning-flow
+                excerpt: "A technical solver/import/database failure is not represented as `partial` or `no_executable_plan`; technical failure remains a separate application error."
+      - id: external-interface
+        claims:
+          - text: The first implementation interface is a deterministic CLI that requires an explicit database path, household id, derivation date and market-as-of instant.
+            sources: [CLI-CONTRACT]
+            evidence:
+              - source: CLI-CONTRACT
+                locator: invocation
+                excerpt: "All four arguments are required."
+          - text: The first slice does not require HTTP, browser UI, authentication or remote transport.
+            sources: [CLI-CONTRACT]
+            evidence:
+              - source: CLI-CONTRACT
+                locator: scope
+                excerpt: "No HTTP API, browser UI, interactive shell, authentication or remote transport is required for the first implementation slice."
