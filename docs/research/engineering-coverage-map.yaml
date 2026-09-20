@@ -1,0 +1,93 @@
+version: 1
+kind: harness-engineering-coverage-map
+catalog: software-engineering-baseline/v0
+project: NUTRITION-MANAGEMENT
+scope: current-design
+
+rows:
+  - concern: problem.discovery
+    state: COVERED
+    rationale: Accepted requirements and domain redesign are backed by project discovery/problem framing.
+  - concern: product.intent
+    state: COVERED
+    capabilities: [nutrition-management.requirements]
+    artifacts: [PRODUCT-REQUIREMENTS]
+  - concern: domain.semantics
+    state: COVERED
+    capabilities:
+      - nutrition-management.domain.context-contracts
+      - nutrition-management.domain.nutrition-targeting
+      - nutrition-management.domain.food-knowledge
+      - nutrition-management.domain.market-catalog
+      - nutrition-management.domain.purchase-planning
+  - concern: application.use-cases
+    state: COVERED
+    capabilities: [nutrition-management.application-design, nutrition-management.frontend.user-journeys]
+    artifacts: [APPLICATION-DESIGN, FRONTEND-USER-JOURNEYS]
+  - concern: architecture.structure
+    state: COVERED
+    capabilities: [nutrition-management.architecture, nutrition-management.frontend.architecture]
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-ARCHITECTURE]
+  - concern: interface.machine
+    state: COVERED
+    capabilities: [nutrition-management.interface.cli, nutrition-management.frontend.application-contracts]
+    artifacts: [CLI-CONTRACT, FRONTEND-APPLICATION-CONTRACTS]
+  - concern: interface.human
+    state: COVERED
+    capabilities: [nutrition-management.frontend.human-interface]
+    artifacts: [FRONTEND-HUMAN-INTERFACE]
+  - concern: data.persistence
+    state: COVERED
+    capabilities: [nutrition-management.data-design]
+    artifacts: [DATA-DESIGN]
+  - concern: security.architecture
+    state: COVERED
+    capabilities: [nutrition-management.frontend.security]
+    artifacts: [FRONTEND-SECURITY]
+    rationale: Current accepted security boundary is specific to the local browser frontend.
+  - concern: security.analysis
+    state: UNASSESSED
+  - concern: privacy.governance
+    state: UNASSESSED
+  - concern: obligation.external
+    state: UNASSESSED
+  - concern: quality.attributes
+    state: UNASSESSED
+  - concern: reliability.concurrency
+    state: UNASSESSED
+  - concern: operability.observability
+    state: UNASSESSED
+  - concern: engineering.policy
+    state: COVERED
+    capabilities: [nutrition-management.engineering-policy]
+    artifacts: [ENGINEERING-DESIGN-POLICY]
+  - concern: dependencies.supply-chain
+    state: UNASSESSED
+  - concern: build.reproducibility
+    state: UNASSESSED
+  - concern: component.design
+    state: COVERED
+    capabilities: [nutrition-management.component-design, nutrition-management.frontend.component-design]
+    artifacts: [COMPONENT-DESIGN, FRONTEND-COMPONENT-DESIGN]
+  - concern: implementation.design
+    state: COVERED
+    capabilities: [nutrition-management.redesign.implementation-design, nutrition-management.frontend.implementation-design]
+    artifacts: [REDESIGN-IMPLEMENTATION-DESIGN, FRONTEND-IMPLEMENTATION-DESIGN]
+  - concern: verification.strategy
+    state: COVERED
+    capabilities: [nutrition-management.redesign.verification-design, nutrition-management.frontend.verification-design, nutrition-management.verification.strategy]
+    artifacts: [REDESIGN-VERIFICATION-DESIGN, FRONTEND-VERIFICATION-DESIGN, VERIFICATION-STRATEGY]
+  - concern: test.design
+    state: COVERED
+    capabilities: [nutrition-management.redesign.test-design, nutrition-management.frontend.test-design]
+    artifacts: [REDESIGN-TEST-DESIGN, FRONTEND-TEST-DESIGN]
+  - concern: change.transition
+    state: UNASSESSED
+  - concern: accessibility
+    state: UNASSESSED
+  - concern: internationalization
+    state: UNASSESSED
+  - concern: safety
+    state: UNASSESSED
+  - concern: ai.risk
+    state: UNASSESSED
