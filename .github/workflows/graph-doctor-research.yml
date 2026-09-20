@@ -42,7 +42,6 @@ jobs:
           report=json.load(open("/tmp/graph-doctor.json"))
           print(json.dumps(report["summary"], indent=2))
           print(json.dumps(report["findings"], indent=2))
-          # Research branch intentionally records real defects before any repair.
-          assert report["summary"]["ERROR"] >= 1 or report["summary"]["WARN"] >= 1, report
+          assert report["summary"] == {"ERROR": 0, "WARN": 0, "INFO": 0}, report
           PY
           exit 0
