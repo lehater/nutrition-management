@@ -30,7 +30,7 @@ documents:
               - source: TARGET-ARCHITECTURE
                 locator: system-topology
                 excerpt: "The MVP is one deployable modular-monolith application process backed by one transactional relational database."
-          - text: Four context-aligned modules preserve ownership: Nutrition Targeting, Food Knowledge, Market Catalog and Purchase Planning; no Bounded Context is a network service in the MVP.
+          - text: "Four context-aligned modules preserve ownership: Nutrition Targeting, Food Knowledge, Market Catalog and Purchase Planning; no Bounded Context is a network service in the MVP."
             sources: [TARGET-ARCHITECTURE, STRATEGIC-DOMAIN]
             evidence:
               - source: TARGET-ARCHITECTURE
