@@ -1,6 +1,6 @@
 version: 0
 kind: canonical-artifact-contract-experiment
-status: research
+status: supported-so-far
 
 question: >-
   Is the reusable schema/format contract better attached to a canonical artifact
@@ -54,3 +54,8 @@ observations:
   - capability is not a representation key
   - knowledge_kind is routing metadata and does not fix representation
   - concrete canonical artifact is the first level at which actual representation is unambiguous
+
+result: >-
+  The experiment supports attaching reusable schema/profile metadata to concrete
+  CanonicalArtifact materializations while keeping Authority and Capability semantics
+  separate. This is pilot evidence only; no canonical Harness contract is accepted.
