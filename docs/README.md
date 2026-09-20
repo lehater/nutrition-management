@@ -26,4 +26,4 @@ Accepted project truth goes into its owning living artifact. Durable rationale g
 
 ## Current pre-code baseline
 
-The accepted implementation-facing baseline is `redesign/component-design.md`, `redesign/verification-design.md` and `redesign/implementation-design.md`. Earlier implementation-plan/component-design/completion-criteria artifacts were retired after the clean redesign. Existing implementation code is not design evidence.
+The accepted CLI/backend implementation-facing baseline is `redesign/component-design.md`, `redesign/verification-design.md` and `redesign/implementation-design.md`. The optional user-facing frontend baseline is `application/user-journeys.md`, `interface/human-interface-design.md`, `architecture/frontend-security.md`, `architecture/frontend-architecture.md`, `redesign/frontend-component-design.md`, `redesign/frontend-verification-design.md`, `redesign/frontend-test-design.md` and `redesign/frontend-implementation-design.md`. Existing implementation code is not design evidence.
