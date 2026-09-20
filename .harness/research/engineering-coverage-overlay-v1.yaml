@@ -1,0 +1,45 @@
+version: 1
+kind: harness-engineering-coverage-overlay
+project: NUTRITION-MANAGEMENT
+scope: current-design
+status: research
+
+required:
+  - data.classification
+  - data.lifecycle
+  - security.threat-analysis
+  - security.vulnerability-management
+  - security.secure-development
+  - reliability.availability
+  - reliability.recovery
+  - operability.logging
+  - operability.metrics
+  - operability.tracing
+  - operability.health
+  - operability.alerting
+  - governance.privacy
+  - governance.data
+  - quality.performance.latency
+  - quality.performance.resource-efficiency
+
+subtree_decisions:
+  - concern: security
+    state: NOT_APPLICABLE
+    rationale: This default applies only to identity/account authority semantics in the local single-user slice; explicit child mappings override it.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+
+decisions:
+  - concern: security.identity
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user frontend has no login/account identity boundary.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.authorization
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user scope has no authorization model.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.accountability
+    state: NOT_APPLICABLE
+    rationale: No multi-user authority/action attribution exists in current scope.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+
+freshness: {}
