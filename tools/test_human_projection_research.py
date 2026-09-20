@@ -49,6 +49,7 @@ def main():
         harness_version="research-prototype",
         project_revision="nutrition-research",
         recipe_id="nutrition-backend-human-docs",
+        source_root=ROOT,
         extra_capabilities=[
             "nutrition-management.food-knowledge.nutrient-evidence-semantics"
         ],
@@ -57,7 +58,7 @@ def main():
     backend_plan=validate_recipe(load("docs/research/human-projection/backend.yaml"),backend_manifest)
     assert [d["id"] for d in backend_plan["documents"]]==["overview","domain-and-data","implementation-guide","verification-and-readiness"]
 
-    frontend_manifest=compile_manifest(graph,model,"FRONTEND-IMPLEMENTATION",harness_version="research-prototype",project_revision="nutrition-research",recipe_id="nutrition-frontend-human-docs")
+    frontend_manifest=compile_manifest(graph,model,"FRONTEND-IMPLEMENTATION",harness_version="research-prototype",project_revision="nutrition-research",recipe_id="nutrition-frontend-human-docs",source_root=ROOT)
     assert frontend_manifest["target"]["status"]=="COMPLETE", frontend_manifest["target"]
     frontend_plan=validate_recipe(load("docs/research/human-projection/frontend.yaml"),frontend_manifest)
     assert [d["id"] for d in frontend_plan["documents"]]==["frontend-guide"]
