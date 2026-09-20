@@ -1,11 +1,12 @@
-version: 0
-kind: harness-artifact-schema-candidate
-schema: cli-contract/v0-experiment
+version: 1
+kind: harness-knowledge-artifact
 artifact: CLI-CONTRACT
-source: docs/interface/cli-contract.md
-capability_claims:
-  - nutrition-management.interface.cli
-
+schema: cli-contract/v0-experiment
+title: Nutrition Management CLI Contract
+research:
+  source: docs/interface/cli-contract.md
+  capability_claims:
+    - nutrition-management.interface.cli
 content:
   command: "nutrition-plan --db <sqlite-file> --household <household-id> --derivation-date <YYYY-MM-DD> --market-as-of <ISO-8601-instant>"
   arguments:
