@@ -1,6 +1,6 @@
 version: 0
 kind: canonical-artifact-contract-experiment
-status: supported-so-far
+status: experiment-complete
 
 question: >-
   Is the reusable schema/format contract better attached to a canonical artifact
@@ -59,3 +59,24 @@ result: >-
   The experiment supports attaching reusable schema/profile metadata to concrete
   CanonicalArtifact materializations while keeping Authority and Capability semantics
   separate. This is pilot evidence only; no canonical Harness contract is accepted.
+
+validation:
+  harness_integration_ci: PASS
+  project_ci: PASS
+  workspace_validate_artifact:
+    product_requirements: PASS
+    implementation_design: PASS
+    cli_contract: PASS
+    invalid_fixture_rejected: true
+  canonical_graph_modified: false
+  provider_registration_modified: false
+
+promotion:
+  product_requirements: HOLD_NO_MACHINE_CONSUMER_FAILURE
+  implementation_design: REJECT_CURRENT_GENERIC_SCHEMA_TOO_PROSE_LIKE
+  cli_contract: HOLD_STRONG_CANDIDATE_NO_MACHINE_CONSUMER_FAILURE
+
+conclusion: >-
+  Existing Harness managed-knowledge envelope can carry tested reusable profiles
+  without changing Core. This branch is evidence only and must not be merged as
+  canonical policy.
