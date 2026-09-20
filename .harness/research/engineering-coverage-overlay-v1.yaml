@@ -22,12 +22,6 @@ required:
   - quality.performance.latency
   - quality.performance.resource-efficiency
 
-subtree_decisions:
-  - concern: security
-    state: NOT_APPLICABLE
-    rationale: This default applies only to identity/account authority semantics in the local single-user slice; explicit child mappings override it.
-    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
-
 decisions:
   - concern: security.identity
     state: NOT_APPLICABLE
