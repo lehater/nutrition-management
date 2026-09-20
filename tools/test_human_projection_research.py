@@ -7,7 +7,7 @@ import yaml
 ROOT=Path(__file__).resolve().parents[1]
 HARNESS=Path(os.environ.get("HUMAN_PROJECTION_HARNESS", ROOT/".human-projection-harness"))
 sys.path.insert(0,str(HARNESS))
-from human_projection import compile_manifest, materialize_package, validate_recipe
+from human_projection import compile_manifest, materialize_package, validate_projection_ir, validate_recipe
 
 def load(path):
     return yaml.safe_load((ROOT/path).read_text(encoding="utf-8"))
@@ -63,6 +63,20 @@ def main():
     frontend_plan=validate_recipe(load("docs/research/human-projection/frontend.yaml"),frontend_manifest)
     assert [d["id"] for d in frontend_plan["documents"]]==["frontend-guide"]
 
+    overview_plan=validate_recipe(
+        load("docs/research/human-projection/overview-evidence-sample.yaml"),
+        backend_manifest,
+    )
+    overview_ir=load("docs/research/human-projection/overview-evidence-sample-ir.yaml")
+    overview_ir["manifest_digest"]=overview_plan["manifest_digest"]
+    validate_projection_ir(
+        overview_ir,
+        overview_plan,
+        manifest=backend_manifest,
+        source_root=ROOT,
+        require_evidence=True,
+    )
+
     backend_ir=synthetic_ir(backend_plan)
     frontend_ir=synthetic_ir(frontend_plan)
 
@@ -93,6 +107,28 @@ def main():
         )
         assert len(handoff_result["sources"])==len(backend_manifest["sources"])
         assert (handoff/"sources/docs/requirements/product-requirements.md").is_file()
+
+        overview_review=Path(temp_dir)/"overview-review"
+        overview_result=materialize_package(
+            backend_manifest,
+            overview_plan,
+            overview_ir,
+            overview_review,
+            mode="REVIEW",
+            source_root=ROOT,
+        )
+        assert overview_result["documents"]==["overview.md"]
+        generated_overview=(overview_review/"documents/overview.md").read_text(encoding="utf-8")
+        benchmark=(ROOT/"docs/generated/overview.md").read_text(encoding="utf-8")
+        for marker in (
+            "modular-monolith",
+            "transactional relational database",
+            "GeneratePurchasePlan",
+            "technical",
+            "No HTTP API",
+        ):
+            assert marker.lower() in generated_overview.lower(), marker
+            assert marker.lower() in benchmark.lower(), marker
 
         frontend_review=Path(temp_dir)/"frontend-review"
         frontend_result=materialize_package(
