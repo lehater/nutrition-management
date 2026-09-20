@@ -1,0 +1,51 @@
+version: 0
+kind: harness-representation-contract-experiment
+
+representations:
+  - knowledge_kind: verification-strategy
+    family: harness-schema
+    schema: verification-plan/v1
+    validator:
+      kind: harness-workspace
+      command: python workspace.py validate-artifact
+    projections:
+      - kind: markdown
+        renderer: harness-workspace
+
+  - knowledge_kind: engineering-policy
+    family: project-native
+    media_type: text/markdown
+    validator:
+      kind: project
+      command: python .harness/validate_integration.py
+    structured_semantics: false
+
+  - knowledge_kind: component-design
+    family: project-native
+    media_type: text/markdown
+    validator:
+      kind: project
+      command: python .harness/validate_integration.py
+    structured_semantics: false
+
+  - knowledge_kind: implementation-design
+    family: project-native
+    media_type: text/markdown
+    validator:
+      kind: project
+      command: python .harness/validate_integration.py
+    structured_semantics: false
+
+  - knowledge_kind: pinned-source-entity-set
+    family: project-native-typed
+    validator:
+      kind: project
+      command: python .harness/validate_integration.py
+    structured_semantics: true
+
+  - knowledge_kind: source-classification-registry
+    family: project-native-typed
+    validator:
+      kind: project
+      command: python .harness/validate_integration.py
+    structured_semantics: true
