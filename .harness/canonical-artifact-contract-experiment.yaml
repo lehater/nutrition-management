@@ -1,0 +1,56 @@
+version: 0
+kind: canonical-artifact-contract-experiment
+status: research
+
+question: >-
+  Is the reusable schema/format contract better attached to a canonical artifact
+  materialization than to Authority, CapabilityId, or knowledge_kind?
+
+artifacts:
+  - artifact: PRODUCT-REQUIREMENTS
+    capability_claims: [nutrition-management.requirements]
+    candidate_artifact_kind: product-requirements
+    representation: markdown
+    structural_validator: none
+    semantic_acceptance: artifact-skill
+    deterministic_consumption: false
+
+  - artifact: TARGET-ARCHITECTURE
+    capability_claims: [nutrition-management.architecture]
+    candidate_artifact_kind: system-architecture-narrative
+    representation: markdown
+    structural_validator: none
+    semantic_acceptance: artifact-skill
+    deterministic_consumption: false
+    unsupported_consumers: [deterministic-c4-projection]
+
+  - artifact: CLI-CONTRACT
+    capability_claims: [nutrition-management.interface.cli]
+    candidate_artifact_kind: cli-contract
+    representation: markdown
+    structural_validator: none
+    semantic_acceptance: artifact-skill
+    deterministic_consumption: false
+
+  - artifact: COMPONENT-DESIGN
+    capability_claims: [nutrition-management.component-design]
+    candidate_artifact_kind: component-design
+    representation: markdown
+    structural_validator: none
+    semantic_acceptance: artifact-skill
+    deterministic_consumption: false
+
+  - artifact: VERIFICATION-STRATEGY
+    capability_claims: [nutrition-management.verification.strategy]
+    candidate_artifact_kind: verification-plan
+    representation: yaml
+    schema: verification-plan/v1
+    structural_validator: harness-workspace
+    semantic_acceptance: artifact-skill
+    deterministic_consumption: true
+
+observations:
+  - authority is too coarse because an authority may own several materialization shapes
+  - capability is not a representation key
+  - knowledge_kind is routing metadata and does not fix representation
+  - concrete canonical artifact is the first level at which actual representation is unambiguous
