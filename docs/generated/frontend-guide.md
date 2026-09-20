@@ -11,6 +11,7 @@ The frontend does not introduce new nutrition, market or optimization semantics.
 Canonical sources:
 - `docs/requirements/frontend-requirements.md`;
 - `docs/application/user-journeys.md`;
+- `docs/application/frontend-application-contracts.md`;
 - `docs/interface/human-interface-design.md`;
 - `docs/decisions/ADR-018-local-browser-frontend.md`;
 - `docs/architecture/frontend-security.md`;
@@ -63,7 +64,7 @@ The first frontend is server-rendered:
 
 ## Code boundary
 
-Presentation code may parse requests, map application results and render HTML.
+Presentation code may parse requests, map application results and render HTML. Provider reads and mutations use the accepted contracts in `docs/application/frontend-application-contracts.md`.
 
 It must not:
 - query context persistence directly;
