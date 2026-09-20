@@ -28,6 +28,13 @@ jobs:
           ref: 185bd3fe5cf8b0167583769f97774c8893a647ad
           path: .harness-tool
 
+      - name: Checkout Harness research experiment
+        uses: actions/checkout@v5
+        with:
+          repository: lehater/harness
+          ref: research/engineering-knowledge-projections
+          path: .harness-research-tool
+
       - uses: actions/setup-python@v6
         with:
           python-version: "3.14.7"
@@ -47,3 +54,12 @@ jobs:
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml THEORETICAL-GAP-SUGGESTIONS .harness/graph.yaml
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml NUTRIENT-EVIDENCE-PROPAGATION .harness/graph.yaml
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml BLS-V4-PRODUCTION-IMPORT .harness/graph.yaml
+
+      - name: Validate artifact schema candidates
+        run: |
+          python .harness-research-tool/experiments/artifact_schemas/validate.py             .harness/experiments/product-requirements.candidate.yaml             .harness/experiments/implementation-design.candidate.yaml
+          if python .harness-research-tool/experiments/artifact_schemas/validate.py             .harness-research-tool/experiments/artifact_schemas/invalid-product-requirements.yaml; then
+            echo "invalid research fixture was unexpectedly accepted" >&2
+            exit 1
+          fi
+          echo "invalid research fixture rejected as expected"
