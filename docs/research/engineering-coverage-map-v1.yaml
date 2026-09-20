@@ -99,9 +99,8 @@ rows:
     state: COVERED
     artifacts: [DATA-DESIGN, TARGET-ARCHITECTURE]
   - concern: data.lifecycle
-    state: COVERED
-    artifacts: [DATA-DESIGN, PRODUCT-REQUIREMENTS]
-    rationale: Durable plan history is explicitly excluded; source/reference data and migrations have defined ownership. Broader retention policy is not implied.
+    state: UNASSESSED
+    rationale: Durable Purchase Plan history is explicitly excluded, but the broader retention/deletion lifecycle for persisted profile, catalog and source data has not been assessed as one concern.
   - concern: data.quality
     state: COVERED
     artifacts: [PRODUCT-REQUIREMENTS, NUTRIENT-EVIDENCE-SEMANTICS, VERIFICATION-STRATEGY]
@@ -148,9 +147,8 @@ rows:
   - concern: security.vulnerability-management
     state: UNASSESSED
   - concern: security.secure-development
-    state: COVERED
-    artifacts: [ENGINEERING-DESIGN-POLICY, FRONTEND-VERIFICATION-DESIGN]
-    rationale: Secure boundary/verification practices are explicit for implementation; this is not an SSDF maturity claim.
+    state: UNASSESSED
+    rationale: Several secure implementation and verification practices are explicit, but there is no accepted project-level secure-development coverage model comparable to SSDF/SAMM.
 
   - concern: reliability.failure-semantics
     state: COVERED
@@ -247,8 +245,8 @@ rows:
     state: UNASSESSED
     rationale: Personal profile-like data exists, but no accepted privacy-risk/applicability analysis is present.
   - concern: governance.data
-    state: COVERED
-    artifacts: [DATA-DESIGN, BLS-V4-SOURCE-BASELINE, BLS-V4-EVIDENCE-SEMANTICS]
+    state: UNASSESSED
+    rationale: Ownership, provenance and evidence semantics are strong, but a broader data-governance policy including lifecycle/classification obligations has not been accepted.
   - concern: governance.audit
     state: COVERED
     artifacts: [DATA-DESIGN, PRODUCT-REQUIREMENTS]
