@@ -1,11 +1,12 @@
-version: 0
-kind: harness-artifact-schema-candidate
-schema: implementation-design/v0-experiment
+version: 1
+kind: harness-knowledge-artifact
 artifact: REDESIGN-IMPLEMENTATION-DESIGN
-source: docs/redesign/implementation-design.md
-capability_claims:
-  - nutrition-management.redesign.implementation-design
-
+schema: implementation-design/v0-experiment
+title: Nutrition Management Implementation Design
+research:
+  source: docs/redesign/implementation-design.md
+  capability_claims:
+    - nutrition-management.redesign.implementation-design
 content:
   purpose: >-
     Define the terminal pre-code implementation baseline: concrete realization,
