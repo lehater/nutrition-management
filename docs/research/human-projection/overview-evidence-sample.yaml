@@ -1,0 +1,21 @@
+version: 1
+kind: harness-human-projection
+id: nutrition-overview-evidence-sample
+consumer: IMPLEMENTATION
+
+documents:
+  - id: overview
+    title: Nutrition Management — System Overview
+    sections:
+      - id: product-boundary
+        title: Product Boundary
+        select: {artifacts: [PRODUCT-REQUIREMENTS]}
+      - id: system-shape
+        title: System Shape
+        select: {artifacts: [TARGET-ARCHITECTURE, STRATEGIC-DOMAIN, CONTEXT-MAP]}
+      - id: primary-flow
+        title: Primary Planning Flow
+        select: {artifacts: [APPLICATION-DESIGN, TARGET-ARCHITECTURE]}
+      - id: external-interface
+        title: External Interface
+        select: {artifacts: [CLI-CONTRACT]}
