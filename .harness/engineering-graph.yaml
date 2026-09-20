@@ -16,6 +16,10 @@ authorities:
       - capability: nutrition-management.requirements
         requires:
           - capability: nutrition-management.problem
+      - capability: nutrition-management.frontend.requirements
+        knowledge_kind: product-requirements
+        requires:
+          - capability: nutrition-management.requirements
 
   - id: DOMAIN-STRUCTURE
     responsibility: Own strategic domain boundaries and context relationships.
@@ -141,6 +145,19 @@ authorities:
           - capability: nutrition-management.domain.food-knowledge
           - capability: nutrition-management.domain.market-catalog
           - capability: nutrition-management.domain.purchase-planning
+      - capability: nutrition-management.frontend.delivery-decision
+        knowledge_kind: system-architecture
+        requires:
+          - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.architecture
+      - capability: nutrition-management.frontend.architecture
+        knowledge_kind: system-architecture
+        requires:
+          - capability: nutrition-management.frontend.delivery-decision
+          - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.security
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
 
   - id: APPLICATION-DESIGN
     responsibility: Own implementation-facing application orchestration and published application contracts.
@@ -152,6 +169,15 @@ authorities:
       - capability: nutrition-management.application-design
         requires:
           - capability: nutrition-management.architecture
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+          - capability: nutrition-management.domain.purchase-planning
+      - capability: nutrition-management.frontend.user-journeys
+        knowledge_kind: user-journey-design
+        requires:
+          - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.application-design
           - capability: nutrition-management.domain.nutrition-targeting
           - capability: nutrition-management.domain.food-knowledge
           - capability: nutrition-management.domain.market-catalog
@@ -170,15 +196,34 @@ authorities:
           - capability: nutrition-management.application-design
 
   - id: INTERFACE-DESIGN
-    responsibility: Own the first-slice external CLI interaction contract.
+    responsibility: Own supported human and machine-facing interaction contracts.
     boundary:
-      semantic_cohesion: User-visible invocation, inputs, output and failure boundary.
-      independent_change: The outer adapter can change without redefining application/domain semantics.
-      public_contract: Produces the accepted CLI contract.
+      semantic_cohesion: User-visible invocation, navigation, state, inputs, output and failure boundaries.
+      independent_change: Outer interface representations can change without redefining application/domain semantics.
+      public_contract: Produces accepted CLI and human-interface contracts.
     produces:
       - capability: nutrition-management.interface.cli
         requires:
           - capability: nutrition-management.application-design
+      - capability: nutrition-management.frontend.human-interface
+        knowledge_kind: human-interface-design
+        requires:
+          - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.frontend.user-journeys
+          - capability: nutrition-management.application-design
+
+  - id: SECURITY-ARCHITECTURE
+    responsibility: Own frontend trust, browser-origin and local listener security boundaries.
+    boundary:
+      semantic_cohesion: Security decisions for the browser-to-local-process trust boundary.
+      independent_change: Security realization can evolve behind stable product and interaction semantics.
+      public_contract: Produces accepted frontend security constraints.
+    produces:
+      - capability: nutrition-management.frontend.security
+        knowledge_kind: security-architecture
+        requires:
+          - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.frontend.delivery-decision
 
   - id: ENGINEERING-POLICY
     responsibility: Own cross-cutting engineering design constraints selected for this project.
@@ -207,6 +252,16 @@ authorities:
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.frontend.component-design
+        knowledge_kind: component-design
+        requires:
+          - capability: nutrition-management.engineering-policy
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.architecture
+          - capability: nutrition-management.frontend.security
+          - capability: nutrition-management.implementation.stack
 
   - id: REDESIGN-VERIFICATION
     responsibility: Own verification evidence required by the clean redesign independently of existing tests.
@@ -225,6 +280,27 @@ authorities:
           - capability: nutrition-management.interface.cli
           - capability: nutrition-management.engineering-policy
           - capability: nutrition-management.component-design
+      - capability: nutrition-management.frontend.verification-design
+        knowledge_kind: verification-strategy
+        requires:
+          - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.security
+          - capability: nutrition-management.frontend.architecture
+          - capability: nutrition-management.frontend.component-design
+
+  - id: TEST-DESIGN
+    responsibility: Own executable behavioral contracts for the user-facing frontend.
+    boundary:
+      semantic_cohesion: Preconditions, operations and observable frontend oracles.
+      independent_change: Test realization can evolve without redefining accepted frontend semantics.
+      public_contract: Produces accepted frontend test design.
+    produces:
+      - capability: nutrition-management.frontend.test-design
+        knowledge_kind: test-design
+        requires:
+          - capability: nutrition-management.frontend.verification-design
+          - capability: nutrition-management.frontend.human-interface
 
   - id: IMPLEMENTATION-DESIGN
     responsibility: Own concrete implementation choices and executable implementation completion contract.
@@ -244,6 +320,15 @@ authorities:
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
           - capability: nutrition-management.interface.cli
+          - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.frontend.implementation-design
+        knowledge_kind: implementation-design
+        requires:
+          - capability: nutrition-management.frontend.component-design
+          - capability: nutrition-management.frontend.verification-design
+          - capability: nutrition-management.frontend.test-design
+          - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.security
           - capability: nutrition-management.implementation.stack
 
   - id: VERIFICATION
@@ -285,6 +370,20 @@ consumers:
       - capability: nutrition-management.redesign.implementation-design
       - capability: nutrition-management.redesign.verification-design
       - capability: nutrition-management.verification.strategy
+
+  - id: FRONTEND-IMPLEMENTATION
+    purpose: Implement the accepted local browser frontend without inventing user-visible, security or structural decisions.
+    requires:
+      - capability: nutrition-management.frontend.requirements
+      - capability: nutrition-management.frontend.user-journeys
+      - capability: nutrition-management.frontend.human-interface
+      - capability: nutrition-management.frontend.delivery-decision
+      - capability: nutrition-management.frontend.security
+      - capability: nutrition-management.frontend.architecture
+      - capability: nutrition-management.frontend.component-design
+      - capability: nutrition-management.frontend.verification-design
+      - capability: nutrition-management.frontend.test-design
+      - capability: nutrition-management.frontend.implementation-design
 
   - id: THEORETICAL-GAP-SUGGESTIONS
     purpose: Implement theoretical gap-closing suggestions from accepted planning and food knowledge.
