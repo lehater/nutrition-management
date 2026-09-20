@@ -88,7 +88,7 @@ Use explicit composition/factory functions. A dependency-injection framework is 
 10. deterministic CLI;
 11. full verification gate.
 
-A slice is complete only with its design-derived verification evidence.
+A slice is complete only with its applicable canonical Test Design contracts and design-derived verification evidence.
 
 ## Decisions forbidden during coding
 
@@ -108,4 +108,4 @@ Any such need becomes an upstream Question.
 
 ## Ready-for-code criterion
 
-The design is ready for coding when the canonical Engineering Graph requires this Implementation Design and Verification Design, all their upstream capabilities are accepted, and IMPLEMENTATION evaluates COMPLETE. This criterion means design-complete/implementation-authorized; it does not mean implementation exists.
+The design is ready for coding when the canonical Engineering Graph requires this Implementation Design, Test Design and Verification Design, all their upstream capabilities are accepted, and IMPLEMENTATION evaluates COMPLETE. This criterion means design-complete/implementation-authorized; it does not mean implementation exists.

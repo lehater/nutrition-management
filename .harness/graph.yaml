@@ -40,6 +40,20 @@ artifacts:
       - ENGINEERING-DESIGN-POLICY
       - COMPONENT-DESIGN
 
+  - id: REDESIGN-TEST-DESIGN
+    authority: TEST-DESIGN
+    path: docs/redesign/test-design.md
+    provides:
+      - nutrition-management.redesign.test-design
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+      - TARGET-ARCHITECTURE
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - CLI-CONTRACT
+      - COMPONENT-DESIGN
+      - REDESIGN-VERIFICATION-DESIGN
+
   - id: REDESIGN-IMPLEMENTATION-DESIGN
     authority: IMPLEMENTATION-DESIGN
     path: docs/redesign/implementation-design.md
@@ -48,6 +62,7 @@ artifacts:
     depends_on:
       - COMPONENT-DESIGN
       - REDESIGN-VERIFICATION-DESIGN
+      - REDESIGN-TEST-DESIGN
       - APPLICATION-DESIGN
       - DATA-DESIGN
       - CLI-CONTRACT
