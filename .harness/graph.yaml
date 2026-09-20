@@ -18,14 +18,6 @@ authorities:
   - id: VERIFICATION
 
 artifacts:
-  - id: REDESIGN-REVALIDATION
-    authority: PRODUCT
-    path: docs/redesign/component-design.md
-    provides: []
-    depends_on:
-      - PRODUCT-REQUIREMENTS
-      - TARGET-ARCHITECTURE
-
   - id: REDESIGN-VERIFICATION-DESIGN
     authority: REDESIGN-VERIFICATION
     path: docs/redesign/verification-design.md
@@ -167,7 +159,6 @@ artifacts:
     path: docs/baseline/bls-v4-source-bytes.md
     provides:
       - nutrition-management.food-knowledge.bls-v4.source-identity
-      - nutrition-management.food-knowledge.bls-v4.source-structure
     depends_on:
       - FOOD-KNOWLEDGE-DOMAIN
 
@@ -176,7 +167,6 @@ artifacts:
     path: docs/decisions/ADR-015-raw-bls-evidence-before-correction.md
     provides:
       - nutrition-management.food-knowledge.bls-v4.evidence-semantics
-      - nutrition-management.food-knowledge.bls-v4.normalization-order
     depends_on:
       - FOOD-KNOWLEDGE-DOMAIN
       - BLS-V4-SOURCE-BASELINE
@@ -265,7 +255,7 @@ artifacts:
 
   - id: COMPONENT-DESIGN
     authority: COMPONENT-DESIGN
-    path: docs/implementation/component-design.md
+    path: docs/redesign/component-design.md
     provides:
       - nutrition-management.component-design
     depends_on:
