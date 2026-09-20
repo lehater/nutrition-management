@@ -1,11 +1,12 @@
-version: 0
-kind: harness-artifact-schema-candidate
-schema: product-requirements/v0-experiment
+version: 1
+kind: harness-knowledge-artifact
 artifact: PRODUCT-REQUIREMENTS
-source: docs/requirements/product-requirements.md
-capability_claims:
-  - nutrition-management.requirements
-
+schema: product-requirements/v0-experiment
+title: Nutrition Management Product Requirements
+research:
+  source: docs/requirements/product-requirements.md
+  capability_claims:
+    - nutrition-management.requirements
 content:
   purpose: >-
     Define the accepted MVP product behavior for an advisory system that calculates
