@@ -1,0 +1,121 @@
+version: 0
+kind: harness-artifact-schema-candidate
+schema: implementation-design/v0-experiment
+artifact: REDESIGN-IMPLEMENTATION-DESIGN
+source: docs/redesign/implementation-design.md
+capability_claims:
+  - nutrition-management.redesign.implementation-design
+
+content:
+  purpose: >-
+    Define the terminal pre-code implementation baseline: concrete realization,
+    implementation sequence and completion boundary without changing accepted
+    upstream product/domain/architecture semantics.
+  design_sections:
+    - id: selected-realization
+      title: Selected realization
+      decisions:
+        - Runtime is Python 3.14.
+        - Packaging/environment is a uv-managed Python project with committed lockfile.
+        - Deployment is one local modular-monolith process.
+        - Persistence is a file-backed SQLite relational database.
+        - Migration is Alembic.
+        - ORM/persistence mapping is SQLAlchemy.
+        - Optimization is SCIP through PySCIPOpt.
+        - First external interface is a deterministic CLI.
+        - Automated verification uses pytest plus architecture/structure checks.
+        - These are implementation choices, not domain semantics; replacing one later does not authorize changing upstream contracts.
+    - id: module-realization
+      title: Module realization
+      decisions:
+        - Create one top-level package with context-aligned modules nutrition_targeting, food_knowledge, market_catalog and purchase_planning.
+        - Each context separates domain, application and infrastructure/adapters where applicable.
+        - A composition module is the only place allowed to select concrete implementations across contexts.
+        - Dependency direction inside each context is infrastructure/adapters -> application -> domain.
+    - id: persistence-realization
+      title: Persistence realization
+      decisions:
+        - Use one SQLite file with context-owned tables and no cross-context foreign keys/ORM relationships.
+        - SQLAlchemy mappings remain infrastructure-only.
+        - Alembic owns one migration stream but each migration/table has an explicit context owner.
+        - Authoritative Decimal values are stored losslessly as canonical decimal text or another exact decimal-capable representation.
+        - Timestamps are explicit ISO-8601/UTC at persistence boundaries; dates remain dates; currency is explicit.
+        - Planning input capture uses one explicit SQLite coherent read scope spanning provider reads and that scope closes before SCIP execution.
+    - id: application-realization
+      title: Application realization
+      decisions:
+        - Provider modules expose immutable application values.
+        - Cross-context consumers import provider application contracts, never repositories/mappings.
+        - Purchase Planning exposes a Generate Purchase Plan application operation depending on Planning Input Source, Optimization Mechanism and Gap Suggestion Source.
+        - Use narrow language-native contracts.
+        - Python Protocols are appropriate where static structural typing improves clarity, but wrappers/classes are not required for stateless callables.
+    - id: optimization-realization
+      title: Optimization realization
+      decisions:
+        - PySCIPOpt is confined to the optimization adapter.
+        - The adapter translates immutable planning input into the accepted deterministic lexicographic optimization policy and translates completion status back to Purchase Planning-owned outcomes/failures.
+        - SCIP types/status objects never cross the adapter.
+        - No provider query occurs during solve.
+        - Reportable nutrition/cost/variety values are recalculated outside the solver adapter.
+    - id: cli-realization
+      title: CLI realization
+      decisions:
+        - Provide nutrition-plan with explicit database path, household id, derivation date and market-as-of instant.
+        - The CLI performs parsing, composition invocation and deterministic canonical JSON serialization only.
+        - No current-clock default is permitted for semantic dates/times.
+    - id: imports
+      title: Imports
+      decisions:
+        - External/manual data imports are outer adapters calling provider-owned application commands.
+        - Imports do not write SQLAlchemy tables directly.
+        - Validation/normalization/provenance acceptance occurs before canonical provider state is committed.
+    - id: security-realization
+      title: Security realization
+      decisions:
+        - No network listener or authentication subsystem is introduced for the local MVP.
+        - File/database access follows host permissions.
+        - Diagnostics avoid full member profiles/planning snapshots by default.
+        - Import parsing treats source files as untrusted data and fails before persistence on invalid canonical representation.
+    - id: construction
+      title: Construction
+      decisions:
+        - Use explicit composition/factory functions.
+        - A dependency-injection framework is not required.
+        - One concrete repository may satisfy several narrow consumer-owned Protocols where appropriate.
+  implementation_slices:
+    - Project/runtime/composition skeleton and structural dependency checks.
+    - Context-owned persistence/migrations and provider application contracts.
+    - Nutrition Targeting.
+    - Food Knowledge.
+    - Market Catalog.
+    - Coherent Planning Input Source.
+    - Purchase Planning domain/evaluation policy.
+    - SCIP optimization adapter.
+    - Post-plan gap enrichment.
+    - Deterministic CLI.
+    - Full verification gate.
+    - A slice is complete only with its design-derived verification evidence.
+  completion_criteria:
+    - The canonical Engineering Graph requires this Implementation Design and Verification Design.
+    - All upstream capabilities of those designs are accepted.
+    - IMPLEMENTATION evaluates COMPLETE.
+    - The criterion means design-complete/implementation-authorized and does not mean implementation exists.
+  forbidden_decisions:
+    - New product scope or target semantics.
+    - New Bounded Context/ownership direction.
+    - Direct cross-context persistence access.
+    - A new external/network contract.
+    - Durable planning/history state.
+    - Asynchronous/distributed integration.
+    - Alternative result/failure semantics.
+    - Weakening of coherent capture or deterministic optimization completion.
+    - Reinterpretation of nutrient evidence/safety/provenance.
+    - Any such need becomes an upstream Question.
+  open_questions: []
+  design_refs:
+    - docs/implementation/component-design.md
+    - docs/redesign/verification-design.md
+    - docs/application/application-design.md
+    - docs/data/data-design.md
+    - docs/interface/cli-contract.md
+    - docs/decisions/ADR-010-first-implementation-stack.md
