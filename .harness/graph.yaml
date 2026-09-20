@@ -11,7 +11,9 @@ authorities:
   - id: APPLICATION-DESIGN
   - id: DATA-DESIGN
   - id: INTERFACE-DESIGN
+  - id: SECURITY-ARCHITECTURE
   - id: REDESIGN-VERIFICATION
+  - id: TEST-DESIGN
   - id: IMPLEMENTATION-DESIGN
   - id: VERIFICATION
 
@@ -265,6 +267,115 @@ artifacts:
       - nutrition-management.implementation.stack
     depends_on:
       - TARGET-ARCHITECTURE
+
+  - id: FRONTEND-REQUIREMENTS
+    authority: PRODUCT
+    path: docs/requirements/frontend-requirements.md
+    provides:
+      - nutrition-management.frontend.requirements
+    depends_on:
+      - PRODUCT-REQUIREMENTS
+
+  - id: FRONTEND-USER-JOURNEYS
+    authority: APPLICATION-DESIGN
+    path: docs/application/user-journeys.md
+    provides:
+      - nutrition-management.frontend.user-journeys
+    depends_on:
+      - FRONTEND-REQUIREMENTS
+      - APPLICATION-DESIGN
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
+  - id: FRONTEND-HUMAN-INTERFACE
+    authority: INTERFACE-DESIGN
+    path: docs/interface/human-interface-design.md
+    provides:
+      - nutrition-management.frontend.human-interface
+    depends_on:
+      - FRONTEND-REQUIREMENTS
+      - FRONTEND-USER-JOURNEYS
+      - APPLICATION-DESIGN
+
+  - id: FRONTEND-DELIVERY-DECISION
+    authority: ARCHITECTURE
+    path: docs/decisions/ADR-018-local-browser-frontend.md
+    provides:
+      - nutrition-management.frontend.delivery-decision
+    depends_on:
+      - FRONTEND-REQUIREMENTS
+      - TARGET-ARCHITECTURE
+
+  - id: FRONTEND-SECURITY
+    authority: SECURITY-ARCHITECTURE
+    path: docs/architecture/frontend-security.md
+    provides:
+      - nutrition-management.frontend.security
+    depends_on:
+      - FRONTEND-REQUIREMENTS
+      - FRONTEND-DELIVERY-DECISION
+
+  - id: FRONTEND-ARCHITECTURE
+    authority: ARCHITECTURE
+    path: docs/architecture/frontend-architecture.md
+    provides:
+      - nutrition-management.frontend.architecture
+    depends_on:
+      - FRONTEND-DELIVERY-DECISION
+      - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-SECURITY
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+
+  - id: FRONTEND-COMPONENT-DESIGN
+    authority: COMPONENT-DESIGN
+    path: docs/redesign/frontend-component-design.md
+    provides:
+      - nutrition-management.frontend.component-design
+    depends_on:
+      - ENGINEERING-DESIGN-POLICY
+      - APPLICATION-DESIGN
+      - DATA-DESIGN
+      - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-ARCHITECTURE
+      - FRONTEND-SECURITY
+      - IMPLEMENTATION-STACK
+
+  - id: FRONTEND-VERIFICATION-DESIGN
+    authority: REDESIGN-VERIFICATION
+    path: docs/redesign/frontend-verification-design.md
+    provides:
+      - nutrition-management.frontend.verification-design
+    depends_on:
+      - FRONTEND-REQUIREMENTS
+      - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-SECURITY
+      - FRONTEND-ARCHITECTURE
+      - FRONTEND-COMPONENT-DESIGN
+
+  - id: FRONTEND-TEST-DESIGN
+    authority: TEST-DESIGN
+    path: docs/redesign/frontend-test-design.md
+    provides:
+      - nutrition-management.frontend.test-design
+    depends_on:
+      - FRONTEND-VERIFICATION-DESIGN
+      - FRONTEND-HUMAN-INTERFACE
+
+  - id: FRONTEND-IMPLEMENTATION-DESIGN
+    authority: IMPLEMENTATION-DESIGN
+    path: docs/redesign/frontend-implementation-design.md
+    provides:
+      - nutrition-management.frontend.implementation-design
+    depends_on:
+      - FRONTEND-COMPONENT-DESIGN
+      - FRONTEND-VERIFICATION-DESIGN
+      - FRONTEND-TEST-DESIGN
+      - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-SECURITY
+      - IMPLEMENTATION-STACK
 
 questions:
   - id: Q-BLS-V4-CATEGORY-ASSIGNMENT
