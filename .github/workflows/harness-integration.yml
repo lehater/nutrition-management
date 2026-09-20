@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           repository: lehater/harness
-          ref: 185bd3fe5cf8b0167583769f97774c8893a647ad
+          ref: 96430653be10cb1dd2cb3d36be268e9f183796ce
           path: .harness-tool
 
       - uses: actions/setup-python@v6
@@ -47,3 +47,8 @@ jobs:
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml THEORETICAL-GAP-SUGGESTIONS .harness/graph.yaml
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml NUTRIENT-EVIDENCE-PROPAGATION .harness/graph.yaml
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml BLS-V4-PRODUCTION-IMPORT .harness/graph.yaml
+          python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml FRONTEND-IMPLEMENTATION .harness/graph.yaml
+
+      - name: Route frontend target
+        run: |
+          python .harness-tool/agent_router.py             .harness/engineering-graph.yaml             FRONTEND-IMPLEMENTATION             .harness/graph.yaml             --registry .harness-tool/skills/artifact-skill-registry-v0.yaml

@@ -18,6 +18,7 @@ Canonical sources: `docs/requirements/product-requirements.md`.
 - [Domain and data](domain-and-data.md) — semantic ownership, evidence/provenance and temporal rules.
 - [Implementation guide](implementation-guide.md) — accepted realization and coding boundaries.
 - [Verification and readiness](verification-and-readiness.md) — required proof, cross-cutting coverage and reopening conditions.
+- [Frontend design guide](frontend-guide.md) — user journeys, screens, browser architecture, security and implementation boundary for the `FRONTEND-IMPLEMENTATION` consumer.
 
 The canonical engineering sources remain the project documents referenced in each generated section plus `.harness/engineering-graph.yaml` and `.harness/graph.yaml`.
 
