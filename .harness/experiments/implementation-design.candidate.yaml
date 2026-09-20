@@ -112,6 +112,9 @@ content:
     - Reinterpretation of nutrient evidence/safety/provenance.
     - Any such need becomes an upstream Question.
   open_questions: []
+  authorization_semantics:
+    - This artifact defines the final pre-code design baseline but does not by itself authorize writing implementation code.
+    - IMPLEMENTATION COMPLETE is the design-complete/implementation-authorized criterion; it does not mean implementation exists.
   design_refs:
     - docs/implementation/component-design.md
     - docs/redesign/verification-design.md
