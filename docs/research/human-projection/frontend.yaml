@@ -1,0 +1,23 @@
+version: 1
+kind: harness-human-projection
+id: nutrition-frontend-human-docs
+consumer: FRONTEND-IMPLEMENTATION
+
+documents:
+  - id: frontend-guide
+    title: Frontend Design Guide
+    sections:
+      - id: frontend-target
+        select: {artifacts: [FRONTEND-REQUIREMENTS, FRONTEND-DELIVERY-DECISION]}
+      - id: user-journeys
+        select: {artifacts: [FRONTEND-USER-JOURNEYS]}
+      - id: application-contracts
+        select: {artifacts: [FRONTEND-APPLICATION-CONTRACTS]}
+      - id: human-interface
+        select: {artifacts: [FRONTEND-HUMAN-INTERFACE]}
+      - id: runtime-and-security
+        select: {artifacts: [FRONTEND-ARCHITECTURE, FRONTEND-SECURITY]}
+      - id: implementation
+        select: {artifacts: [FRONTEND-COMPONENT-DESIGN, FRONTEND-IMPLEMENTATION-DESIGN]}
+      - id: verification
+        select: {artifacts: [FRONTEND-VERIFICATION-DESIGN, FRONTEND-TEST-DESIGN]}
