@@ -156,6 +156,7 @@ authorities:
           - capability: nutrition-management.frontend.delivery-decision
           - capability: nutrition-management.frontend.human-interface
           - capability: nutrition-management.frontend.security
+          - capability: nutrition-management.frontend.application-contracts
           - capability: nutrition-management.application-design
           - capability: nutrition-management.data-design
 
@@ -177,6 +178,15 @@ authorities:
         knowledge_kind: user-journey-design
         requires:
           - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.application-design
+          - capability: nutrition-management.domain.nutrition-targeting
+          - capability: nutrition-management.domain.food-knowledge
+          - capability: nutrition-management.domain.market-catalog
+          - capability: nutrition-management.domain.purchase-planning
+      - capability: nutrition-management.frontend.application-contracts
+        knowledge_kind: application-design
+        requires:
+          - capability: nutrition-management.frontend.user-journeys
           - capability: nutrition-management.application-design
           - capability: nutrition-management.domain.nutrition-targeting
           - capability: nutrition-management.domain.food-knowledge
@@ -257,6 +267,7 @@ authorities:
         requires:
           - capability: nutrition-management.engineering-policy
           - capability: nutrition-management.application-design
+          - capability: nutrition-management.frontend.application-contracts
           - capability: nutrition-management.data-design
           - capability: nutrition-management.frontend.human-interface
           - capability: nutrition-management.frontend.architecture
@@ -376,6 +387,7 @@ consumers:
     requires:
       - capability: nutrition-management.frontend.requirements
       - capability: nutrition-management.frontend.user-journeys
+      - capability: nutrition-management.frontend.application-contracts
       - capability: nutrition-management.frontend.human-interface
       - capability: nutrition-management.frontend.delivery-decision
       - capability: nutrition-management.frontend.security
