@@ -289,6 +289,19 @@ artifacts:
       - MARKET-CATALOG-DOMAIN
       - PURCHASE-PLANNING-DOMAIN
 
+  - id: FRONTEND-APPLICATION-CONTRACTS
+    authority: APPLICATION-DESIGN
+    path: docs/application/frontend-application-contracts.md
+    provides:
+      - nutrition-management.frontend.application-contracts
+    depends_on:
+      - FRONTEND-USER-JOURNEYS
+      - APPLICATION-DESIGN
+      - NUTRITION-TARGETING-DOMAIN
+      - FOOD-KNOWLEDGE-DOMAIN
+      - MARKET-CATALOG-DOMAIN
+      - PURCHASE-PLANNING-DOMAIN
+
   - id: FRONTEND-HUMAN-INTERFACE
     authority: INTERFACE-DESIGN
     path: docs/interface/human-interface-design.md
@@ -326,6 +339,7 @@ artifacts:
       - FRONTEND-DELIVERY-DECISION
       - FRONTEND-HUMAN-INTERFACE
       - FRONTEND-SECURITY
+      - FRONTEND-APPLICATION-CONTRACTS
       - APPLICATION-DESIGN
       - DATA-DESIGN
 
@@ -337,6 +351,7 @@ artifacts:
     depends_on:
       - ENGINEERING-DESIGN-POLICY
       - APPLICATION-DESIGN
+      - FRONTEND-APPLICATION-CONTRACTS
       - DATA-DESIGN
       - FRONTEND-HUMAN-INTERFACE
       - FRONTEND-ARCHITECTURE
