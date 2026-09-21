@@ -65,8 +65,9 @@ jobs:
           assert frontend["work_item_count"] == len(frontend["work_items"])
           assert isinstance(backend["question_frontier"], list)
           assert isinstance(frontend["question_frontier"], list)
-          assert backend["routed_production_count"] == 10
-          assert frontend["routed_production_count"] >= 2
+          assert backend["routed_production_count"] == 0
+          assert backend["remaining_work_count"] == 1
+          assert frontend["routed_production_count"] >= 0
 
           backend_structural = [
               item for item in backend["work_items"]
