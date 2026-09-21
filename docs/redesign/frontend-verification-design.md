@@ -8,6 +8,14 @@ Owner: REDESIGN-VERIFICATION.
 
 Define evidence required to prove the user-facing frontend realizes accepted frontend requirements and upstream semantics.
 
+## Presentation and screen-design evidence
+
+Demonstrate:
+- all six canonical screens inherit the shared Presentation System;
+- shared hierarchy/status/form/collection/result patterns are used consistently unless an accepted local deviation exists;
+- each screen realizes its required regions, states and responsive transformations;
+- responsive realization preserves semantic order, labels and actions rather than only matching a visual snapshot.
+
 ## Evidence classes
 
 ### Journey evidence
