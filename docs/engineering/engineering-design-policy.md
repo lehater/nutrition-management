@@ -71,3 +71,17 @@ The following are not required for the current MVP merely because they are commo
 - dependency-injection framework.
 
 They may be introduced only after an accepted requirement/design decision creates the need.
+
+## Code-quality acceptance contract
+
+Implementation is acceptable only when code quality preserves the design boundaries rather than merely satisfying local tests.
+
+Required properties:
+
+- public modules, ports and functions have one coherent responsibility and use project/domain vocabulary;
+- dependency direction and forbidden cross-context/framework dependencies are mechanically checkable where practical;
+- public boundary types make semantic distinctions explicit instead of relying on unstructured dictionaries or sentinel values;
+- error handling preserves domain outcome versus technical failure distinctions and contains no catch-all conversion that hides invariant violations;
+- deterministic behavior has deterministic tests; tests do not depend on wall-clock time, network availability or unordered iteration where product output is affected;
+- dead abstractions, unused extension points and duplicate policy implementations are removed instead of retained for hypothetical reuse;
+- formatter/linter/type-check tooling may be selected by Implementation Design, but passing tools cannot override these semantic quality obligations.
