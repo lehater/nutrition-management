@@ -1,0 +1,49 @@
+version: 1
+kind: harness-coverage-subject-obligations
+project: NUTRITION-MANAGEMENT
+consumer: IMPLEMENTATION
+scope: current-design
+source:
+  path: docs/requirements/product-requirements.md
+
+subjects:
+  - subject: Household nutrition targeting
+    concerns: [application.use-cases]
+    requirement_refs:
+      [PR-NT-001, PR-NT-002, PR-NT-003, PR-NT-004, PR-NT-005,
+       PR-NT-006, PR-NT-007, PR-NT-008, PR-NT-009, PR-NT-010]
+
+  - subject: Food knowledge
+    concerns: [application.use-cases]
+    requirement_refs:
+      [PR-FK-001, PR-FK-002, PR-FK-003, PR-FK-004, PR-FK-005,
+       PR-FK-006, PR-FK-007]
+
+  - subject: Purchasable catalog and offers
+    concerns: [application.use-cases]
+    requirement_refs:
+      [PR-MC-001, PR-MC-002, PR-MC-003, PR-MC-004, PR-MC-005,
+       PR-MC-006, PR-MC-007, PR-MC-008, PR-MC-009, PR-MC-010]
+
+  - subject: Purchase planning and optimization
+    concerns: [application.use-cases]
+    requirement_refs:
+      [PR-SCOPE-001, PR-PP-001, PR-PP-002, PR-PP-003, PR-PP-004,
+       PR-PP-005, PR-PP-006, PR-PP-007, PR-PP-008, PR-PP-009,
+       PR-PP-010, PR-PP-011, PR-PP-012, PR-PP-013, PR-PP-014,
+       PR-PP-015, PR-PP-016, PR-PP-017, PR-PP-018, PR-PP-019]
+
+excluded_requirements:
+  - {requirement: PR-NG-001, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-002, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-003, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-004, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-005, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-006, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-007, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-008, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-009, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-010, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-011, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-012, rationale: Explicit MVP non-goal; it creates no required backend subject.}
+  - {requirement: PR-NG-013, rationale: Explicit MVP non-goal; it creates no required backend subject.}
