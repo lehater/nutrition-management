@@ -2,6 +2,12 @@
 
 Status: accepted for the frontend design target.
 
+Canonical presentation inputs:
+- `docs/interface/frontend-presentation-system.yaml`;
+- `docs/interface/frontend-screen-view-design.yaml`.
+
+Reusable presentation helpers/components realize accepted patterns and semantic roles; they do not become design authority.
+
 Owner: COMPONENT-DESIGN.
 
 ## Purpose
