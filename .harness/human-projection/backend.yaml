@@ -1,0 +1,50 @@
+version: 1
+kind: harness-human-projection
+id: nutrition-backend-human-docs
+consumer: IMPLEMENTATION
+
+documents:
+  - id: overview
+    title: System Overview
+    sections:
+      - id: product-boundary
+        select: {artifacts: [PRODUCT-REQUIREMENTS]}
+      - id: system-shape
+        select: {artifacts: [TARGET-ARCHITECTURE, STRATEGIC-DOMAIN, CONTEXT-MAP]}
+      - id: primary-flow
+        select: {artifacts: [APPLICATION-DESIGN]}
+      - id: external-interface
+        select: {artifacts: [CLI-CONTRACT]}
+
+  - id: domain-and-data
+    title: Domain and Data
+    sections:
+      - id: semantic-ownership
+        select: {artifacts: [STRATEGIC-DOMAIN, CONTEXT-MAP]}
+      - id: domain-semantics
+        select:
+          artifacts:
+            - NUTRITION-TARGETING-DOMAIN
+            - FOOD-KNOWLEDGE-DOMAIN
+            - MARKET-CATALOG-DOMAIN
+            - PURCHASE-PLANNING-DOMAIN
+      - id: persistence
+        select: {artifacts: [DATA-DESIGN]}
+
+  - id: implementation-guide
+    title: Implementation Guide
+    sections:
+      - id: engineering-policy
+        select: {artifacts: [ENGINEERING-DESIGN-POLICY]}
+      - id: component-boundaries
+        select: {artifacts: [COMPONENT-DESIGN]}
+      - id: implementation-contract
+        select: {artifacts: [REDESIGN-IMPLEMENTATION-DESIGN, IMPLEMENTATION-STACK]}
+
+  - id: verification-and-readiness
+    title: Verification and Readiness
+    sections:
+      - id: verification
+        select: {artifacts: [REDESIGN-VERIFICATION-DESIGN, VERIFICATION-STRATEGY]}
+      - id: test-design
+        select: {artifacts: [REDESIGN-TEST-DESIGN]}

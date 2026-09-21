@@ -66,6 +66,25 @@ jobs:
             --target FRONTEND-IMPLEMENTATION \
             --source-root .
 
+      - name: Validate human documentation projection recipes
+        run: |
+          python .harness-tool/human_projection.py compile \
+            .harness/engineering-graph.yaml \
+            IMPLEMENTATION \
+            --core-model .harness/graph.yaml \
+            --recipe .harness/human-projection/backend.yaml \
+            --source-root . \
+            --output-manifest /tmp/backend-human-manifest.yaml \
+            --output-plan /tmp/backend-human-plan.yaml
+          python .harness-tool/human_projection.py compile \
+            .harness/engineering-graph.yaml \
+            FRONTEND-IMPLEMENTATION \
+            --core-model .harness/graph.yaml \
+            --recipe .harness/human-projection/frontend.yaml \
+            --source-root . \
+            --output-manifest /tmp/frontend-human-manifest.yaml \
+            --output-plan /tmp/frontend-human-plan.yaml
+
       - name: Evaluate canonical consumers
         run: |
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml IMPLEMENTATION .harness/graph.yaml
