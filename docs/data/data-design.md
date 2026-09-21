@@ -8,9 +8,9 @@ Define the relational persistence representation required by accepted domain, ap
 
 ## Store and ownership
 
-The first implementation slice uses one file-backed SQLite database with WAL, `synchronous=FULL`, foreign keys enabled and `read_uncommitted` disabled.
+The accepted architecture uses one relational store for the modular monolith. Data Design owns logical persistence representation, integrity and consistency semantics; the concrete database engine, driver, journal/durability settings and migration tooling are Implementation Design decisions.
 
-Table prefixes make logical ownership explicit:
+Logical ownership remains explicit:
 
 - `nt_`: Nutrition Targeting;
 - `fk_`: Food Knowledge;
@@ -61,28 +61,28 @@ A Planning Input Snapshot is immutable in-memory calculation input for one execu
 
 ## Scalar encoding
 
-Authoritative decimal quantities and money are stored in canonical decimal textual form and converted to `Decimal` at persistence boundaries. SQLite binary floating point is not authoritative.
+Authoritative decimal quantities and money require an exact persistence representation that round-trips accepted decimal semantics without binary floating-point becoming authoritative. The concrete relational encoding is an Implementation Design choice.
 
-Dates use ISO-8601 date representation. Instants are explicit ISO-8601 timestamps normalized to UTC at the persistence boundary. Currency is an explicit code beside amount.
+Dates and instants require unambiguous persistence representations preserving accepted date/time semantics; instants remain normalized to UTC at the persistence boundary. Currency is an explicit code beside amount.
 
 Solver floating-point coefficients exist only at the solver adapter boundary. Reportable values are recalculated from domain/application values.
 
 ## Consistent planning read
 
-Snapshot assembly uses one explicit SQLite read transaction/connection spanning all provider reads. Provider repositories participate in that scope without exposing the connection through domain/application contracts.
+Snapshot assembly uses one explicit coherent relational read scope spanning all provider reads. Provider repositories participate in that scope without exposing the concrete database transaction/connection through domain/application contracts.
 
-The read transaction closes before solver execution.
+The read scope closes before solver execution. The concrete database isolation/snapshot mechanism must realize this semantic contract and is selected by Implementation Design.
 
 ## Migrations
 
-Alembic owns one migration stream for the modular monolith. Every table/change has one context owner.
+The modular monolith has one ordered schema-evolution stream, while every table/change retains one context owner. The concrete migration tool is selected by Implementation Design.
 
 Migration rules:
 
 - forward schema changes preserve accepted provider semantics;
 - no migration introduces cross-context relational ownership;
 - source/reference data migrations remain distinguishable from schema migrations where practical;
-- tests exercise migrations against a temporary file-backed SQLite database, not only `:memory:`.
+- verification exercises migrations against the selected concrete relational implementation rather than only an in-memory substitute when that would bypass accepted transaction/durability semantics.
 
 ## Integrity boundary
 
@@ -108,6 +108,6 @@ Lifecycle is explicit per data class:
 - current member/profile state is mutable provider-owned state; updates replace current state while preserving only history required by an accepted requirement;
 - Nutrition Standard Sets and other versioned reference sets are immutable-by-version once accepted for use;
 - imported Food Knowledge/Market data is normalized into canonical provider state while retaining required source/provenance identity;
-- schema evolution is performed through the single Alembic migration stream and must preserve context ownership and representation invariants;
+- schema evolution is performed through the single accepted migration stream and must preserve context ownership and representation invariants;
 - Planning Input Snapshots and returned Purchase Plans remain non-durable for the MVP and are discarded after the execution/result lifecycle;
 - deletion, archival or long-term retention beyond these rules requires an explicit upstream product/governance decision rather than an implementation default.
