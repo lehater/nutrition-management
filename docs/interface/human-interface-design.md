@@ -265,11 +265,15 @@ No formal WCAG conformance claim is made by this artifact.
 
 Primary target is an ordinary desktop/laptop browser. Narrow layouts must reflow without losing information or actions, but no mobile-specific workflow or breakpoint contract is introduced.
 
+## Downstream presentation closure
+
+Shared visual hierarchy, density, layout conventions, reusable presentation patterns and semantic visual roles are owned by `docs/interface/frontend-presentation-system.yaml`. Concrete screen composition is owned by `docs/interface/frontend-screen-view-design.yaml`.
+
 ## Deliberately unconstrained
 
 - CSS framework/component library;
-- exact typography/colors/spacing;
-- table versus responsive card realization where semantics remain equivalent;
+- exact CSS values within accepted Presentation System semantic roles;
+- table versus responsive card realization where Screen/View semantics remain equivalent;
 - JS framework;
 - exact route strings;
-- modal versus dedicated page for simple create/edit tasks.
+- modal versus dedicated page for simple create/edit tasks when focus/navigation semantics remain equivalent.
