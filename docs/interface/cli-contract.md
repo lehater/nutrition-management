@@ -63,3 +63,15 @@ It may not query context tables, construct solver policy, derive nutrition seman
 ## Scope
 
 No HTTP API, browser UI, interactive shell, authentication or remote transport is required for the first implementation slice. Adding one later creates a separate interface contract while preserving the application boundary.
+
+## Compatibility contract
+
+The first-slice machine contract is the documented command shape, required flags, accepted value semantics, exit success/failure distinction and canonical JSON result semantics.
+
+Compatibility rules:
+
+- adding an optional flag may be backward-compatible only when omission preserves current semantics;
+- removing or renaming a required flag, changing a flag's semantic meaning, or changing canonical result-field semantics is a breaking contract change and requires an explicit Interface Design revision;
+- diagnostic stderr wording and Python exception text are not compatibility contracts;
+- accepted domain outcomes and technical failures must remain distinguishable across compatible revisions;
+- a future HTTP/UI adapter does not replace or silently redefine this CLI contract.
