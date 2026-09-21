@@ -39,11 +39,11 @@ jobs:
 
       - name: Evaluate backend coverage
         run: |
-          python .harness-coverage-tool/engineering_coverage.py             .harness/engineering-graph.yaml             .harness/graph.yaml             IMPLEMENTATION             --scope current-design             --authority-aliases .harness/research/authority-role-aliases-v1.yaml             --overlay .harness/research/concern-activation-overlay-v1.yaml             --semantic-claim-bindings .harness/research/semantic-claim-bindings-v1.yaml             > /tmp/backend-coverage.json
+          python .harness-coverage-tool/engineering_coverage.py             .harness/engineering-graph.yaml             .harness/graph.yaml             IMPLEMENTATION             --scope current-design             --authority-aliases .harness/research/authority-role-aliases-v1.yaml             --overlay .harness/research/concern-activation-overlay-v1.yaml             --semantic-claim-bindings .harness/research/semantic-claim-bindings-v1.yaml             --production-contract-overlay .harness/research/production-contract-overlay-v1.yaml             > /tmp/backend-coverage.json
 
       - name: Evaluate frontend coverage
         run: |
-          python .harness-coverage-tool/engineering_coverage.py             .harness/engineering-graph.yaml             .harness/graph.yaml             FRONTEND-IMPLEMENTATION             --scope current-design             --authority-aliases .harness/research/authority-role-aliases-v1.yaml             --overlay .harness/research/concern-activation-overlay-v1.yaml             --semantic-claim-bindings .harness/research/semantic-claim-bindings-v1.yaml             > /tmp/frontend-coverage.json
+          python .harness-coverage-tool/engineering_coverage.py             .harness/engineering-graph.yaml             .harness/graph.yaml             FRONTEND-IMPLEMENTATION             --scope current-design             --authority-aliases .harness/research/authority-role-aliases-v1.yaml             --overlay .harness/research/concern-activation-overlay-v1.yaml             --semantic-claim-bindings .harness/research/semantic-claim-bindings-v1.yaml             --production-contract-overlay .harness/research/production-contract-overlay-v1.yaml             > /tmp/frontend-coverage.json
 
       - name: Verify Consumer isolation and work-plan shape
         run: |
