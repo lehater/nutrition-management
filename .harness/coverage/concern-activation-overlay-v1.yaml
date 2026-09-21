@@ -1,0 +1,44 @@
+version: 1
+kind: harness-concern-activation-overlay
+project: NUTRITION-MANAGEMENT
+scope: current-design
+status: canonical
+
+# Only facts not safely inferable from generic software topology remain explicit.
+# governance.privacy is intentionally not activated merely from personal-data presence;
+# current Harness obligation research says Nutrition has no material independent normative source.
+activate:
+  - concern: governance.data
+    consumers: [IMPLEMENTATION, FRONTEND-IMPLEMENTATION, BLS-V4-PRODUCTION-IMPORT]
+    rationale: Persistent user/domain/source data requires explicit project data-governance assessment.
+    evidence: [DATA-DESIGN]
+  - concern: quality.performance.latency
+    consumers: [FRONTEND-IMPLEMENTATION]
+    rationale: Interactive local-browser journeys make response-time behavior relevant even without a numeric target.
+    evidence: [FRONTEND-USER-JOURNEYS, FRONTEND-HUMAN-INTERFACE]
+  - concern: quality.performance.resource-efficiency
+    consumers: [FRONTEND-IMPLEMENTATION]
+    rationale: Local execution makes bounded resource use relevant to frontend product feasibility.
+    evidence: [FRONTEND-DELIVERY-DECISION]
+
+decisions:
+  - concern: interface.human.i18n
+    consumers: [FRONTEND-IMPLEMENTATION]
+    state: NOT_APPLICABLE
+    rationale: The accepted local frontend has no multi-language or localization requirement in the current product scope.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-HUMAN-INTERFACE]
+  - concern: security.identity
+    consumers: [FRONTEND-IMPLEMENTATION]
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user frontend has no login/account identity boundary.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.authorization
+    consumers: [FRONTEND-IMPLEMENTATION]
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user scope has no authorization model.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.accountability
+    consumers: [FRONTEND-IMPLEMENTATION]
+    state: NOT_APPLICABLE
+    rationale: No multi-user authority/action attribution exists in current scope.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
