@@ -12,10 +12,8 @@ authorities:
       public_contract: Produces problem and requirements capabilities consumed by downstream design.
     produces:
       - capability: nutrition-management.problem
-        semantic_claims: [engineering.intent.problem]
         requires: []
       - capability: nutrition-management.requirements
-        semantic_claims: [engineering.intent.scope, engineering.intent.behavior]
         requires:
           - capability: nutrition-management.problem
       - capability: nutrition-management.frontend.requirements
@@ -31,11 +29,9 @@ authorities:
       public_contract: Produces domain boundary and context-contract knowledge.
     produces:
       - capability: nutrition-management.domain.boundaries
-        semantic_claims: [engineering.domain.boundaries]
         requires:
           - capability: nutrition-management.requirements
       - capability: nutrition-management.domain.context-contracts
-        semantic_claims: [engineering.domain.boundaries]
         requires:
           - capability: nutrition-management.domain.boundaries
 
@@ -142,7 +138,6 @@ authorities:
       public_contract: Produces the implementation-facing architecture capability.
     produces:
       - capability: nutrition-management.architecture
-        semantic_claims: [engineering.architecture.structure, engineering.architecture.boundaries]
         requires:
           - capability: nutrition-management.requirements
           - capability: nutrition-management.domain.context-contracts
@@ -160,14 +155,10 @@ authorities:
         requires:
           - capability: nutrition-management.frontend.delivery-decision
           - capability: nutrition-management.frontend.human-interface
-        semantic_claims: [engineering.interface.human.usability, engineering.interface.human.accessibility, engineering.interface.human.responsiveness]
           - capability: nutrition-management.frontend.security
-        semantic_claims: [engineering.security.boundaries]
           - capability: nutrition-management.frontend.application-contracts
           - capability: nutrition-management.application-design
-        semantic_claims: [engineering.application.use-cases, engineering.application.orchestration]
           - capability: nutrition-management.data-design
-        semantic_claims: [engineering.data.model]
 
   - id: APPLICATION-DESIGN
     responsibility: Own implementation-facing application orchestration and published application contracts.
@@ -184,7 +175,6 @@ authorities:
           - capability: nutrition-management.domain.market-catalog
           - capability: nutrition-management.domain.purchase-planning
       - capability: nutrition-management.frontend.user-journeys
-        semantic_claims: [engineering.interface.human.journeys]
         knowledge_kind: user-journey-design
         requires:
           - capability: nutrition-management.frontend.requirements
@@ -223,7 +213,6 @@ authorities:
       public_contract: Produces accepted CLI and human-interface contracts.
     produces:
       - capability: nutrition-management.interface.cli
-        semantic_claims: [engineering.interface.machine.contract]
         requires:
           - capability: nutrition-management.application-design
       - capability: nutrition-management.frontend.human-interface
@@ -372,7 +361,6 @@ authorities:
       public_contract: Produces project and source-import verification capabilities.
     produces:
       - capability: nutrition-management.verification.strategy
-        semantic_claims: [engineering.verification.strategy]
         knowledge_kind: verification-strategy
         requires:
           - capability: nutrition-management.requirements
