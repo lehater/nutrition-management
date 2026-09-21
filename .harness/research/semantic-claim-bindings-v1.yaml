@@ -72,3 +72,23 @@ bindings:
 
 # Broad design/test capabilities are intentionally not expanded to multiple concerns
 # unless their producer contract is made explicit in canonical knowledge.
+  - capability: nutrition-management.coverage.data-classification
+    semantic_claims: [engineering.data.classification]
+  - capability: nutrition-management.coverage.data-lifecycle
+    semantic_claims: [engineering.data.lifecycle]
+  - capability: nutrition-management.coverage.backend-delivery-migration
+    semantic_claims: [engineering.delivery.migration]
+  - capability: nutrition-management.coverage.backend-delivery-release
+    semantic_claims: [engineering.delivery.release]
+  - capability: nutrition-management.coverage.backend-delivery-rollback
+    semantic_claims: [engineering.delivery.rollback]
+  - capability: nutrition-management.coverage.cli-compatibility
+    semantic_claims: [engineering.interface.machine.compatibility]
+  - capability: nutrition-management.coverage.engineering-code-quality
+    semantic_claims: [engineering.engineering.code-quality]
+  - capability: nutrition-management.coverage.maintainability-testability
+    semantic_claims: [engineering.quality.maintainability.testability]
+  - capability: nutrition-management.coverage.transition-revalidation
+    semantic_claims: [engineering.transition.revalidation]
+  - capability: nutrition-management.coverage.requirement-traceability
+    semantic_claims: [engineering.verification.requirement-traceability]
