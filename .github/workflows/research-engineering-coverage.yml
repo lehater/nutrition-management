@@ -65,6 +65,8 @@ jobs:
           assert frontend["work_item_count"] == len(frontend["work_items"])
           assert isinstance(backend["question_frontier"], list)
           assert isinstance(frontend["question_frontier"], list)
+          assert backend["routed_production_count"] == 6
+          assert frontend["routed_production_count"] == 2
 
           backend_concerns = {row["concern"] for row in backend["rows"]}
           frontend_concerns = {row["concern"] for row in frontend["rows"]}
@@ -104,6 +106,11 @@ jobs:
               "question frontiers:",
               len(backend["question_frontier"]),
               len(frontend["question_frontier"]),
+          )
+          print(
+              "routed production:",
+              backend["routed_production_count"],
+              frontend["routed_production_count"],
           )
 
           for label, result in (("backend", backend), ("frontend", frontend)):
