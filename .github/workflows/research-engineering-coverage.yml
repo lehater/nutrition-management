@@ -66,20 +66,10 @@ jobs:
           assert isinstance(backend["question_frontier"], list)
           assert isinstance(frontend["question_frontier"], list)
           assert backend["routed_production_count"] == 0
-          assert backend["remaining_work_count"] == 1
+          assert backend["remaining_work_count"] == 0
+          assert backend["completion_ready"] is True
+          assert backend["work_items"] == []
           assert frontend["routed_production_count"] >= 0
-
-          backend_structural = [
-              item for item in backend["work_items"]
-              if item["action"] in {"MODEL_PRODUCTION_CONTRACT", "ASSIGN_AUTHORITY"}
-          ]
-          assert backend_structural == [
-              {
-                  "action": "ASSIGN_AUTHORITY",
-                  "concern": "governance.privacy",
-                  "accepted_semantic_claims": ["engineering.governance.privacy"],
-              }
-          ]
 
           backend_concerns = {row["concern"] for row in backend["rows"]}
           frontend_concerns = {row["concern"] for row in frontend["rows"]}
