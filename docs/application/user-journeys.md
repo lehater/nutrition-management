@@ -14,11 +14,12 @@ Owner: APPLICATION-DESIGN.
 
 **Flow:**
 1. inspect household members and current profile completeness;
-2. add a household member or open an existing member;
+2. choose either **Add member** or open an existing member;
 3. enter/update date of birth, sex, height, current weight/date, PAL where applicable, and optional target weight/date;
 4. submit;
-5. system validates accepted profile invariants and persists source facts;
-6. UI returns to the member/household context and marks derived targets as recalculated-on-demand rather than editable stored truth.
+5. for Add member, the application creates a provider-owned opaque Member identity together with the initial profile; for an existing member, it replaces that member's current profile;
+6. system validates accepted profile invariants and persists source facts atomically for the selected operation;
+7. UI returns to the member/household context and marks derived targets as recalculated-on-demand rather than editable stored truth.
 
 **Alternate/recovery:**
 - invalid source fact -> no mutation; field/summary rejection remains visible;
