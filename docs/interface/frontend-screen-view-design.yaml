@@ -1,0 +1,146 @@
+version: 1
+kind: screen-view-design
+id: NUTRITION-MANAGEMENT-FRONTEND-SCREEN-VIEW-DESIGN
+status: CURRENT
+inherits: NUTRITION-MANAGEMENT-FRONTEND-PRESENTATION-SYSTEM
+
+purpose: >-
+  Define concrete composition of the local browser frontend while inheriting
+  common presentation decisions and preserving the semantic freedom explicitly
+  left by Human Interface Design.
+
+basis:
+  human_interface: docs/interface/human-interface-design.md
+  presentation_system: docs/interface/frontend-presentation-system.yaml
+  journeys: docs/application/user-journeys.md
+  application_contracts: docs/application/frontend-application-contracts.md
+
+screens:
+  - id: OVERVIEW
+    purpose: Show concrete readiness facts and direct the user into the primary household-to-plan journey.
+    patterns: [SUMMARY, STATUS]
+    regions:
+      - {id: context, role: heading-context, priority: primary}
+      - {id: household-readiness, role: summary, priority: primary}
+      - {id: standards-and-data, role: summary, priority: supporting}
+      - {id: actions, role: task-actions, priority: primary}
+      - {id: feedback, role: operation-status, priority: supporting}
+    primary_action_role: open-plan
+    states: [loading, loaded, missing-required-facts, technical-failure]
+    responsive:
+      - summaries stack while preserving labels and blocker visibility
+    overrides: []
+
+  - id: HOUSEHOLD
+    purpose: Inspect household members, create a member and replace an existing member profile.
+    patterns: [COLLECTION, DETAIL-EDITOR, FORM, STATUS]
+    regions:
+      - {id: context, role: heading-context, priority: primary}
+      - {id: members, role: collection, priority: primary}
+      - {id: selected-member, role: detail-editor, priority: primary}
+      - {id: member-form, role: task-form, priority: primary}
+      - {id: plan-action, role: task-actions, priority: supporting}
+      - {id: feedback, role: operation-status, priority: supporting}
+    variants:
+      - {id: member-create, form_semantics: CreateMember}
+      - {id: member-edit, form_semantics: SaveMemberProfile}
+    states: [loading, loaded, empty, editing, submitting, validation-rejected, saved, technical-failure]
+    responsive:
+      - collection and editor stack with current member/task context preserved
+      - error summary remains before invalid field navigation
+    overrides: []
+
+  - id: FOOD-KNOWLEDGE
+    purpose: Browse Base Foods and inspect/edit accepted Food Knowledge facts and evidence states.
+    patterns: [COLLECTION, DETAIL-EDITOR, FORM, STATUS, DISCLOSURE]
+    regions:
+      - {id: context, role: heading-context, priority: primary}
+      - {id: collection-controls, role: search-filter, priority: primary}
+      - {id: base-foods, role: collection, priority: primary}
+      - {id: selected-food, role: detail-editor, priority: primary}
+      - {id: nutrient-evidence, role: semantic-facts, priority: primary}
+      - {id: provenance, role: secondary-content, priority: secondary}
+      - {id: feedback, role: operation-status, priority: supporting}
+    primary_action_role: create-or-save-manual-base-food
+    states: [loading, loaded, empty, editing, submitting, validation-rejected, saved, technical-failure]
+    responsive:
+      - browse/detail composition may stack
+      - nutrient evidence labels/state remain visible when numeric values are absent
+    overrides: []
+
+  - id: MARKET
+    purpose: Maintain Products, Fulfilment Channels and Offers without collapsing their distinct semantics.
+    patterns: [SUBNAV, COLLECTION, DETAIL-EDITOR, FORM, STATUS]
+    sublocations: [PRODUCTS, FULFILMENT-CHANNELS, OFFERS]
+    regions:
+      - {id: context, role: heading-context, priority: primary}
+      - {id: subnavigation, role: subnavigation, priority: primary}
+      - {id: collection-controls, role: search-filter, priority: supporting}
+      - {id: records, role: collection, priority: primary}
+      - {id: selected-record, role: detail-editor, priority: primary}
+      - {id: feedback, role: operation-status, priority: supporting}
+    states: [loading, loaded, empty, editing, submitting, validation-rejected, saved, technical-failure]
+    semantic_rules:
+      - non-executable Product remains visible and explicitly marked
+      - missing Offer valid_until never gains fabricated expiry
+      - Product, Channel and Offer editors expose only their accepted facts
+    responsive:
+      - subnavigation remains discoverable
+      - collection/detail may stack and may use list/table/cards by sublocation
+    overrides: []
+
+  - id: PLAN
+    purpose: Collect explicit plan inputs, show readiness context and invoke GeneratePurchasePlan.
+    patterns: [FORM, SUMMARY, STATUS]
+    regions:
+      - {id: context, role: heading-context, priority: primary}
+      - {id: plan-input, role: task-form, priority: primary}
+      - {id: readiness-summary, role: summary, priority: supporting}
+      - {id: actions, role: task-actions, priority: primary}
+      - {id: feedback, role: operation-status, priority: supporting}
+    primary_action_role: generate-purchase-plan
+    fields: [household, derivation-date, market-as-of]
+    states: [editing, submitting, validation-rejected, no-executable-plan, technical-failure]
+    exits:
+      - accepted mapped_complete or partial -> RESULT
+      - accepted no_executable_plan -> remains PLAN with domain outcome
+    responsive:
+      - explicit dates/times and action remain visible before supporting readiness information where necessary
+    overrides: []
+
+  - id: RESULT
+    purpose: Interpret one non-durable accepted Purchase Plan result and its uncertainty/provenance.
+    patterns: [OUTCOME-SUMMARY, RESULT-SECTIONS, DISCLOSURE, STATUS]
+    regions:
+      - {id: outcome-summary, role: primary-content, priority: primary}
+      - {id: purchase-groups, role: primary-content, priority: primary}
+      - {id: nutrition-coverage, role: primary-content, priority: primary}
+      - {id: variety, role: supporting-content, priority: supporting}
+      - {id: safety-diagnostics, role: warning-content, priority: primary}
+      - {id: gaps-and-suggestions, role: supporting-content, priority: supporting}
+      - {id: provenance, role: secondary-content, priority: secondary}
+      - {id: actions, role: task-actions, priority: primary}
+    states: [mapped-complete, partial, stale-browser-content]
+    semantic_rules:
+      - mapped_complete never implies universal nutrition completeness
+      - purchase quantity, utilized quantity and surplus remain distinct
+      - unsupported and indeterminate coverage remain separate from mapped numeric assessment
+      - safety diagnostics remain separate from adequacy
+      - theoretical suggestions remain distinct from purchasable selections
+      - stale browser result never claims to be current after provider inputs change
+    responsive:
+      - semantic result section order is preserved even if implemented as tabs/accordions
+      - purchase group lines retain labels for package, purchased, utilized, surplus and cost
+      - provenance remains inspectable
+    overrides: []
+
+global_rules:
+  - every screen inherits NUTRITION-MANAGEMENT-FRONTEND-PRESENTATION-SYSTEM
+  - shared presentation rules are not copied into individual screen contracts
+  - local deviations require explicit rationale
+  - composition never creates new domain/application semantics
+  - table, list, card, tab, accordion, modal and route mechanics remain implementation choices where declared semantically equivalent
+
+coverage:
+  required_screens: [OVERVIEW, HOUSEHOLD, FOOD-KNOWLEDGE, MARKET, PLAN, RESULT]
+  rule: FRONTEND-IMPLEMENTATION is not presentation-complete unless every required screen is present and inherits the shared Presentation System.

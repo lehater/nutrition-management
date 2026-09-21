@@ -319,6 +319,28 @@ artifacts:
       - FRONTEND-USER-JOURNEYS
       - APPLICATION-DESIGN
 
+  - id: FRONTEND-PRESENTATION-SYSTEM
+    authority: INTERFACE-DESIGN
+    path: docs/interface/frontend-presentation-system.yaml
+    provides:
+      - nutrition-management.frontend.presentation-system
+    depends_on:
+      - FRONTEND-REQUIREMENTS
+      - FRONTEND-USER-JOURNEYS
+      - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-APPLICATION-CONTRACTS
+      - FRONTEND-SECURITY
+
+  - id: FRONTEND-SCREEN-VIEW-DESIGN
+    authority: INTERFACE-DESIGN
+    path: docs/interface/frontend-screen-view-design.yaml
+    provides:
+      - nutrition-management.frontend.screen-view-design
+    depends_on:
+      - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-PRESENTATION-SYSTEM
+      - FRONTEND-APPLICATION-CONTRACTS
+
   - id: FRONTEND-DELIVERY-DECISION
     authority: ARCHITECTURE
     path: docs/decisions/ADR-018-local-browser-frontend.md
@@ -345,6 +367,8 @@ artifacts:
     depends_on:
       - FRONTEND-DELIVERY-DECISION
       - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-PRESENTATION-SYSTEM
+      - FRONTEND-SCREEN-VIEW-DESIGN
       - FRONTEND-SECURITY
       - FRONTEND-APPLICATION-CONTRACTS
       - APPLICATION-DESIGN
@@ -361,6 +385,8 @@ artifacts:
       - FRONTEND-APPLICATION-CONTRACTS
       - DATA-DESIGN
       - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-PRESENTATION-SYSTEM
+      - FRONTEND-SCREEN-VIEW-DESIGN
       - FRONTEND-ARCHITECTURE
       - FRONTEND-SECURITY
       - IMPLEMENTATION-STACK
@@ -393,6 +419,8 @@ artifacts:
     depends_on:
       - FRONTEND-REQUIREMENTS
       - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-PRESENTATION-SYSTEM
+      - FRONTEND-SCREEN-VIEW-DESIGN
       - FRONTEND-SECURITY
       - FRONTEND-ARCHITECTURE
       - FRONTEND-COMPONENT-DESIGN
@@ -407,6 +435,8 @@ artifacts:
     depends_on:
       - FRONTEND-VERIFICATION-DESIGN
       - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-PRESENTATION-SYSTEM
+      - FRONTEND-SCREEN-VIEW-DESIGN
 
   - id: FRONTEND-IMPLEMENTATION-DESIGN
     authority: IMPLEMENTATION-DESIGN
@@ -418,6 +448,8 @@ artifacts:
       - FRONTEND-VERIFICATION-DESIGN
       - FRONTEND-TEST-DESIGN
       - FRONTEND-HUMAN-INTERFACE
+      - FRONTEND-PRESENTATION-SYSTEM
+      - FRONTEND-SCREEN-VIEW-DESIGN
       - FRONTEND-SECURITY
       - IMPLEMENTATION-STACK
 

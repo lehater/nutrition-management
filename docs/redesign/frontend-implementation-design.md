@@ -4,6 +4,14 @@ Status: accepted terminal pre-code design for the frontend target.
 
 Owner: IMPLEMENTATION-DESIGN.
 
+## Canonical presentation inputs
+
+Implementation realizes:
+- `docs/interface/frontend-presentation-system.yaml`;
+- `docs/interface/frontend-screen-view-design.yaml`.
+
+CSS/templates may choose concrete mechanics and token values within those contracts; material hierarchy, shared pattern and screen-composition deviations route back to INTERFACE-DESIGN.
+
 ## Selected realization
 
 Extend the current Python 3.14 modular-monolith process with:

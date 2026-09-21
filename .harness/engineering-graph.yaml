@@ -150,6 +150,8 @@ authorities:
         requires:
           - capability: nutrition-management.frontend.delivery-decision
           - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.presentation-system
+          - capability: nutrition-management.frontend.screen-view-design
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.frontend.application-contracts
           - capability: nutrition-management.application-design
@@ -216,6 +218,20 @@ authorities:
           - capability: nutrition-management.frontend.requirements
           - capability: nutrition-management.frontend.user-journeys
           - capability: nutrition-management.application-design
+      - capability: nutrition-management.frontend.presentation-system
+        knowledge_kind: presentation-system-design
+        requires:
+          - capability: nutrition-management.frontend.requirements
+          - capability: nutrition-management.frontend.user-journeys
+          - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.application-contracts
+          - capability: nutrition-management.frontend.security
+      - capability: nutrition-management.frontend.screen-view-design
+        knowledge_kind: screen-view-design
+        requires:
+          - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.presentation-system
+          - capability: nutrition-management.frontend.application-contracts
 
   - id: SECURITY-ARCHITECTURE
     responsibility: Own frontend trust, browser-origin and local listener security boundaries.
@@ -293,6 +309,8 @@ authorities:
           - capability: nutrition-management.frontend.application-contracts
           - capability: nutrition-management.data-design
           - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.presentation-system
+          - capability: nutrition-management.frontend.screen-view-design
           - capability: nutrition-management.frontend.architecture
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.implementation.stack
@@ -319,6 +337,8 @@ authorities:
         requires:
           - capability: nutrition-management.frontend.requirements
           - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.presentation-system
+          - capability: nutrition-management.frontend.screen-view-design
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.frontend.architecture
           - capability: nutrition-management.frontend.component-design
@@ -347,6 +367,8 @@ authorities:
         requires:
           - capability: nutrition-management.frontend.verification-design
           - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.presentation-system
+          - capability: nutrition-management.frontend.screen-view-design
 
   - id: IMPLEMENTATION-DESIGN
     responsibility: Own concrete implementation choices and executable implementation completion contract.
@@ -375,6 +397,8 @@ authorities:
           - capability: nutrition-management.frontend.verification-design
           - capability: nutrition-management.frontend.test-design
           - capability: nutrition-management.frontend.human-interface
+          - capability: nutrition-management.frontend.presentation-system
+          - capability: nutrition-management.frontend.screen-view-design
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.implementation.stack
 
@@ -426,6 +450,8 @@ consumers:
       - capability: nutrition-management.frontend.user-journeys
       - capability: nutrition-management.frontend.application-contracts
       - capability: nutrition-management.frontend.human-interface
+      - capability: nutrition-management.frontend.presentation-system
+      - capability: nutrition-management.frontend.screen-view-design
       - capability: nutrition-management.frontend.delivery-decision
       - capability: nutrition-management.frontend.security
       - capability: nutrition-management.frontend.architecture
