@@ -2,6 +2,13 @@
 
 Status: accepted for the frontend design target.
 
+Canonical UI inputs:
+- `docs/interface/human-interface-design.md`;
+- `docs/interface/frontend-presentation-system.yaml`;
+- `docs/interface/frontend-screen-view-design.yaml`.
+
+Architecture realizes these contracts without redefining visual hierarchy or screen composition.
+
 ## Runtime topology
 
 The frontend extends the accepted modular monolith with one presentation adapter:
