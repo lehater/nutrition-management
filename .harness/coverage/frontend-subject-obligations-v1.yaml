@@ -1,0 +1,40 @@
+version: 1
+kind: harness-coverage-subject-obligations
+project: NUTRITION-MANAGEMENT
+consumer: FRONTEND-IMPLEMENTATION
+scope: current-design
+source:
+  path: docs/requirements/frontend-requirements.md
+
+subjects:
+  - subject: Household and nutrition targeting
+    concerns: [interface.human.journeys]
+    requirement_refs: [FR-HOUSEHOLD-001, FR-PROFILE-001, FR-STANDARD-001]
+
+  - subject: Catalog maintenance
+    concerns: [interface.human.journeys]
+    requirement_refs: [FR-CATALOG-001]
+
+  - subject: Bulk/reference import workflow
+    concerns: [interface.human.journeys]
+    requirement_refs: [FR-IMPORT-001]
+    state: NOT_APPLICABLE
+    rationale: The accepted frontend requirement explicitly retains existing import mechanisms and states that the first frontend slice need not reproduce every import workflow.
+
+  - subject: Purchase plan generation
+    concerns: [interface.human.journeys]
+    requirement_refs: [FR-PLAN-001, FR-TIME-001]
+
+  - subject: Plan result interpretation
+    concerns: [interface.human.journeys]
+    requirement_refs:
+      [FR-RESULT-001, FR-COVERAGE-001, FR-EVIDENCE-001, FR-SAFETY-001,
+       FR-SUGGESTION-001, FR-OUTCOME-001, FR-SEMANTICS-001, FR-SEMANTICS-002,
+       FR-SAFETY-002, FR-COMPLETENESS-001, FR-SCOPE-001, FR-AUTHORITY-001]
+
+  - subject: Shared browser interface
+    concerns:
+      [interface.human.usability, interface.human.accessibility, interface.human.responsiveness]
+    requirement_refs: [FR-CHANNEL-001, FR-CHANNEL-002, FR-QUALITY-001, FR-QUALITY-002]
+
+excluded_requirements: []

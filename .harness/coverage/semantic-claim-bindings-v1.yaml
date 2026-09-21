@@ -39,12 +39,20 @@ bindings:
       - engineering.reliability.durability
       - engineering.governance.data
   - capability: nutrition-management.frontend.user-journeys
-    semantic_claims: [engineering.interface.human.journeys]
+    semantic_claims:
+      - engineering.interface.human.journeys
+      - {claim: engineering.interface.human.journeys, subject: Household and nutrition targeting}
+      - {claim: engineering.interface.human.journeys, subject: Catalog maintenance}
+      - {claim: engineering.interface.human.journeys, subject: Purchase plan generation}
+      - {claim: engineering.interface.human.journeys, subject: Plan result interpretation}
   - capability: nutrition-management.frontend.human-interface
     semantic_claims:
       - engineering.interface.human.usability
       - engineering.interface.human.accessibility
       - engineering.interface.human.responsiveness
+      - {claim: engineering.interface.human.usability, subject: Shared browser interface}
+      - {claim: engineering.interface.human.accessibility, subject: Shared browser interface}
+      - {claim: engineering.interface.human.responsiveness, subject: Shared browser interface}
   - capability: nutrition-management.frontend.security
     semantic_claims:
       - engineering.security.boundaries
