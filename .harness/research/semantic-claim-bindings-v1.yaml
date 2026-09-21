@@ -27,6 +27,8 @@ bindings:
     semantic_claims:
       - engineering.data.model
       - engineering.data.integrity
+      - engineering.reliability.durability
+      - engineering.governance.data
   - capability: nutrition-management.frontend.user-journeys
     semantic_claims: [engineering.interface.human.journeys]
   - capability: nutrition-management.frontend.human-interface
@@ -50,6 +52,9 @@ bindings:
   - capability: nutrition-management.component-design
     semantic_claims:
       - engineering.engineering.components
+      - engineering.quality.maintainability.modularity
+      - engineering.quality.maintainability.analysability
+      - engineering.quality.maintainability.modifiability
 
   - capability: nutrition-management.redesign.verification-design
     semantic_claims:
