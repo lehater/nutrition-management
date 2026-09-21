@@ -198,6 +198,14 @@ authorities:
         requires:
           - capability: nutrition-management.architecture
           - capability: nutrition-management.application-design
+      - capability: nutrition-management.coverage.data-classification
+        knowledge_kind: data-design
+        requires:
+          - capability: nutrition-management.data-design
+      - capability: nutrition-management.coverage.data-lifecycle
+        knowledge_kind: data-design
+        requires:
+          - capability: nutrition-management.data-design
 
   - id: INTERFACE-DESIGN
     responsibility: Own supported human and machine-facing interaction contracts.
@@ -209,6 +217,10 @@ authorities:
       - capability: nutrition-management.interface.cli
         requires:
           - capability: nutrition-management.application-design
+      - capability: nutrition-management.coverage.cli-compatibility
+        knowledge_kind: interface-contract
+        requires:
+          - capability: nutrition-management.interface.cli
       - capability: nutrition-management.frontend.human-interface
         knowledge_kind: human-interface-design
         requires:
@@ -240,6 +252,11 @@ authorities:
         knowledge_kind: engineering-policy
         requires:
           - capability: nutrition-management.architecture
+      - capability: nutrition-management.coverage.engineering-code-quality
+        knowledge_kind: engineering-policy
+        requires:
+          - capability: nutrition-management.engineering-policy
+          - capability: nutrition-management.component-design
 
   - id: COMPONENT-DESIGN
     responsibility: Own implementation-facing component decomposition and dependency contracts.
@@ -267,6 +284,11 @@ authorities:
           - capability: nutrition-management.frontend.architecture
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.coverage.maintainability-testability
+        knowledge_kind: component-design
+        requires:
+          - capability: nutrition-management.component-design
+          - capability: nutrition-management.redesign.verification-design
 
   - id: REDESIGN-VERIFICATION
     responsibility: Own verification evidence required by the clean redesign independently of existing tests.
@@ -293,6 +315,17 @@ authorities:
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.frontend.architecture
           - capability: nutrition-management.frontend.component-design
+      - capability: nutrition-management.coverage.transition-revalidation
+        knowledge_kind: verification-strategy
+        requires:
+          - capability: nutrition-management.redesign.verification-design
+          - capability: nutrition-management.redesign.test-design
+          - capability: nutrition-management.redesign.implementation-design
+      - capability: nutrition-management.coverage.requirement-traceability
+        knowledge_kind: verification-strategy
+        requires:
+          - capability: nutrition-management.requirements
+          - capability: nutrition-management.redesign.verification-design
 
   - id: TEST-DESIGN
     responsibility: Own executable behavioral contracts derived from accepted system and interface design.
@@ -346,6 +379,19 @@ authorities:
           - capability: nutrition-management.frontend.human-interface
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.implementation.stack
+      - capability: nutrition-management.coverage.backend-delivery-migration
+        knowledge_kind: implementation-design
+        requires:
+          - capability: nutrition-management.data-design
+          - capability: nutrition-management.redesign.implementation-design
+      - capability: nutrition-management.coverage.backend-delivery-release
+        knowledge_kind: implementation-design
+        requires:
+          - capability: nutrition-management.redesign.implementation-design
+      - capability: nutrition-management.coverage.backend-delivery-rollback
+        knowledge_kind: implementation-design
+        requires:
+          - capability: nutrition-management.redesign.implementation-design
 
   - id: VERIFICATION
     responsibility: Own verification strategy and acceptance evidence design.
@@ -387,6 +433,16 @@ consumers:
       - capability: nutrition-management.redesign.verification-design
       - capability: nutrition-management.redesign.test-design
       - capability: nutrition-management.verification.strategy
+      - capability: nutrition-management.coverage.data-classification
+      - capability: nutrition-management.coverage.data-lifecycle
+      - capability: nutrition-management.coverage.backend-delivery-migration
+      - capability: nutrition-management.coverage.backend-delivery-release
+      - capability: nutrition-management.coverage.backend-delivery-rollback
+      - capability: nutrition-management.coverage.cli-compatibility
+      - capability: nutrition-management.coverage.engineering-code-quality
+      - capability: nutrition-management.coverage.maintainability-testability
+      - capability: nutrition-management.coverage.transition-revalidation
+      - capability: nutrition-management.coverage.requirement-traceability
 
   - id: FRONTEND-IMPLEMENTATION
     purpose: Implement the accepted local browser frontend without inventing user-visible, security or structural decisions.
