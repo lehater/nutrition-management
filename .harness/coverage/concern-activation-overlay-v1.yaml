@@ -2,7 +2,7 @@ version: 1
 kind: harness-concern-activation-overlay
 project: NUTRITION-MANAGEMENT
 scope: current-design
-status: research
+status: canonical
 
 # Only facts not safely inferable from generic software topology remain explicit.
 # governance.privacy is intentionally not activated merely from personal-data presence;

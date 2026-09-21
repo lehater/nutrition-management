@@ -1,7 +1,7 @@
 version: 1
 kind: harness-semantic-claim-bindings
 project: NUTRITION-MANAGEMENT
-status: research
+status: canonical
 
 bindings:
   - capability: nutrition-management.problem

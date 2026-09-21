@@ -1,7 +1,7 @@
 version: 1
 kind: harness-project-authority-role-aliases
 project: NUTRITION-MANAGEMENT
-status: research
+status: canonical
 bindings:
   PRODUCT: [product]
   DOMAIN-STRUCTURE: [domain]
