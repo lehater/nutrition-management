@@ -109,3 +109,34 @@ Any such need becomes an upstream Question.
 ## Ready-for-code criterion
 
 The design is ready for coding when the canonical Engineering Graph requires this Implementation Design, Test Design and Verification Design, all their upstream capabilities are accepted, and IMPLEMENTATION evaluates COMPLETE. This criterion means design-complete/implementation-authorized; it does not mean implementation exists.
+
+## Delivery, migration and rollback contract
+
+### Migration
+
+Before a release that changes persistent representation:
+
+- the required Alembic revision set is part of the release artifact/baseline;
+- migration is applied before the new code is allowed to operate on the database;
+- migration verification exercises a representative file-backed SQLite database and checks ownership/integrity invariants;
+- source/reference-data changes that alter semantic meaning remain distinguishable from schema mechanics and must already be accepted by their semantic owner.
+
+### Release
+
+A backend/CLI release is one coherent versioned application baseline consisting of the locked Python environment, application package, migration set and matching verification baseline.
+
+Release authorization requires:
+
+- the selected Engineering Graph Consumer/scope to be design-complete;
+- applicable automated verification and architecture checks to pass;
+- no unresolved blocking Question for a required capability;
+- the deployed database schema to be at the release's expected migration revision before normal commands execute.
+
+### Rollback
+
+Rollback must not silently reinterpret a database created by a newer incompatible schema.
+
+- code-only rollback is permitted when the current schema is explicitly compatible with the previous application baseline;
+- when a migration is not backward-compatible, rollback requires restoration of a pre-migration database backup/snapshot or an explicitly designed reverse/forward-repair migration;
+- destructive or semantics-changing migration without a tested recovery path blocks release;
+- rollback success is revalidated with the same startup/schema and representative planning checks used for release acceptance.
