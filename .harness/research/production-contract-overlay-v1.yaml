@@ -54,3 +54,40 @@ productions:
     knowledge_kind: interface-contract
     requires:
       - nutrition-management.interface.cli
+
+  - authority: ENGINEERING-POLICY
+    capability: nutrition-management.coverage.engineering-code-quality
+    semantic_claims:
+      - engineering.engineering.code-quality
+    knowledge_kind: engineering-policy
+    requires:
+      - nutrition-management.engineering-policy
+      - nutrition-management.component-design
+
+  - authority: COMPONENT-DESIGN
+    capability: nutrition-management.coverage.maintainability-testability
+    semantic_claims:
+      - engineering.quality.maintainability.testability
+    knowledge_kind: component-design
+    requires:
+      - nutrition-management.component-design
+      - nutrition-management.redesign.verification-design
+
+  - authority: REDESIGN-VERIFICATION
+    capability: nutrition-management.coverage.transition-revalidation
+    semantic_claims:
+      - engineering.transition.revalidation
+    knowledge_kind: verification-strategy
+    requires:
+      - nutrition-management.redesign.verification-design
+      - nutrition-management.redesign.test-design
+      - nutrition-management.redesign.implementation-design
+
+  - authority: REDESIGN-VERIFICATION
+    capability: nutrition-management.coverage.requirement-traceability
+    semantic_claims:
+      - engineering.verification.requirement-traceability
+    knowledge_kind: verification-strategy
+    requires:
+      - nutrition-management.requirements
+      - nutrition-management.redesign.verification-design
