@@ -13,13 +13,20 @@ bindings:
   - capability: nutrition-management.domain.context-contracts
     semantic_claims: [engineering.domain.boundaries]
   - capability: nutrition-management.application-design
-    semantic_claims: [engineering.application.use-cases, engineering.application.orchestration]
+    semantic_claims:
+      - engineering.application.use-cases
+      - engineering.application.orchestration
+      - engineering.application.failures
   - capability: nutrition-management.architecture
     semantic_claims: [engineering.architecture.structure, engineering.architecture.boundaries]
   - capability: nutrition-management.interface.cli
-    semantic_claims: [engineering.interface.machine.contract]
+    semantic_claims:
+      - engineering.interface.machine.contract
+      - engineering.interface.machine.errors
   - capability: nutrition-management.data-design
-    semantic_claims: [engineering.data.model]
+    semantic_claims:
+      - engineering.data.model
+      - engineering.data.integrity
   - capability: nutrition-management.frontend.user-journeys
     semantic_claims: [engineering.interface.human.journeys]
   - capability: nutrition-management.frontend.human-interface
@@ -28,9 +35,35 @@ bindings:
       - engineering.interface.human.accessibility
       - engineering.interface.human.responsiveness
   - capability: nutrition-management.frontend.security
-    semantic_claims: [engineering.security.boundaries]
+    semantic_claims:
+      - engineering.security.boundaries
+      - engineering.security.confidentiality
+      - engineering.security.integrity
   - capability: nutrition-management.verification.strategy
     semantic_claims: [engineering.verification.strategy]
+
+  - capability: nutrition-management.engineering-policy
+    semantic_claims:
+      - engineering.engineering.principles
+      - engineering.engineering.error-handling
+
+  - capability: nutrition-management.component-design
+    semantic_claims:
+      - engineering.engineering.components
+
+  - capability: nutrition-management.redesign.verification-design
+    semantic_claims:
+      - engineering.verification.functional
+      - engineering.verification.architecture
+      - engineering.verification.data
+      - engineering.verification.interface.machine
+
+  - capability: nutrition-management.frontend.verification-design
+    semantic_claims:
+      - engineering.verification.strategy
+      - engineering.verification.interface.human
+      - engineering.verification.security
+      - engineering.verification.architecture
 
 # Broad design/test capabilities are intentionally not expanded to multiple concerns
 # unless their producer contract is made explicit in canonical knowledge.
