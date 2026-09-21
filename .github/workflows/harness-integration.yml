@@ -47,6 +47,9 @@ jobs:
       - name: Validate Core realization
         run: python .harness-tool/harness.py validate .harness/graph.yaml
 
+      - name: Validate frontend design closure
+        run: python .harness/check_frontend_design_closure.py
+
       - name: Evaluate canonical consumers
         run: |
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml IMPLEMENTATION .harness/graph.yaml
