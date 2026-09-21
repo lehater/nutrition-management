@@ -1,0 +1,34 @@
+version: 1
+kind: harness-concern-activation-overlay
+project: NUTRITION-MANAGEMENT
+scope: current-design
+status: research
+
+# Only facts not safely inferable from generic software topology remain explicit.
+activate:
+  - concern: governance.privacy
+    rationale: The product stores member/profile information; privacy applicability is a project/domain fact.
+    evidence: [PRODUCT-REQUIREMENTS, DATA-DESIGN]
+  - concern: governance.data
+    rationale: Persistent user/domain/source data requires explicit project data-governance assessment.
+    evidence: [DATA-DESIGN]
+  - concern: quality.performance.latency
+    rationale: Interactive local-browser journeys make response-time behavior relevant even without a numeric target.
+    evidence: [FRONTEND-USER-JOURNEYS, FRONTEND-HUMAN-INTERFACE]
+  - concern: quality.performance.resource-efficiency
+    rationale: Local execution makes bounded resource use relevant to product feasibility.
+    evidence: [FRONTEND-DELIVERY-DECISION]
+
+decisions:
+  - concern: security.identity
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user frontend has no login/account identity boundary.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.authorization
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user scope has no authorization model.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.accountability
+    state: NOT_APPLICABLE
+    rationale: No multi-user authority/action attribution exists in current scope.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
