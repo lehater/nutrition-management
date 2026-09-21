@@ -37,9 +37,20 @@ Returns current source-profile summaries for the household.
 
 Returns the current accepted source facts required by the member editor.
 
-### SaveMemberProfile(household_id, profile)
+### CreateMember(household_id, profile)
 
-Creates or replaces the one current profile for that member through Nutrition Targeting validation.
+Creates one new Household Member identity and its initial current Nutrition Profile atomically through Nutrition Targeting application/domain validation.
+
+Semantics:
+- Nutrition Targeting generates/owns the new opaque `member_id`; the frontend never manufactures it;
+- success returns the created `member_id` plus the accepted current profile summary;
+- invalid profile input creates neither Member identity nor profile state;
+- technical failure is not reported as confirmed creation;
+- duplicate submission handling must not silently create two members; if idempotent creation is required by the selected adapter, that adapter/application contract must make its idempotency key/semantics explicit rather than inferring identity from profile fields.
+
+### SaveMemberProfile(household_id, member_id, profile)
+
+Replaces the one current profile for an already existing member through Nutrition Targeting validation. It does not create Member identity implicitly.
 
 The command may reuse/refine the existing profile-import application command, but the web adapter must not call the repository directly.
 
