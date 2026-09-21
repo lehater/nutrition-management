@@ -7,28 +7,35 @@ status: research
 # Only facts not safely inferable from generic software topology remain explicit.
 activate:
   - concern: governance.privacy
+    consumers: [IMPLEMENTATION, FRONTEND-IMPLEMENTATION]
     rationale: The product stores member/profile information; privacy applicability is a project/domain fact.
     evidence: [PRODUCT-REQUIREMENTS, DATA-DESIGN]
   - concern: governance.data
+    consumers: [IMPLEMENTATION, FRONTEND-IMPLEMENTATION, BLS-V4-PRODUCTION-IMPORT]
     rationale: Persistent user/domain/source data requires explicit project data-governance assessment.
     evidence: [DATA-DESIGN]
   - concern: quality.performance.latency
+    consumers: [FRONTEND-IMPLEMENTATION]
     rationale: Interactive local-browser journeys make response-time behavior relevant even without a numeric target.
     evidence: [FRONTEND-USER-JOURNEYS, FRONTEND-HUMAN-INTERFACE]
   - concern: quality.performance.resource-efficiency
-    rationale: Local execution makes bounded resource use relevant to product feasibility.
+    consumers: [FRONTEND-IMPLEMENTATION]
+    rationale: Local execution makes bounded resource use relevant to frontend product feasibility.
     evidence: [FRONTEND-DELIVERY-DECISION]
 
 decisions:
   - concern: security.identity
+    consumers: [FRONTEND-IMPLEMENTATION]
     state: NOT_APPLICABLE
     rationale: Accepted local single-user frontend has no login/account identity boundary.
     evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
   - concern: security.authorization
+    consumers: [FRONTEND-IMPLEMENTATION]
     state: NOT_APPLICABLE
     rationale: Accepted local single-user scope has no authorization model.
     evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
   - concern: security.accountability
+    consumers: [FRONTEND-IMPLEMENTATION]
     state: NOT_APPLICABLE
     rationale: No multi-user authority/action attribution exists in current scope.
     evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
