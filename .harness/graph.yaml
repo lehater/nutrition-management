@@ -18,14 +18,6 @@ authorities:
   - id: VERIFICATION
 
 artifacts:
-  - id: REDESIGN-REVALIDATION
-    authority: PRODUCT
-    path: docs/redesign/component-design.md
-    provides: []
-    depends_on:
-      - PRODUCT-REQUIREMENTS
-      - TARGET-ARCHITECTURE
-
   - id: REDESIGN-VERIFICATION-DESIGN
     authority: REDESIGN-VERIFICATION
     path: docs/redesign/verification-design.md
