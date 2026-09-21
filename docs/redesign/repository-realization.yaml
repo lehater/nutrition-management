@@ -1,7 +1,7 @@
 version: 1
 kind: repository-realization-design
 id: NUTRITION-MANAGEMENT-REPOSITORY-REALIZATION
-status: accepted-candidate
+status: accepted
 owner: IMPLEMENTATION-DESIGN
 basis:
   implementation_stack: docs/decisions/ADR-010-first-implementation-stack.md
