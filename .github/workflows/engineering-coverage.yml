@@ -1,4 +1,4 @@
-# Coverage uses the canonical Harness SHA pinned below.
+# Coverage uses the canonical Harness SHA pinned in .harness-version.
 name: Engineering Coverage
 
 on:
@@ -7,11 +7,13 @@ on:
       - main
     paths:
       - ".harness/**"
+      - ".harness-version"
       - "docs/requirements/**"
       - ".github/workflows/engineering-coverage.yml"
   pull_request:
     paths:
       - ".harness/**"
+      - ".harness-version"
       - "docs/requirements/**"
       - ".github/workflows/engineering-coverage.yml"
   workflow_dispatch:
@@ -26,11 +28,15 @@ jobs:
       - name: Checkout Nutrition Management
         uses: actions/checkout@v5
 
+      - name: Read pinned Harness version
+        id: harness-version
+        run: echo "sha=$(cat .harness-version)" >> "$GITHUB_OUTPUT"
+
       - name: Checkout Harness
         uses: actions/checkout@v5
         with:
           repository: lehater/harness
-          ref: 9373367ee2d0a0d068a3b45bc1a549e9c1d45a90
+          ref: ${{ steps.harness-version.outputs.sha }}
           path: .harness-coverage-tool
 
       - uses: actions/setup-python@v6
