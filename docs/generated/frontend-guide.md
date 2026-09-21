@@ -13,6 +13,8 @@ Canonical sources:
 - `docs/application/user-journeys.md`;
 - `docs/application/frontend-application-contracts.md`;
 - `docs/interface/human-interface-design.md`;
+- `docs/interface/frontend-presentation-system.yaml`;
+- `docs/interface/frontend-screen-view-design.yaml`;
 - `docs/decisions/ADR-018-local-browser-frontend.md`;
 - `docs/architecture/frontend-security.md`;
 - `docs/architecture/frontend-architecture.md`.
@@ -27,6 +29,10 @@ Canonical sources:
 6. inspect basket/cost, mapped coverage, unsupported/indeterminate dimensions, variety, safety diagnostics, gap suggestions and provenance.
 
 The result is not saved as durable plan history.
+
+## Presentation model
+
+All screens inherit the canonical Presentation System in `docs/interface/frontend-presentation-system.yaml`. Concrete screen composition and state coverage are defined in `docs/interface/frontend-screen-view-design.yaml`. The generated guide is a projection only and does not replace those contracts.
 
 ## Main screens
 
