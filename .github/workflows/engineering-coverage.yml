@@ -7,10 +7,12 @@ on:
       - main
     paths:
       - ".harness/**"
+      - "docs/requirements/**"
       - ".github/workflows/engineering-coverage.yml"
   pull_request:
     paths:
       - ".harness/**"
+      - "docs/requirements/**"
       - ".github/workflows/engineering-coverage.yml"
   workflow_dispatch:
 
