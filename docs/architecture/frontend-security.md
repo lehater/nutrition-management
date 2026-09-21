@@ -43,3 +43,15 @@ Reopen Security Architecture before:
 - storing credentials;
 - introducing third-party browser origins or remote APIs;
 - changing the threat boundary from local single-user use.
+
+## Availability-abuse controls
+
+The local trust model still prevents browser-origin abuse from becoming an unbounded expensive-work trigger:
+
+- Generate Plan and other state-changing/expensive operations require accepted same-origin/CSRF validation before application dispatch;
+- the listener remains loopback-only, so remote network clients are outside the accepted exposure boundary;
+- presentation endpoints do not introduce unbounded file upload, background-job creation or queued work;
+- request/form parsing must apply finite implementation limits appropriate to the accepted input shapes rather than accepting unbounded representation size;
+- security rejection occurs before domain mutation or solver invocation where the rejected property is known at the presentation boundary.
+
+Remote multi-user denial-of-service protection, rate limiting and distributed abuse controls are reopening conditions, not current requirements.
