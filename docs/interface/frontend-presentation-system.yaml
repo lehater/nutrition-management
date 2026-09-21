@@ -15,6 +15,9 @@ basis:
   application_contracts: docs/application/frontend-application-contracts.md
   security: docs/architecture/frontend-security.md
 
+scope:
+  screens: [OVERVIEW, HOUSEHOLD, FOOD-KNOWLEDGE, MARKET, PLAN, RESULT]
+
 presentation_language:
   character: local-planning-workbench
   priorities:
