@@ -171,3 +171,17 @@ Tests/static checks must demonstrate:
 - each feature depends on narrow application-facing contracts;
 - planning presentation cannot construct accepted Purchase Plan facts itself;
 - browser-specific security is confined to presentation infrastructure.
+
+## Maintainability and testability contract
+
+The frontend decomposition must remain independently understandable, modifiable and testable:
+
+- feature controllers/view models remain cohesive by user-facing area and do not share private mutable state;
+- shared presentation helpers contain only presentation semantics and have narrow, named contracts;
+- application dependencies are injected through accepted commands/queries so feature behavior can be tested with deterministic fakes;
+- templates/view-model mapping can be tested without a live database or solver;
+- web security helpers can be tested independently from domain behavior;
+- a change isolated to one feature must not require unrelated feature-controller changes unless a shared public presentation contract changes;
+- architecture/static tests enforce forbidden dependencies so accidental coupling is detected mechanically.
+
+A frontend design that requires a live end-to-end stack to verify ordinary view-model, route-mapping or presentation-state behavior is not implementation-ready.

@@ -1,0 +1,141 @@
+name: Research Engineering Coverage
+
+on:
+  push:
+    branches:
+      - research/hierarchical-coverage-map
+    paths:
+      - ".harness/**"
+      - ".github/workflows/research-engineering-coverage.yml"
+  pull_request:
+    paths:
+      - ".harness/**"
+      - ".github/workflows/research-engineering-coverage.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Nutrition Management
+        uses: actions/checkout@v5
+
+      - name: Checkout Harness coverage research
+        uses: actions/checkout@v5
+        with:
+          repository: lehater/harness
+          ref: research/hierarchical-engineering-concerns-v1
+          path: .harness-coverage-tool
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14.7"
+
+      - name: Install runtime dependency
+        run: python -m pip install PyYAML
+
+      - name: Evaluate backend coverage
+        run: |
+          python .harness-coverage-tool/engineering_coverage.py             .harness/engineering-graph.yaml             .harness/graph.yaml             IMPLEMENTATION             --scope current-design             --authority-aliases .harness/research/authority-role-aliases-v1.yaml             --overlay .harness/research/concern-activation-overlay-v1.yaml             --semantic-claim-bindings .harness/research/semantic-claim-bindings-v1.yaml             --production-contract-overlay .harness/research/production-contract-overlay-v1.yaml             > /tmp/backend-coverage.json
+
+      - name: Evaluate frontend coverage
+        run: |
+          python .harness-coverage-tool/engineering_coverage.py             .harness/engineering-graph.yaml             .harness/graph.yaml             FRONTEND-IMPLEMENTATION             --scope current-design             --authority-aliases .harness/research/authority-role-aliases-v1.yaml             --overlay .harness/research/concern-activation-overlay-v1.yaml             --semantic-claim-bindings .harness/research/semantic-claim-bindings-v1.yaml             --production-contract-overlay .harness/research/production-contract-overlay-v1.yaml             > /tmp/frontend-coverage.json
+
+      - name: Verify Consumer isolation and work-plan shape
+        run: |
+          python - <<'PY'
+          import json
+
+          with open("/tmp/backend-coverage.json", encoding="utf-8") as f:
+              backend = json.load(f)
+          with open("/tmp/frontend-coverage.json", encoding="utf-8") as f:
+              frontend = json.load(f)
+
+          assert backend["kind"] == "harness-engineering-coverage-evaluation"
+          assert frontend["kind"] == "harness-engineering-coverage-evaluation"
+          assert backend["consumer"] == "IMPLEMENTATION"
+          assert frontend["consumer"] == "FRONTEND-IMPLEMENTATION"
+          assert backend["remaining_work_count"] == len(backend["remaining_work"])
+          assert frontend["remaining_work_count"] == len(frontend["remaining_work"])
+          assert backend["work_item_count"] == len(backend["work_items"])
+          assert frontend["work_item_count"] == len(frontend["work_items"])
+          assert isinstance(backend["question_frontier"], list)
+          assert isinstance(frontend["question_frontier"], list)
+          assert backend["routed_production_count"] == 0
+          assert backend["remaining_work_count"] == 0
+          assert backend["completion_ready"] is True
+          assert backend["work_items"] == []
+          assert frontend["routed_production_count"] >= 0
+
+          backend_concerns = {row["concern"] for row in backend["rows"]}
+          frontend_concerns = {row["concern"] for row in frontend["rows"]}
+
+          assert "interface.human.accessibility" not in backend_concerns
+          assert "quality.performance.latency" not in backend_concerns
+          assert "interface.human.accessibility" in frontend_concerns
+          assert "quality.performance.latency" in frontend_concerns
+          assert "data.model" in backend_concerns
+          assert "data.model" in frontend_concerns
+
+          print(
+              "backend:",
+              backend["activated_count"],
+              "activated /",
+              backend["remaining_work_count"],
+              "remaining",
+          )
+          print(
+              "frontend:",
+              frontend["activated_count"],
+              "activated /",
+              frontend["remaining_work_count"],
+              "remaining",
+          )
+
+          from collections import Counter
+          print(
+              "backend work actions:",
+              dict(Counter(item["action"] for item in backend["work_items"])),
+          )
+          print(
+              "frontend work actions:",
+              dict(Counter(item["action"] for item in frontend["work_items"])),
+          )
+          print(
+              "question frontiers:",
+              len(backend["question_frontier"]),
+              len(frontend["question_frontier"]),
+          )
+          print(
+              "routed production:",
+              backend["routed_production_count"],
+              frontend["routed_production_count"],
+          )
+
+          for label, result in (("backend", backend), ("frontend", frontend)):
+              print(f"{label} structural gaps:")
+              for item in result["work_items"]:
+                  if item["action"] == "MODEL_PRODUCTION_CONTRACT":
+                      print(
+                          "  MODEL_PRODUCTION_CONTRACT",
+                          item["concern"],
+                          "->",
+                          ",".join(item["candidate_authorities"]),
+                      )
+                  elif item["action"] == "ASSIGN_AUTHORITY":
+                      print("  ASSIGN_AUTHORITY", item["concern"])
+                  elif item["action"] == "PRODUCE_CAPABILITY":
+                      print(
+                          "  PRODUCE_CAPABILITY",
+                          item["capability"],
+                          "->",
+                          item.get("authority"),
+                          "[",
+                          ",".join(item["concerns"]),
+                          "]",
+                      )
+          PY

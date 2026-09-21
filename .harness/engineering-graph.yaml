@@ -67,9 +67,6 @@ authorities:
       - capability: nutrition-management.food-knowledge.bls-v4.source-identity
         requires:
           - capability: nutrition-management.domain.food-knowledge
-      - capability: nutrition-management.food-knowledge.bls-v4.source-structure
-        requires:
-          - capability: nutrition-management.domain.food-knowledge
       - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
         knowledge_kind: pinned-source-entity-set
         requires:
@@ -77,9 +74,6 @@ authorities:
       - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
         requires:
           - capability: nutrition-management.food-knowledge.bls-v4.source-identity
-      - capability: nutrition-management.food-knowledge.bls-v4.normalization-order
-        requires:
-          - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
       - capability: nutrition-management.food-knowledge.bls-v4.errata-policy
         requires:
           - capability: nutrition-management.food-knowledge.bls-v4.source-identity
@@ -235,6 +229,34 @@ authorities:
           - capability: nutrition-management.frontend.requirements
           - capability: nutrition-management.frontend.delivery-decision
 
+  - id: OPERABILITY-DESIGN
+    responsibility: Own frontend runtime evidence, diagnosability, readiness and operational behavior.
+    boundary:
+      semantic_cohesion: Runtime configuration, diagnostic evidence, health/readiness and local incident handling.
+      independent_change: Operational evidence and runtime diagnostics can evolve without redefining product/domain semantics.
+      public_contract: Produces the accepted frontend operability contract consumed by verification and implementation.
+    produces:
+      - capability: nutrition-management.frontend.operability-design
+        knowledge_kind: operability-design
+        requires:
+          - capability: nutrition-management.frontend.architecture
+          - capability: nutrition-management.frontend.security
+          - capability: nutrition-management.data-design
+
+  - id: SECURITY-ANALYSIS
+    responsibility: Own frontend threat/control applicability and security coverage analysis.
+    boundary:
+      semantic_cohesion: Threats, control coverage, vulnerability-management and secure-development obligations for the accepted trust boundary.
+      independent_change: Threat/control coverage can change without itself re-owning the security architecture.
+      public_contract: Produces accepted frontend security coverage and routes unresolved gaps to their semantic owners.
+    produces:
+      - capability: nutrition-management.frontend.security-analysis
+        knowledge_kind: security-analysis
+        requires:
+          - capability: nutrition-management.frontend.security
+          - capability: nutrition-management.frontend.architecture
+          - capability: nutrition-management.frontend.operability-design
+
   - id: ENGINEERING-POLICY
     responsibility: Own cross-cutting engineering design constraints selected for this project.
     boundary:
@@ -299,6 +321,8 @@ authorities:
           - capability: nutrition-management.frontend.security
           - capability: nutrition-management.frontend.architecture
           - capability: nutrition-management.frontend.component-design
+          - capability: nutrition-management.frontend.operability-design
+          - capability: nutrition-management.frontend.security-analysis
 
   - id: TEST-DESIGN
     responsibility: Own executable behavioral contracts derived from accepted system and interface design.

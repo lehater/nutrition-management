@@ -1,0 +1,22 @@
+version: 1
+kind: harness-project-authority-role-bindings
+project: NUTRITION-MANAGEMENT
+status: research
+
+bindings:
+  PRODUCT: [product]
+  DOMAIN-STRUCTURE: [domain]
+  NUTRITION-TARGETING: [domain]
+  FOOD-KNOWLEDGE: [domain]
+  MARKET-CATALOG: [domain]
+  PURCHASE-PLANNING: [domain]
+  APPLICATION-DESIGN: [application]
+  ARCHITECTURE: [architecture, reliability]
+  INTERFACE-DESIGN: [interface]
+  DATA-DESIGN: [data]
+  SECURITY-ARCHITECTURE: [security-architecture]
+  REDESIGN-VERIFICATION: [verification]
+  VERIFICATION: [verification]
+  TEST-DESIGN: [verification]
+  ENGINEERING-POLICY: [engineering]
+  COMPONENT-DESIGN: [engineering]

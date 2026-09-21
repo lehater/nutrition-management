@@ -1,0 +1,288 @@
+version: 1
+kind: harness-engineering-coverage-map
+catalog: software-engineering-concerns/v1-research
+project: NUTRITION-MANAGEMENT
+scope: current-design
+status: research
+
+rows:
+  - concern: intent.problem
+    state: COVERED
+    artifacts: [PROBLEM]
+  - concern: intent.scope
+    state: COVERED
+    artifacts: [PRODUCT-REQUIREMENTS, FRONTEND-REQUIREMENTS]
+  - concern: intent.behavior
+    state: COVERED
+    capabilities: [nutrition-management.requirements]
+    artifacts: [PRODUCT-REQUIREMENTS, FRONTEND-REQUIREMENTS]
+  - concern: intent.quality-targets
+    state: COVERED
+    artifacts: [PRODUCT-REQUIREMENTS, FRONTEND-REQUIREMENTS]
+    rationale: Explicit semantic-quality constraints exist, including determinism, provenance preservation and accessibility baseline; no broad numeric SLO set is claimed.
+
+  - concern: domain.model
+    state: COVERED
+    artifacts: [STRATEGIC-DOMAIN, NUTRITION-TARGETING-DOMAIN, FOOD-KNOWLEDGE-DOMAIN, MARKET-CATALOG-DOMAIN, PURCHASE-PLANNING-DOMAIN]
+  - concern: domain.boundaries
+    state: COVERED
+    artifacts: [CONTEXT-MAP, TARGET-ARCHITECTURE]
+  - concern: domain.invariants
+    state: COVERED
+    artifacts: [NUTRITION-TARGETING-DOMAIN, FOOD-KNOWLEDGE-DOMAIN, MARKET-CATALOG-DOMAIN, PURCHASE-PLANNING-DOMAIN]
+  - concern: domain.time
+    state: COVERED
+    artifacts: [PRODUCT-REQUIREMENTS, DATA-DESIGN, TARGET-ARCHITECTURE]
+  - concern: domain.provenance
+    state: COVERED
+    artifacts: [PRODUCT-REQUIREMENTS, NUTRIENT-EVIDENCE-SEMANTICS, DATA-DESIGN]
+
+  - concern: application.use-cases
+    state: COVERED
+    artifacts: [APPLICATION-DESIGN, FRONTEND-USER-JOURNEYS]
+  - concern: application.orchestration
+    state: COVERED
+    artifacts: [APPLICATION-DESIGN, TARGET-ARCHITECTURE]
+  - concern: application.failures
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-HUMAN-INTERFACE]
+  - concern: application.idempotency
+    state: UNASSESSED
+
+  - concern: architecture.structure
+    state: COVERED
+    capabilities: [nutrition-management.architecture, nutrition-management.frontend.architecture]
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-ARCHITECTURE]
+  - concern: architecture.boundaries
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, ENGINEERING-DESIGN-POLICY, COMPONENT-DESIGN]
+  - concern: architecture.communication
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-APPLICATION-CONTRACTS]
+  - concern: architecture.deployment
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-DELIVERY-DECISION, FRONTEND-SECURITY]
+  - concern: architecture.decisions
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-DELIVERY-DECISION]
+
+  - concern: interface.machine.contract
+    state: COVERED
+    artifacts: [CLI-CONTRACT, FRONTEND-APPLICATION-CONTRACTS]
+  - concern: interface.machine.errors
+    state: COVERED
+    artifacts: [CLI-CONTRACT, FRONTEND-APPLICATION-CONTRACTS, TARGET-ARCHITECTURE]
+  - concern: interface.machine.compatibility
+    state: UNASSESSED
+  - concern: interface.human.journeys
+    state: COVERED
+    capabilities: [nutrition-management.frontend.human-interface]
+    artifacts: [FRONTEND-USER-JOURNEYS, FRONTEND-HUMAN-INTERFACE]
+  - concern: interface.human.usability
+    state: COVERED
+    artifacts: [FRONTEND-HUMAN-INTERFACE, FRONTEND-VERIFICATION-DESIGN]
+  - concern: interface.human.accessibility
+    state: COVERED
+    artifacts: [FRONTEND-REQUIREMENTS, FRONTEND-HUMAN-INTERFACE, FRONTEND-VERIFICATION-DESIGN]
+    rationale: Keyboard, focus, labels/errors, semantic status and non-color-only meaning are explicit. This is an engineering baseline, not a WCAG conformance claim.
+  - concern: interface.human.responsiveness
+    state: COVERED
+    artifacts: [FRONTEND-HUMAN-INTERFACE, FRONTEND-VERIFICATION-DESIGN]
+  - concern: interface.human.i18n
+    state: UNASSESSED
+
+  - concern: data.model
+    state: COVERED
+    capabilities: [nutrition-management.data-design]
+    artifacts: [DATA-DESIGN]
+  - concern: data.integrity
+    state: COVERED
+    artifacts: [DATA-DESIGN, TARGET-ARCHITECTURE]
+  - concern: data.lifecycle
+    state: UNASSESSED
+    rationale: Durable Purchase Plan history is explicitly excluded, but the broader retention/deletion lifecycle for persisted profile, catalog and source data has not been assessed as one concern.
+  - concern: data.quality
+    state: COVERED
+    artifacts: [PRODUCT-REQUIREMENTS, NUTRIENT-EVIDENCE-SEMANTICS, VERIFICATION-STRATEGY]
+  - concern: data.provenance
+    state: COVERED
+    artifacts: [PRODUCT-REQUIREMENTS, BLS-V4-SOURCE-BASELINE, BLS-V4-EVIDENCE-SEMANTICS, DATA-DESIGN]
+  - concern: data.reproducibility
+    state: COVERED
+    artifacts: [VERIFICATION-STRATEGY, DATA-DESIGN]
+  - concern: data.classification
+    state: UNASSESSED
+    rationale: Member profile data exists, but no accepted privacy/data-classification analysis was found.
+
+  - concern: security.boundaries
+    state: COVERED
+    capabilities: [nutrition-management.frontend.security]
+    artifacts: [FRONTEND-SECURITY]
+  - concern: security.identity
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user frontend introduces no login/account identity boundary.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.authorization
+    state: NOT_APPLICABLE
+    rationale: Accepted local single-user scope has no authorization model.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.confidentiality
+    state: COVERED
+    artifacts: [FRONTEND-SECURITY]
+    rationale: Diagnostics avoid full sensitive domain snapshots and no credentials are introduced in the current slice.
+  - concern: security.integrity
+    state: COVERED
+    artifacts: [FRONTEND-SECURITY, DATA-DESIGN]
+  - concern: security.accountability
+    state: NOT_APPLICABLE
+    rationale: No multi-user/account authority model exists in the accepted local slice.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-SECURITY]
+  - concern: security.availability-abuse
+    state: COVERED
+    artifacts: [FRONTEND-SECURITY]
+    rationale: Host/origin/CSRF and fail-closed local binding cover the material accepted browser attack surface; no public-service DoS claim is made.
+  - concern: security.threat-analysis
+    state: UNASSESSED
+    rationale: Security architecture exists but no explicit systematic threat-analysis artifact/evidence was found.
+  - concern: security.vulnerability-management
+    state: UNASSESSED
+  - concern: security.secure-development
+    state: UNASSESSED
+    rationale: Several secure implementation and verification practices are explicit, but there is no accepted project-level secure-development coverage model comparable to SSDF/SAMM.
+
+  - concern: reliability.failure-semantics
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, FRONTEND-HUMAN-INTERFACE, REDESIGN-VERIFICATION-DESIGN]
+  - concern: reliability.availability
+    state: UNASSESSED
+  - concern: reliability.fault-tolerance
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE]
+    rationale: Technical failures remain distinct from accepted domain outcomes and unproven solver results are rejected.
+  - concern: reliability.recovery
+    state: UNASSESSED
+  - concern: reliability.consistency
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, DATA-DESIGN, REDESIGN-VERIFICATION-DESIGN]
+  - concern: reliability.retry-idempotency
+    state: UNASSESSED
+  - concern: reliability.durability
+    state: COVERED
+    artifacts: [DATA-DESIGN]
+  - concern: reliability.dependency-failure
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, REDESIGN-VERIFICATION-DESIGN]
+
+  - concern: operability.configuration
+    state: COVERED
+    artifacts: [ENGINEERING-DESIGN-POLICY, FRONTEND-SECURITY]
+    rationale: Local binding and implementation configuration constraints are explicit, but no full deployment-config catalog is claimed.
+  - concern: operability.logging
+    state: UNASSESSED
+    rationale: Security forbids unsafe diagnostics, but no accepted logging contract defines required events/structure.
+  - concern: operability.metrics
+    state: UNASSESSED
+  - concern: operability.tracing
+    state: UNASSESSED
+  - concern: operability.health
+    state: UNASSESSED
+  - concern: operability.alerting
+    state: UNASSESSED
+  - concern: operability.incident
+    state: UNASSESSED
+  - concern: operability.admin
+    state: COVERED
+    artifacts: [CLI-CONTRACT, TARGET-ARCHITECTURE]
+  - concern: operability.capacity
+    state: UNASSESSED
+
+  - concern: quality.performance.latency
+    state: UNASSESSED
+  - concern: quality.performance.throughput
+    state: UNASSESSED
+  - concern: quality.performance.resource-efficiency
+    state: UNASSESSED
+  - concern: quality.performance.capacity
+    state: UNASSESSED
+  - concern: quality.compatibility.interoperability
+    state: COVERED
+    artifacts: [CLI-CONTRACT, FRONTEND-APPLICATION-CONTRACTS]
+  - concern: quality.compatibility.coexistence
+    state: COVERED
+    artifacts: [FRONTEND-DELIVERY-DECISION]
+    rationale: Browser frontend coexists with the existing CLI over shared application semantics.
+  - concern: quality.maintainability.modularity
+    state: COVERED
+    artifacts: [ENGINEERING-DESIGN-POLICY, COMPONENT-DESIGN]
+  - concern: quality.maintainability.reusability
+    state: COVERED
+    artifacts: [ENGINEERING-DESIGN-POLICY, FRONTEND-APPLICATION-CONTRACTS]
+    rationale: Reuse is constrained to accepted application/provider contracts rather than generic abstractions.
+  - concern: quality.maintainability.analysability
+    state: COVERED
+    artifacts: [TARGET-ARCHITECTURE, COMPONENT-DESIGN, ENGINEERING-DESIGN-POLICY]
+  - concern: quality.maintainability.modifiability
+    state: COVERED
+    artifacts: [ENGINEERING-DESIGN-POLICY, COMPONENT-DESIGN]
+  - concern: quality.maintainability.testability
+    state: COVERED
+    artifacts: [REDESIGN-VERIFICATION-DESIGN, FRONTEND-VERIFICATION-DESIGN, REDESIGN-TEST-DESIGN, FRONTEND-TEST-DESIGN]
+  - concern: quality.flexibility.adaptability
+    state: COVERED
+    artifacts: [ENGINEERING-DESIGN-POLICY, TARGET-ARCHITECTURE]
+    rationale: Framework/database/solver details are kept behind accepted boundaries where variation exists.
+  - concern: quality.flexibility.scalability
+    state: UNASSESSED
+  - concern: quality.flexibility.installability
+    state: UNASSESSED
+  - concern: quality.flexibility.replaceability
+    state: COVERED
+    artifacts: [ENGINEERING-DESIGN-POLICY, TARGET-ARCHITECTURE]
+
+  - concern: governance.external-obligations
+    state: UNASSESSED
+  - concern: governance.privacy
+    state: UNASSESSED
+    rationale: Personal profile-like data exists, but no accepted privacy-risk/applicability analysis is present.
+  - concern: governance.data
+    state: UNASSESSED
+    rationale: Ownership, provenance and evidence semantics are strong, but a broader data-governance policy including lifecycle/classification obligations has not been accepted.
+  - concern: governance.audit
+    state: COVERED
+    artifacts: [DATA-DESIGN, PRODUCT-REQUIREMENTS]
+    rationale: Domain/source provenance is explicit; this does not claim regulatory audit compliance.
+  - concern: governance.ownership
+    state: COVERED
+    artifacts: [CONTEXT-MAP, TARGET-ARCHITECTURE, ENGINEERING-DESIGN-POLICY]
+
+  - concern: verification.strategy
+    state: COVERED
+    capabilities: [nutrition-management.verification.strategy]
+    artifacts: [VERIFICATION-STRATEGY, REDESIGN-VERIFICATION-DESIGN, FRONTEND-VERIFICATION-DESIGN]
+  - concern: verification.requirement-traceability
+    state: COVERED
+    artifacts: [REDESIGN-VERIFICATION-DESIGN, FRONTEND-VERIFICATION-DESIGN]
+  - concern: verification.functional
+    state: COVERED
+    artifacts: [VERIFICATION-STRATEGY, REDESIGN-VERIFICATION-DESIGN]
+  - concern: verification.quality
+    state: COVERED
+    artifacts: [REDESIGN-VERIFICATION-DESIGN, FRONTEND-VERIFICATION-DESIGN]
+  - concern: verification.security
+    state: COVERED
+    artifacts: [FRONTEND-VERIFICATION-DESIGN]
+  - concern: verification.reliability
+    state: COVERED
+    artifacts: [REDESIGN-VERIFICATION-DESIGN]
+  - concern: verification.interface.machine
+    state: COVERED
+    artifacts: [REDESIGN-VERIFICATION-DESIGN, CLI-CONTRACT]
+  - concern: verification.interface.human
+    state: COVERED
+    artifacts: [FRONTEND-VERIFICATION-DESIGN, FRONTEND-TEST-DESIGN]
+  - concern: verification.architecture
+    state: COVERED
+    artifacts: [VERIFICATION-STRATEGY, REDESIGN-VERIFICATION-DESIGN]
+  - concern: verification.data
+    state: COVERED
+    artifacts: [VERIFICATION-STRATEGY, REDESIGN-VERIFICATION-DESIGN]
