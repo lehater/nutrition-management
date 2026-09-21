@@ -10,6 +10,7 @@ productions:
     capability: nutrition-management.coverage.data-classification
     semantic_claims:
       - engineering.data.classification
+    knowledge_kind: data-design
     requires:
       - nutrition-management.data-design
 
@@ -17,6 +18,7 @@ productions:
     capability: nutrition-management.coverage.data-lifecycle
     semantic_claims:
       - engineering.data.lifecycle
+    knowledge_kind: data-design
     requires:
       - nutrition-management.data-design
 
@@ -24,6 +26,7 @@ productions:
     capability: nutrition-management.coverage.backend-delivery-migration
     semantic_claims:
       - engineering.delivery.migration
+    knowledge_kind: implementation-design
     requires:
       - nutrition-management.data-design
       - nutrition-management.redesign.implementation-design
@@ -32,6 +35,7 @@ productions:
     capability: nutrition-management.coverage.backend-delivery-release
     semantic_claims:
       - engineering.delivery.release
+    knowledge_kind: implementation-design
     requires:
       - nutrition-management.redesign.implementation-design
 
@@ -39,6 +43,7 @@ productions:
     capability: nutrition-management.coverage.backend-delivery-rollback
     semantic_claims:
       - engineering.delivery.rollback
+    knowledge_kind: implementation-design
     requires:
       - nutrition-management.redesign.implementation-design
 
@@ -46,5 +51,6 @@ productions:
     capability: nutrition-management.coverage.cli-compatibility
     semantic_claims:
       - engineering.interface.machine.compatibility
+    knowledge_kind: interface-contract
     requires:
       - nutrition-management.interface.cli
