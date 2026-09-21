@@ -1,0 +1,125 @@
+version: 1
+kind: harness-semantic-claim-bindings
+project: NUTRITION-MANAGEMENT
+status: canonical
+
+bindings:
+  - capability: nutrition-management.problem
+    semantic_claims: [engineering.intent.problem]
+  - capability: nutrition-management.requirements
+    semantic_claims: [engineering.intent.scope, engineering.intent.behavior]
+  - capability: nutrition-management.domain.boundaries
+    semantic_claims: [engineering.domain.boundaries]
+  - capability: nutrition-management.domain.context-contracts
+    semantic_claims: [engineering.domain.boundaries]
+  - capability: nutrition-management.application-design
+    semantic_claims:
+      - engineering.application.use-cases
+      - engineering.application.orchestration
+      - engineering.application.failures
+  - capability: nutrition-management.architecture
+    semantic_claims: [engineering.architecture.structure, engineering.architecture.boundaries]
+  - capability: nutrition-management.frontend.architecture
+    semantic_claims:
+      - engineering.reliability.availability
+      - engineering.reliability.recovery
+      - engineering.quality.performance.latency
+      - engineering.quality.performance.resource-efficiency
+  - capability: nutrition-management.interface.cli
+    semantic_claims:
+      - engineering.interface.machine.contract
+      - engineering.interface.machine.errors
+      - engineering.interface.machine.compatibility
+  - capability: nutrition-management.data-design
+    semantic_claims:
+      - engineering.data.model
+      - engineering.data.integrity
+      - engineering.data.classification
+      - engineering.data.lifecycle
+      - engineering.reliability.durability
+      - engineering.governance.data
+  - capability: nutrition-management.frontend.user-journeys
+    semantic_claims: [engineering.interface.human.journeys]
+  - capability: nutrition-management.frontend.human-interface
+    semantic_claims:
+      - engineering.interface.human.usability
+      - engineering.interface.human.accessibility
+      - engineering.interface.human.responsiveness
+  - capability: nutrition-management.frontend.security
+    semantic_claims:
+      - engineering.security.boundaries
+      - engineering.security.confidentiality
+      - engineering.security.integrity
+      - engineering.security.availability-abuse
+  - capability: nutrition-management.verification.strategy
+    semantic_claims: [engineering.verification.strategy]
+
+  - capability: nutrition-management.engineering-policy
+    semantic_claims:
+      - engineering.engineering.principles
+      - engineering.engineering.error-handling
+      - engineering.engineering.code-quality
+
+  - capability: nutrition-management.component-design
+    semantic_claims:
+      - engineering.engineering.components
+      - engineering.quality.maintainability.modularity
+      - engineering.quality.maintainability.analysability
+      - engineering.quality.maintainability.modifiability
+      - engineering.quality.maintainability.testability
+
+  - capability: nutrition-management.redesign.verification-design
+    semantic_claims:
+      - engineering.verification.functional
+      - engineering.verification.architecture
+      - engineering.verification.data
+      - engineering.verification.interface.machine
+      - engineering.verification.requirement-traceability
+      - engineering.transition.revalidation
+
+  - capability: nutrition-management.redesign.implementation-design
+    semantic_claims:
+      - engineering.delivery.migration
+      - engineering.delivery.release
+      - engineering.delivery.rollback
+
+  - capability: nutrition-management.frontend.verification-design
+    semantic_claims:
+      - engineering.verification.strategy
+      - engineering.verification.functional
+      - engineering.verification.data
+      - engineering.verification.interface.human
+      - engineering.verification.security
+      - engineering.verification.architecture
+      - engineering.verification.requirement-traceability
+      - engineering.transition.revalidation
+
+  - capability: nutrition-management.frontend.component-design
+    semantic_claims:
+      - engineering.engineering.components
+      - engineering.quality.maintainability.modularity
+      - engineering.quality.maintainability.analysability
+      - engineering.quality.maintainability.modifiability
+      - engineering.quality.maintainability.testability
+
+  - capability: nutrition-management.frontend.implementation-design
+    semantic_claims:
+      - engineering.delivery.migration
+      - engineering.delivery.release
+      - engineering.delivery.rollback
+
+  - capability: nutrition-management.frontend.operability-design
+    semantic_claims:
+      - engineering.operability.configuration
+      - engineering.operability.logging
+      - engineering.operability.health
+      - engineering.operability.incident
+
+  - capability: nutrition-management.frontend.security-analysis
+    semantic_claims:
+      - engineering.security.threat-analysis
+      - engineering.security.vulnerability-management
+      - engineering.security.secure-development
+
+# Broad design/test capabilities are intentionally not expanded to multiple concerns
+# unless their producer contract is made explicit in canonical knowledge.
