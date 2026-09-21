@@ -105,4 +105,17 @@ jobs:
               len(backend["question_frontier"]),
               len(frontend["question_frontier"]),
           )
+
+          for label, result in (("backend", backend), ("frontend", frontend)):
+              print(f"{label} structural gaps:")
+              for item in result["work_items"]:
+                  if item["action"] == "MODEL_PRODUCTION_CONTRACT":
+                      print(
+                          "  MODEL_PRODUCTION_CONTRACT",
+                          item["concern"],
+                          "->",
+                          ",".join(item["candidate_authorities"]),
+                      )
+                  elif item["action"] == "ASSIGN_AUTHORITY":
+                      print("  ASSIGN_AUTHORITY", item["concern"])
           PY
