@@ -17,6 +17,10 @@ bindings:
       - engineering.application.use-cases
       - engineering.application.orchestration
       - engineering.application.failures
+      - {claim: engineering.application.use-cases, subject: Household nutrition targeting}
+      - {claim: engineering.application.use-cases, subject: Food knowledge}
+      - {claim: engineering.application.use-cases, subject: Purchasable catalog and offers}
+      - {claim: engineering.application.use-cases, subject: Purchase planning and optimization}
   - capability: nutrition-management.architecture
     semantic_claims: [engineering.architecture.structure, engineering.architecture.boundaries]
   - capability: nutrition-management.frontend.architecture
