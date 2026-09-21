@@ -1,3 +1,4 @@
+# Coverage uses the canonical Harness SHA pinned below.
 name: Engineering Coverage
 
 on:
