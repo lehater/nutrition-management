@@ -1,6 +1,6 @@
 # ADR-017 — Gap suggestions rank computable nutrient density before fallback density
 
-Status: `accepted` for the Harness pilot branch.
+Status: `accepted` for the current canonical project baseline.
 
 Date: 2026-09-19.
 Lifecycle owner: `S2 Tactical Domain Design / Purchase Planning suggestion ranking`.

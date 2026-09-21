@@ -107,7 +107,7 @@ Implementation must realize `docs/redesign/frontend-test-design.md` and `docs/re
 ## Implementation slices
 
 1. web composition, loopback/security shell, template base and structural tests;
-2. Overview + Household/member management;
+2. Overview + Household/member management, with explicit CreateMember for new identity and SaveMemberProfile only for existing members;
 3. Food Knowledge read/manual-edit surface;
 4. Market Product/Channel/Offer surface;
 5. Plan form and GeneratePurchasePlan integration;

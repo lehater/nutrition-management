@@ -1,6 +1,6 @@
 # ADR-016 — BLS 4.0 category assignment is an explicit exhaustive project decision registry
 
-Status: `accepted` for the Harness pilot branch.
+Status: `accepted` for the current canonical project baseline.
 
 Date: 2026-09-19.
 Lifecycle owner: `S2 Strategic/Tactical Domain Design / Food Knowledge classification semantics`.
