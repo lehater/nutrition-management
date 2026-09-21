@@ -45,3 +45,29 @@ For identical explicit inputs and accepted provider state, canonical output is d
 ## Acceptance gate
 
 Implementation may be declared complete only when every applicable evidence class passes and Harness evaluates IMPLEMENTATION COMPLETE. Existing code or existing tests are not evidence for this redesign until an implementation revision is verified against this design.
+
+## Requirement traceability
+
+Verification obligations trace to accepted requirements and design contracts through stable semantic responsibility rather than by file-name coincidence.
+
+For every implementation-facing behavior or constraint in the selected Consumer scope, verification must identify:
+
+1. the accepted requirement or upstream design decision being protected;
+2. the owning capability/Authority;
+3. the evidence class or executable contract that proves it;
+4. any intentionally deferred or not-applicable verification with its accepted rationale.
+
+A requirement is not considered verified merely because a nearby test passes; the evidence must exercise the observable behavior or structural constraint that the requirement actually imposes.
+
+## Transition revalidation
+
+Any accepted transition that changes runtime, persistence representation, interface contract, dependency topology or implementation mechanism must revalidate the affected evidence classes before the new state is accepted.
+
+At minimum:
+
+- schema/data migration revalidates persistence round-trip, ownership and representative planning reads;
+- interface change revalidates deterministic success/failure behavior and compatibility obligations;
+- solver/runtime/library replacement revalidates optimization status semantics, deterministic policy ordering and architecture boundaries;
+- component-boundary change revalidates forbidden-dependency and application/domain isolation evidence.
+
+Unchanged upstream semantics do not need to be re-proven wholesale; revalidation follows the affected capability closure.
