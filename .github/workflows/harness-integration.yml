@@ -4,11 +4,13 @@ on:
   pull_request:
     paths:
       - ".harness/**"
+      - ".harness-version"
       - ".github/workflows/harness-integration.yml"
   push:
     branches: [main]
     paths:
       - ".harness/**"
+      - ".harness-version"
       - ".github/workflows/harness-integration.yml"
 
 permissions:
@@ -21,11 +23,15 @@ jobs:
       - name: Checkout Nutrition Management
         uses: actions/checkout@v5
 
+      - name: Read pinned Harness version
+        id: harness-version
+        run: echo "sha=$(cat .harness-version)" >> "$GITHUB_OUTPUT"
+
       - name: Checkout pinned Harness
         uses: actions/checkout@v5
         with:
           repository: lehater/harness
-          ref: 90f80c2d670b894d7a0286d463ae7af451b3c948
+          ref: ${{ steps.harness-version.outputs.sha }}
           path: .harness-tool
 
       - uses: actions/setup-python@v6
