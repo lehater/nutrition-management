@@ -23,8 +23,6 @@ artifacts:
     path: docs/redesign/verification-design.md
     provides:
       - nutrition-management.redesign.verification-design
-      - nutrition-management.coverage.transition-revalidation
-      - nutrition-management.coverage.requirement-traceability
     depends_on:
       - PRODUCT-REQUIREMENTS
       - TARGET-ARCHITECTURE
@@ -53,9 +51,6 @@ artifacts:
     path: docs/redesign/implementation-design.md
     provides:
       - nutrition-management.redesign.implementation-design
-      - nutrition-management.coverage.backend-delivery-migration
-      - nutrition-management.coverage.backend-delivery-release
-      - nutrition-management.coverage.backend-delivery-rollback
     depends_on:
       - COMPONENT-DESIGN
       - REDESIGN-VERIFICATION-DESIGN
@@ -70,7 +65,6 @@ artifacts:
     path: docs/engineering/engineering-design-policy.md
     provides:
       - nutrition-management.engineering-policy
-      - nutrition-management.coverage.engineering-code-quality
     depends_on:
       - TARGET-ARCHITECTURE
 
@@ -247,8 +241,6 @@ artifacts:
     path: docs/data/data-design.md
     provides:
       - nutrition-management.data-design
-      - nutrition-management.coverage.data-classification
-      - nutrition-management.coverage.data-lifecycle
     depends_on:
       - TARGET-ARCHITECTURE
       - APPLICATION-DESIGN
@@ -258,7 +250,6 @@ artifacts:
     path: docs/interface/cli-contract.md
     provides:
       - nutrition-management.interface.cli
-      - nutrition-management.coverage.cli-compatibility
     depends_on:
       - APPLICATION-DESIGN
 
@@ -267,7 +258,6 @@ artifacts:
     path: docs/redesign/component-design.md
     provides:
       - nutrition-management.component-design
-      - nutrition-management.coverage.maintainability-testability
     depends_on:
       - ENGINEERING-DESIGN-POLICY
       - APPLICATION-DESIGN
