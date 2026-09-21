@@ -53,8 +53,8 @@ Shows:
 - explicit unresolved/applicability-relevant facts when accepted semantics expose them.
 
 Actions:
-- add member;
-- edit current profile;
+- add member through explicit provider-owned member creation;
+- edit current profile for an existing member;
 - generate plan for this household.
 
 ### Member form
