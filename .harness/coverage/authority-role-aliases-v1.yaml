@@ -1,0 +1,14 @@
+version: 1
+kind: harness-project-authority-role-aliases
+project: NUTRITION-MANAGEMENT
+status: canonical
+bindings:
+  PRODUCT: [product]
+  DOMAIN-STRUCTURE: [domain]
+  NUTRITION-TARGETING: [domain]
+  FOOD-KNOWLEDGE: [domain]
+  MARKET-CATALOG: [domain]
+  PURCHASE-PLANNING: [domain]
+  ARCHITECTURE: [architecture, reliability]
+  REDESIGN-VERIFICATION: [verification]
+  VERIFICATION: [verification]
