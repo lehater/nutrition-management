@@ -5,11 +5,9 @@ scope: current-design
 status: research
 
 # Only facts not safely inferable from generic software topology remain explicit.
+# governance.privacy is intentionally not activated merely from personal-data presence;
+# current Harness obligation research says Nutrition has no material independent normative source.
 activate:
-  - concern: governance.privacy
-    consumers: [IMPLEMENTATION, FRONTEND-IMPLEMENTATION]
-    rationale: The product stores member/profile information; privacy applicability is a project/domain fact.
-    evidence: [PRODUCT-REQUIREMENTS, DATA-DESIGN]
   - concern: governance.data
     consumers: [IMPLEMENTATION, FRONTEND-IMPLEMENTATION, BLS-V4-PRODUCTION-IMPORT]
     rationale: Persistent user/domain/source data requires explicit project data-governance assessment.
