@@ -1,0 +1,68 @@
+version: 1
+kind: repository-realization-design
+id: NUTRITION-MANAGEMENT-REPOSITORY-REALIZATION
+status: accepted-candidate
+owner: IMPLEMENTATION-DESIGN
+basis:
+  implementation_stack: docs/decisions/ADR-010-first-implementation-stack.md
+  implementation_design: docs/redesign/implementation-design.md
+  frontend_implementation: docs/redesign/frontend-implementation-design.md
+  component_design: docs/redesign/component-design.md
+
+repository_topology: single repository, one uv-managed Python distribution, one deployable modular-monolith baseline
+
+module_realizations:
+  - {semantic_owner: Nutrition Targeting, physical_root: src/nutrition_management/nutrition_targeting}
+  - {semantic_owner: Food Knowledge, physical_root: src/nutrition_management/food_knowledge}
+  - {semantic_owner: Market Catalog, physical_root: src/nutrition_management/market_catalog}
+  - {semantic_owner: Purchase Planning, physical_root: src/nutrition_management/purchase_planning}
+  - {semantic_owner: Composition, physical_root: src/nutrition_management/composition}
+  - {semantic_owner: CLI and browser presentation adapters, physical_root: src/nutrition_management/adapters}
+
+dependency_rules:
+  - rule: within each context adapters/infrastructure may depend on application and domain, application may depend on domain, domain must not depend outward
+    enforcement: import-linter contracts plus architecture tests
+  - rule: cross-context imports use provider-owned application contracts and never peer persistence mappings
+    enforcement: import-linter forbidden/independence contracts plus architecture tests
+  - rule: SQLAlchemy PySCIPOpt Starlette Jinja2 and other framework types remain behind their accepted adapter boundaries
+    enforcement: import-linter forbidden contracts plus targeted architecture tests
+
+obligations:
+  - {id: deterministic-formatting, applicability: REQUIRED, enforcement: "Ruff format --check, pinned in uv dev dependencies and blocking PR CI"}
+  - {id: linting, applicability: REQUIRED, enforcement: "Ruff check, blocking PR CI"}
+  - {id: static-typing, applicability: REQUIRED, enforcement: "mypy over src and typed tests at the accepted project strictness baseline, blocking PR CI"}
+  - {id: architecture-dependencies, applicability: REQUIRED, enforcement: "Import Linter contracts plus pytest architecture tests, blocking PR CI"}
+  - {id: unit-integration-tests, applicability: REQUIRED, enforcement: "pytest, blocking PR CI"}
+  - {id: browser-tests, applicability: REQUIRED, enforcement: "Playwright scenarios required by frontend Test Design, blocking frontend PR CI"}
+  - {id: dependency-vulnerability, applicability: REQUIRED, enforcement: "pip-audit against the locked Python environment in PR CI"}
+  - {id: sast, applicability: REQUIRED, enforcement: "GitHub CodeQL Python analysis on pull requests/main"}
+  - {id: secret-scanning, applicability: REQUIRED, enforcement: "GitHub secret scanning/push protection or equivalent repository control"}
+  - {id: build-install-validation, applicability: REQUIRED, enforcement: "uv build followed by clean-environment install/smoke validation before release"}
+  - {id: dead-code, applicability: DEFERRED, rationale: first MVP does not justify a blocking dead-code heuristic until useful signal is demonstrated}
+  - {id: license-policy-gate, applicability: DEFERRED, rationale: no accepted organizational/product license allow/deny policy exists; dependency licenses remain reviewable inventory}
+  - {id: pre-commit-hooks, applicability: NOT_APPLICABLE, rationale: local fast-check command is sufficient; CI remains authoritative and hooks add no semantic coverage}
+  - {id: sbom-provenance, applicability: NOT_APPLICABLE, rationale: current local MVP has no published distributable artifact or external provenance obligation}
+
+generated_artifacts:
+  - path: docs/generated/**
+    source_of_truth: canonical Harness/project engineering knowledge
+    regenerate: canonical Human Documentation Projection recipes
+
+environment:
+  reproducibility: REQUIRED
+  lock_or_equivalent: "Python 3.14.x + uv 0.12.13 + committed uv.lock; CI uses uv lock --check and uv sync --locked"
+
+quality_gates:
+  - id: pull-request
+    trigger: pull_request
+    blocking: true
+    command: "one project check entrypoint: lock + format + lint + type + architecture + tests + security/dependency checks"
+  - id: release
+    trigger: release
+    blocking: true
+    command: "clean build/install + migration verification + representative CLI/browser acceptance"
+
+implementation_freedoms:
+  - private helper modules and exact file names below accepted context/adapter roots
+  - fixture/test-helper decomposition that does not cross ownership boundaries
+  - CSS classes/template macro decomposition and other frontend freedoms already listed by Frontend Implementation Design
