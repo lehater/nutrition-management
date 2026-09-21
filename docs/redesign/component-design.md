@@ -114,3 +114,16 @@ The outer composition component selects concrete persistence, planning-input, op
 Language constructs, private helper decomposition, file/package layout below these public boundaries, dependency-construction technique and optimization library adapter shape remain implementation freedoms unless fixed by Implementation Design.
 
 No coding agent may change semantic ownership, provider/consumer direction, coherent-capture semantics, outcome/failure semantics or introduce a new integration mechanism without reopening design.
+
+## Testability contract
+
+Component boundaries must permit verification without replacing accepted semantics.
+
+- application use cases depend on narrow ports/provider contracts that can be substituted by deterministic fakes in tests;
+- domain policy is testable without database, solver, CLI/web framework or Harness runtime;
+- persistence, solver and external adapters can be exercised independently against their owned contracts;
+- composition is the only place that binds concrete adapters, so integration tests can replace a dependency without changing use-case code;
+- time/version inputs that affect semantics are explicit inputs, not hidden globals;
+- no test-only public production API is introduced solely to reach private implementation details.
+
+A component decomposition that requires end-to-end infrastructure to verify ordinary domain/application behavior fails this design obligation and must be revised before coding.

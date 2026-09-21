@@ -89,3 +89,25 @@ Migration rules:
 Database constraints enforce representation-level integrity within a context. Domain/application validation remains authoritative for semantic invariants that cannot be represented safely as relational constraints.
 
 A schema change that changes domain meaning, context ownership or planning consistency semantics must reopen the corresponding upstream design rather than being treated as a local migration detail.
+
+## Data classification contract
+
+Persistent data is classified for engineering handling before implementation:
+
+- member/household profile and nutrition/safety-reference data are personal domain data and must not be copied into diagnostics, fixtures or exports by default;
+- Food Knowledge source facts and provenance are externally sourced reference data whose source identity and normalization evidence must remain traceable;
+- Market Catalog observations are commercial/temporal domain data and retain observation/validity provenance;
+- implementation metadata such as migration revision identifiers is operational data and carries no domain authority.
+
+Classification does not itself decide legal/privacy obligations. If a classification triggers such an obligation, that decision is routed to the owning governance/obligation authority.
+
+## Data lifecycle contract
+
+Lifecycle is explicit per data class:
+
+- current member/profile state is mutable provider-owned state; updates replace current state while preserving only history required by an accepted requirement;
+- Nutrition Standard Sets and other versioned reference sets are immutable-by-version once accepted for use;
+- imported Food Knowledge/Market data is normalized into canonical provider state while retaining required source/provenance identity;
+- schema evolution is performed through the single Alembic migration stream and must preserve context ownership and representation invariants;
+- Planning Input Snapshots and returned Purchase Plans remain non-durable for the MVP and are discarded after the execution/result lifecycle;
+- deletion, archival or long-term retention beyond these rules requires an explicit upstream product/governance decision rather than an implementation default.

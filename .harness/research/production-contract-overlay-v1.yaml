@@ -1,0 +1,9 @@
+version: 1
+kind: harness-production-contract-overlay
+project: NUTRITION-MANAGEMENT
+status: research
+
+# Backend proposals were materialized into the Engineering Graph on this
+# research branch. Keep the adapter file for the evaluator until project
+# integration no longer passes an overlay.
+productions: []

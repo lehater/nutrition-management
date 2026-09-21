@@ -140,3 +140,21 @@ Coding must not:
 - bypass provider application contracts.
 
 Any such need reopens its owning design artifact.
+
+## Delivery, migration and rollback
+
+The frontend is released as part of the same local application baseline as the backend/CLI; it is not a separately deployed product.
+
+### Migration
+
+The frontend introduces no independent persistence store. Any provider-schema migration used by a frontend feature follows the accepted backend Data/Implementation migration contract and must complete before the new frontend baseline serves requests.
+
+### Release
+
+A frontend release consists of the locked Python environment, server-rendered templates/static assets, application package and matching migration/verification baseline. Release is authorized only when the FRONTEND-IMPLEMENTATION Consumer is complete, frontend security/operability/verification obligations are accepted, and automated frontend plus shared backend gates pass.
+
+### Rollback
+
+Frontend-only presentation rollback is permitted when its application contracts and current database schema remain compatible. A rollback across an incompatible provider/schema change follows the backend rollback contract; the frontend must never run against a schema/application-contract combination it was not designed to consume.
+
+There is no independent SPA asset version or separately rolling frontend deployment in this slice.
