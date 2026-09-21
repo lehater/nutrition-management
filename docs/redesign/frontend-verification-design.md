@@ -13,7 +13,7 @@ Define evidence required to prove the user-facing frontend realizes accepted fro
 ### Journey evidence
 
 Demonstrate:
-- household member create/update journey;
+- household member create/update journey, including provider-owned new-member identity creation distinct from profile replacement;
 - catalog/manual market-data maintenance sufficient for accepted UI scope;
 - Generate Purchase Plan with explicit dates/times;
 - result interpretation for mapped-complete, partial and no-executable-plan outcomes.
@@ -33,6 +33,7 @@ Demonstrate that UI preserves distinctions:
 
 Demonstrate that:
 - web adapter calls provider/application contracts;
+- Add Member invokes explicit `CreateMember` semantics and does not manufacture `member_id` or treat `SaveMemberProfile` as implicit identity creation;
 - no domain calculation is reimplemented in route/template/JS code;
 - no provider persistence or solver-native types cross the presentation boundary;
 - CLI and web converge on the same application semantics for overlapping operations.
