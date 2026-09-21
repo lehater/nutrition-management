@@ -1,0 +1,50 @@
+version: 1
+kind: harness-production-contract-overlay
+project: NUTRITION-MANAGEMENT
+status: research
+
+# Research-only proposals. They are evaluated in memory by the Coverage
+# evaluator and are not canonical Engineering Graph truth.
+productions:
+  - authority: DATA-DESIGN
+    capability: nutrition-management.coverage.data-classification
+    semantic_claims:
+      - engineering.data.classification
+    requires:
+      - nutrition-management.data-design
+
+  - authority: DATA-DESIGN
+    capability: nutrition-management.coverage.data-lifecycle
+    semantic_claims:
+      - engineering.data.lifecycle
+    requires:
+      - nutrition-management.data-design
+
+  - authority: IMPLEMENTATION-DESIGN
+    capability: nutrition-management.coverage.backend-delivery-migration
+    semantic_claims:
+      - engineering.delivery.migration
+    requires:
+      - nutrition-management.data-design
+      - nutrition-management.redesign.implementation-design
+
+  - authority: IMPLEMENTATION-DESIGN
+    capability: nutrition-management.coverage.backend-delivery-release
+    semantic_claims:
+      - engineering.delivery.release
+    requires:
+      - nutrition-management.redesign.implementation-design
+
+  - authority: IMPLEMENTATION-DESIGN
+    capability: nutrition-management.coverage.backend-delivery-rollback
+    semantic_claims:
+      - engineering.delivery.rollback
+    requires:
+      - nutrition-management.redesign.implementation-design
+
+  - authority: INTERFACE-DESIGN
+    capability: nutrition-management.coverage.cli-compatibility
+    semantic_claims:
+      - engineering.interface.machine.compatibility
+    requires:
+      - nutrition-management.interface.cli
