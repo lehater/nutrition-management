@@ -16,7 +16,7 @@ Each context separates domain, application and infrastructure/adapters where app
 
 PySCIPOpt is confined to the optimization adapter. SCIP status/types cannot cross that boundary. Reportable nutrition/cost/variety values are recalculated outside the solver.
 
-Canonical sources: `docs/implementation/component-design.md`, `docs/redesign/component-design.md`, `docs/redesign/implementation-design.md`.
+Canonical sources: `docs/redesign/component-design.md`, `docs/redesign/implementation-design.md`.
 
 ## Implementation sequence
 
