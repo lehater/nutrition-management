@@ -22,6 +22,11 @@ activate:
     evidence: [FRONTEND-DELIVERY-DECISION]
 
 decisions:
+  - concern: interface.human.i18n
+    consumers: [FRONTEND-IMPLEMENTATION]
+    state: NOT_APPLICABLE
+    rationale: The accepted local frontend has no multi-language or localization requirement in the current product scope.
+    evidence: [FRONTEND-REQUIREMENTS, FRONTEND-HUMAN-INTERFACE]
   - concern: security.identity
     consumers: [FRONTEND-IMPLEMENTATION]
     state: NOT_APPLICABLE
