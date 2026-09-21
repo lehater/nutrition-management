@@ -67,9 +67,6 @@ authorities:
       - capability: nutrition-management.food-knowledge.bls-v4.source-identity
         requires:
           - capability: nutrition-management.domain.food-knowledge
-      - capability: nutrition-management.food-knowledge.bls-v4.source-structure
-        requires:
-          - capability: nutrition-management.domain.food-knowledge
       - capability: nutrition-management.food-knowledge.bls-v4.source-code-set
         knowledge_kind: pinned-source-entity-set
         requires:
@@ -77,9 +74,6 @@ authorities:
       - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
         requires:
           - capability: nutrition-management.food-knowledge.bls-v4.source-identity
-      - capability: nutrition-management.food-knowledge.bls-v4.normalization-order
-        requires:
-          - capability: nutrition-management.food-knowledge.bls-v4.evidence-semantics
       - capability: nutrition-management.food-knowledge.bls-v4.errata-policy
         requires:
           - capability: nutrition-management.food-knowledge.bls-v4.source-identity
