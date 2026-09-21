@@ -23,10 +23,13 @@ bindings:
     semantic_claims:
       - engineering.interface.machine.contract
       - engineering.interface.machine.errors
+      - engineering.interface.machine.compatibility
   - capability: nutrition-management.data-design
     semantic_claims:
       - engineering.data.model
       - engineering.data.integrity
+      - engineering.data.classification
+      - engineering.data.lifecycle
       - engineering.reliability.durability
       - engineering.governance.data
   - capability: nutrition-management.frontend.user-journeys
@@ -48,6 +51,7 @@ bindings:
     semantic_claims:
       - engineering.engineering.principles
       - engineering.engineering.error-handling
+      - engineering.engineering.code-quality
 
   - capability: nutrition-management.component-design
     semantic_claims:
@@ -55,6 +59,7 @@ bindings:
       - engineering.quality.maintainability.modularity
       - engineering.quality.maintainability.analysability
       - engineering.quality.maintainability.modifiability
+      - engineering.quality.maintainability.testability
 
   - capability: nutrition-management.redesign.verification-design
     semantic_claims:
@@ -62,6 +67,14 @@ bindings:
       - engineering.verification.architecture
       - engineering.verification.data
       - engineering.verification.interface.machine
+      - engineering.verification.requirement-traceability
+      - engineering.transition.revalidation
+
+  - capability: nutrition-management.redesign.implementation-design
+    semantic_claims:
+      - engineering.delivery.migration
+      - engineering.delivery.release
+      - engineering.delivery.rollback
 
   - capability: nutrition-management.frontend.verification-design
     semantic_claims:
@@ -72,23 +85,3 @@ bindings:
 
 # Broad design/test capabilities are intentionally not expanded to multiple concerns
 # unless their producer contract is made explicit in canonical knowledge.
-  - capability: nutrition-management.coverage.data-classification
-    semantic_claims: [engineering.data.classification]
-  - capability: nutrition-management.coverage.data-lifecycle
-    semantic_claims: [engineering.data.lifecycle]
-  - capability: nutrition-management.coverage.backend-delivery-migration
-    semantic_claims: [engineering.delivery.migration]
-  - capability: nutrition-management.coverage.backend-delivery-release
-    semantic_claims: [engineering.delivery.release]
-  - capability: nutrition-management.coverage.backend-delivery-rollback
-    semantic_claims: [engineering.delivery.rollback]
-  - capability: nutrition-management.coverage.cli-compatibility
-    semantic_claims: [engineering.interface.machine.compatibility]
-  - capability: nutrition-management.coverage.engineering-code-quality
-    semantic_claims: [engineering.engineering.code-quality]
-  - capability: nutrition-management.coverage.maintainability-testability
-    semantic_claims: [engineering.quality.maintainability.testability]
-  - capability: nutrition-management.coverage.transition-revalidation
-    semantic_claims: [engineering.transition.revalidation]
-  - capability: nutrition-management.coverage.requirement-traceability
-    semantic_claims: [engineering.verification.requirement-traceability]
