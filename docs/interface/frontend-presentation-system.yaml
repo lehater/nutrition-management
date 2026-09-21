@@ -1,0 +1,174 @@
+version: 1
+kind: presentation-system-design
+id: NUTRITION-MANAGEMENT-FRONTEND-PRESENTATION-SYSTEM
+status: CURRENT
+
+purpose: >-
+  Define one reusable presentation language for the local browser frontend so
+  planning, household maintenance and catalog maintenance remain visually and
+  interactionally consistent without forcing one dense enterprise UI pattern.
+
+basis:
+  requirements: docs/requirements/frontend-requirements.md
+  journeys: docs/application/user-journeys.md
+  human_interface: docs/interface/human-interface-design.md
+  application_contracts: docs/application/frontend-application-contracts.md
+  security: docs/architecture/frontend-security.md
+
+presentation_language:
+  character: local-planning-workbench
+  priorities:
+    - lead with human-readable nutrition/planning meaning rather than technical identifiers;
+    - keep the household-to-plan journey visually primary over administrative catalog maintenance;
+    - make uncertainty, provenance and semantic distinctions explicit without overwhelming the primary task;
+    - use calm readable forms and result sections rather than dense dashboard/table composition by default.
+
+hierarchy:
+  page:
+    order: [context, primary-task, supporting-information, feedback]
+  actions:
+    primary: one task-leading action per active form or planning context
+    secondary: navigation, disclosure and supporting edits
+    destructive_or_reset: visually separated and confirmed when consequence is not safely reversible
+  information:
+    current_task_input: primary
+    accepted_result: primary
+    warnings_and_uncertainty: visible-supporting
+    provenance: secondary-inspectable
+    technical_identifiers: inspectable-not-leading
+
+layout:
+  shell:
+    pattern: APP-SHELL
+    regions: [primary-navigation, current-location, workspace-content, status-region]
+  density:
+    default: comfortable
+    rationale: Forms, explanatory outcomes and provenance are more important than maximizing rows per viewport.
+  reading_width:
+    rule: long explanatory/result text uses readable line length while collections may use wider content regions
+  grouping:
+    - group fields by semantic task, not persistence entity shape;
+    - keep result summary before detailed sections;
+    - keep provenance/diagnostics available without competing with the main plan interpretation flow.
+
+visual_roles:
+  typography:
+    - page-title
+    - section-title
+    - body
+    - field-label
+    - supporting
+    - numeric-result
+    - provenance
+  color:
+    roles: [surface, text, muted-text, border, primary-action, success, warning, error, focus]
+    rule: semantic meaning never depends on color alone
+  spacing:
+    roles: [inline, control, group, section, page]
+  iconography:
+    rule: optional reinforcement only; required meaning remains available as text/semantic structure
+
+patterns:
+  APP-SHELL:
+    purpose: persistent navigation and status framing
+    rules:
+      - Overview, Household, Food Knowledge, Market and Plan remain primary locations;
+      - Result is reached from Plan and remains within the planning journey;
+      - no account/profile chrome is introduced for the local MVP.
+
+  SUMMARY:
+    purpose: show a small set of task-relevant facts and blockers without inventing a composite score
+    rules:
+      - labels state concrete facts or missing conditions;
+      - aggregate readiness/safety scores are forbidden unless accepted upstream.
+
+  FORM:
+    purpose: edit one accepted semantic input group
+    rules:
+      - labels remain visible;
+      - optionality and units/basis are explicit where material;
+      - validation appears at field plus accessible summary;
+      - submitted values remain available after rejection.
+
+  COLLECTION:
+    purpose: browse/search a provider-owned collection
+    regions: [collection-controls, collection-items, collection-state]
+    responsive: may use list, table or cards according to data shape; labels/actions must remain explicit
+
+  DETAIL-EDITOR:
+    purpose: inspect and edit one provider-owned entity without exposing persistence representation
+    regions: [identity-context, semantic-facts, actions, supporting-provenance]
+
+  SUBNAV:
+    purpose: switch between closely related sub-locations inside one workspace
+    rule: current sub-location remains programmatically and visually identifiable
+
+  STATUS:
+    purpose: expose loading, accepted completion, validation rejection and technical failure
+    rules:
+      - technical failure is distinct from accepted domain outcomes;
+      - missing/unknown/unsupported/indeterminate are never represented as numeric zero;
+      - non-modal routine completion uses the shared status region.
+
+  OUTCOME-SUMMARY:
+    purpose: state the accepted planning outcome before details
+    rules:
+      - mapped_complete is phrased as mapped-target coverage, not universal nutrition completeness;
+      - partial and no_executable_plan remain accepted domain outcomes distinct from technical failure.
+
+  RESULT-SECTIONS:
+    purpose: organize one Purchase Plan result into semantically distinct sections
+    sections: [summary, purchase-groups, nutrition-coverage, variety, safety-diagnostics, gaps-and-suggestions, provenance]
+    rule: tabs, accordions or in-page sections are implementation choices if semantic order/accessibility are preserved
+
+  DISCLOSURE:
+    purpose: reveal secondary explanation/provenance
+    rules:
+      - control state is programmatically exposed;
+      - collapsed content remains discoverable and keyboard operable.
+
+responsive:
+  target: desktop-first-local-browser
+  defaults:
+    - preserve all required form fields, warnings, result distinctions and actions at narrow width;
+    - multi-column groups may stack in semantic reading order;
+    - collections may switch among table/list/card realizations without changing meaning;
+    - Result sections remain reachable in the same semantic order;
+    - primary action remains discoverable after reflow.
+  exact_breakpoints: implementation freedom
+
+accessibility_defaults:
+  - prefer semantic HTML and native controls;
+  - all required actions are keyboard reachable with visible focus;
+  - form labels/errors are programmatically associated;
+  - rejected submission focuses or announces the error summary and allows navigation to invalid controls;
+  - status/result changes use semantic status structure where appropriate;
+  - color is never the sole carrier of meaning;
+  - disclosure/subnavigation state is programmatically exposed.
+
+content_rules:
+  - use canonical domain language for Household, Base Food, SKU, Offer, Fulfilment Channel and Purchase Plan concepts;
+  - preserve missing, zero, unsupported, indeterminate, partial, no_executable_plan and technical-failure distinctions;
+  - distinguish theoretical food suggestions from purchasable market selections;
+  - provenance labels identify source/time/version without becoming the primary task headline.
+
+design_tokens:
+  policy: >-
+    Use shared semantic roles for type, spacing, focus, status and surfaces.
+    Exact values remain component/CSS realization freedom unless accessibility
+    or an accepted invariant requires a measurable value.
+  required_role_groups: [typography, spacing, surface, focus, status]
+
+deviation_policy:
+  rule: Every Screen/View contract inherits this Presentation System.
+  local_override:
+    allowed_when: a screen's accepted semantic task cannot be represented clearly with shared patterns
+    requires: [explicit-rule-or-pattern, rationale, preserved-accessibility-and-interface-semantics]
+
+implementation_freedom:
+  - CSS framework or no framework
+  - exact typography, colors and spacing values
+  - table versus responsive card/list realization where semantics remain equivalent
+  - exact breakpoints
+  - modal versus dedicated page for simple create/edit tasks when focus/navigation semantics remain correct
+  - private template/macro/component decomposition
