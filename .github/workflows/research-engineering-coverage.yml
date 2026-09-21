@@ -137,4 +137,14 @@ jobs:
                       )
                   elif item["action"] == "ASSIGN_AUTHORITY":
                       print("  ASSIGN_AUTHORITY", item["concern"])
+                  elif item["action"] == "PRODUCE_CAPABILITY":
+                      print(
+                          "  PRODUCE_CAPABILITY",
+                          item["capability"],
+                          "->",
+                          item.get("authority"),
+                          "[",
+                          ",".join(item["concerns"]),
+                          "]",
+                      )
           PY
