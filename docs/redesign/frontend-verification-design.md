@@ -86,3 +86,21 @@ Frontend implementation is complete only when:
 2. structural/security checks pass;
 3. the frontend Harness consumer evaluates COMPLETE;
 4. no unresolved Question blocks a required frontend capability.
+
+## Traceability, data evidence and transition revalidation
+
+### Requirement traceability
+
+Every frontend verification obligation must trace to an accepted frontend requirement, upstream application/domain semantic, Security/Operability contract or structural design constraint. A passing browser test is not sufficient unless its oracle states which accepted behavior or constraint it proves.
+
+### Data evidence
+
+Frontend verification must demonstrate that presentation code neither creates a second authoritative data model nor changes accepted lifecycle semantics: provider writes go through application commands, generated plans remain non-durable, browser state is disposable, and data classification/redaction constraints are preserved at presentation/diagnostic boundaries.
+
+### Functional evidence
+
+The FUI contracts and journey evidence together prove the accepted user-visible operations and outcome distinctions for the selected frontend scope. Functional evidence includes success, validation rejection, accepted domain outcomes and technical failures rather than only happy-path navigation.
+
+### Transition revalidation
+
+Changes to frontend framework/runtime, application-contract shape, listener/security boundary, templates/rendering model or provider persistence compatibility re-run the affected frontend evidence classes before acceptance. Unchanged domain semantics need not be re-proven wholesale; revalidation follows the affected capability closure.
