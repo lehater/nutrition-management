@@ -19,6 +19,12 @@ bindings:
       - engineering.application.failures
   - capability: nutrition-management.architecture
     semantic_claims: [engineering.architecture.structure, engineering.architecture.boundaries]
+  - capability: nutrition-management.frontend.architecture
+    semantic_claims:
+      - engineering.reliability.availability
+      - engineering.reliability.recovery
+      - engineering.quality.performance.latency
+      - engineering.quality.performance.resource-efficiency
   - capability: nutrition-management.interface.cli
     semantic_claims:
       - engineering.interface.machine.contract
@@ -44,6 +50,7 @@ bindings:
       - engineering.security.boundaries
       - engineering.security.confidentiality
       - engineering.security.integrity
+      - engineering.security.availability-abuse
   - capability: nutrition-management.verification.strategy
     semantic_claims: [engineering.verification.strategy]
 
@@ -79,9 +86,40 @@ bindings:
   - capability: nutrition-management.frontend.verification-design
     semantic_claims:
       - engineering.verification.strategy
+      - engineering.verification.functional
+      - engineering.verification.data
       - engineering.verification.interface.human
       - engineering.verification.security
       - engineering.verification.architecture
+      - engineering.verification.requirement-traceability
+      - engineering.transition.revalidation
+
+  - capability: nutrition-management.frontend.component-design
+    semantic_claims:
+      - engineering.engineering.components
+      - engineering.quality.maintainability.modularity
+      - engineering.quality.maintainability.analysability
+      - engineering.quality.maintainability.modifiability
+      - engineering.quality.maintainability.testability
+
+  - capability: nutrition-management.frontend.implementation-design
+    semantic_claims:
+      - engineering.delivery.migration
+      - engineering.delivery.release
+      - engineering.delivery.rollback
+
+  - capability: nutrition-management.frontend.operability-design
+    semantic_claims:
+      - engineering.operability.configuration
+      - engineering.operability.logging
+      - engineering.operability.health
+      - engineering.operability.incident
+
+  - capability: nutrition-management.frontend.security-analysis
+    semantic_claims:
+      - engineering.security.threat-analysis
+      - engineering.security.vulnerability-management
+      - engineering.security.secure-development
 
 # Broad design/test capabilities are intentionally not expanded to multiple concerns
 # unless their producer contract is made explicit in canonical knowledge.
