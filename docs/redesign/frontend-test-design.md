@@ -6,6 +6,8 @@ Owner: TEST-DESIGN.
 
 The contracts below define observable frontend behavior; concrete pytest/browser mechanics remain implementation.
 
+Shared structural oracles also verify `docs/interface/frontend-presentation-system.yaml` and `docs/interface/frontend-screen-view-design.yaml`: every canonical screen is present, inherits the shared system and preserves required region/state semantics.
+
 ## FUI-000 — New member creation
 
 **Precondition:** Household exists and the submitted initial profile is valid.
