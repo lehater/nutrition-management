@@ -4,6 +4,9 @@ project: NUTRITION-MANAGEMENT
 scope: current-design
 status: research
 
+# LEGACY RESEARCH ORACLE: the manual required list below is retained only to compare
+# automatic activation results. It is not the target Coverage control input.
+
 required:
   - data.classification
   - data.lifecycle
