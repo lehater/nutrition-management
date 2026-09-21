@@ -12,6 +12,8 @@ authorities:
   - id: DATA-DESIGN
   - id: INTERFACE-DESIGN
   - id: SECURITY-ARCHITECTURE
+  - id: OPERABILITY-DESIGN
+  - id: SECURITY-ANALYSIS
   - id: REDESIGN-VERIFICATION
   - id: TEST-DESIGN
   - id: IMPLEMENTATION-DESIGN
@@ -363,6 +365,26 @@ artifacts:
       - FRONTEND-SECURITY
       - IMPLEMENTATION-STACK
 
+  - id: FRONTEND-OPERABILITY-DESIGN
+    authority: OPERABILITY-DESIGN
+    path: docs/operability/frontend-operability-design.md
+    provides:
+      - nutrition-management.frontend.operability-design
+    depends_on:
+      - FRONTEND-ARCHITECTURE
+      - FRONTEND-SECURITY
+      - DATA-DESIGN
+
+  - id: FRONTEND-SECURITY-ANALYSIS
+    authority: SECURITY-ANALYSIS
+    path: docs/security/frontend-security-analysis.md
+    provides:
+      - nutrition-management.frontend.security-analysis
+    depends_on:
+      - FRONTEND-SECURITY
+      - FRONTEND-ARCHITECTURE
+      - FRONTEND-OPERABILITY-DESIGN
+
   - id: FRONTEND-VERIFICATION-DESIGN
     authority: REDESIGN-VERIFICATION
     path: docs/redesign/frontend-verification-design.md
@@ -374,6 +396,8 @@ artifacts:
       - FRONTEND-SECURITY
       - FRONTEND-ARCHITECTURE
       - FRONTEND-COMPONENT-DESIGN
+      - FRONTEND-OPERABILITY-DESIGN
+      - FRONTEND-SECURITY-ANALYSIS
 
   - id: FRONTEND-TEST-DESIGN
     authority: TEST-DESIGN
