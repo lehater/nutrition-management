@@ -6,6 +6,19 @@ Owner: TEST-DESIGN.
 
 The contracts below define observable frontend behavior; concrete pytest/browser mechanics remain implementation.
 
+## FUI-000 — New member creation
+
+**Precondition:** Household exists and the submitted initial profile is valid.
+
+**Operation:** choose Add member and submit the initial profile.
+
+**Oracle:**
+- frontend calls the explicit CreateMember application contract;
+- Nutrition Targeting owns/generates the returned opaque member identity;
+- exactly one new member/profile is reported on accepted completion;
+- frontend does not manufacture member identity from form fields;
+- rejected or technical-failure completion does not render a confirmed created member.
+
 ## FUI-001 — Member profile validation
 
 **Precondition:** Household exists.
@@ -19,11 +32,14 @@ The contracts below define observable frontend behavior; concrete pytest/browser
 - focus/context permits reaching the rejected control;
 - no derived target is fabricated client-side.
 
-## FUI-002 — Member profile success
+## FUI-002 — Existing member profile success
 
-**Operation:** submit an accepted profile.
+**Precondition:** Member identity already exists.
+
+**Operation:** submit an accepted replacement profile.
 
 **Oracle:**
+- SaveMemberProfile targets the existing member identity and does not create another member implicitly;
 - provider command commits once;
 - resulting member/profile is rendered from accepted application state;
 - age/targets are not persisted/edited as independent source facts.
