@@ -50,6 +50,22 @@ jobs:
       - name: Validate frontend design closure
         run: python .harness/check_frontend_design_closure.py
 
+      - name: Diagnose backend graph health
+        run: |
+          python .harness-tool/graph_doctor.py \
+            .harness/engineering-graph.yaml \
+            --core-model .harness/graph.yaml \
+            --target IMPLEMENTATION \
+            --source-root .
+
+      - name: Diagnose frontend graph health
+        run: |
+          python .harness-tool/graph_doctor.py \
+            .harness/engineering-graph.yaml \
+            --core-model .harness/graph.yaml \
+            --target FRONTEND-IMPLEMENTATION \
+            --source-root .
+
       - name: Evaluate canonical consumers
         run: |
           python .harness-tool/engineering_graph.py evaluate .harness/engineering-graph.yaml IMPLEMENTATION .harness/graph.yaml
